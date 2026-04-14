@@ -6,16 +6,19 @@ heroImage: "/images/friction-tax-hero.png"
 artefact: "/artefacts/friction-tax.html"
 artefactHeight: 880
 tags: ["Intelligence interface"]
+stage: draft
 ---
 
-The friction tax isn't the work. It's the *re-reading*. It's remembering what state this thing was in. It's digging through Slack to find what Daniel said on Tuesday. Every item that lands on you without a type, a status, and a next action charges rent on your attention, every time you look at the pile.
+The friction tax isn't the work. It's the *re-reading*. Remembering what state this thing was in. Digging through Slack for what Daniel said on Tuesday. Every item that lands on you without a context, a status, and a next action charges rent on your attention, every time you look at the pile.
 
-GTD (Getting Things Done) was [Ontology engineering](https://en.wikipedia.org/wiki/Ontology_engineering) in disguise.
+Structure is how you stop paying it. GTD ([Getting Things Done](https://en.wikipedia.org/wiki/Getting_Things_Done)) is the classic version: four buckets (Inbox, Next Action, Waiting-On, Someday/Maybe) with a context, a status, and a due date on each item. A glance at the list tells you what to do next instead of making you re-derive it from the raw pile.
 
-**Inbox • Next Action • Waiting-On • Someday/Maybe**
+But GTD has a second tax, and it's why most people bounce off it. Someone still has to sit there and convert the pile into the schema. Read the email, decide the context, assign the status, write the next action. Humans are slow, bored parsers. The conversion work is dull enough that the pile wins.
 
-A tiny schema (type, status, due date) enforced by hand with paper and folders. It works because the structure does the thinking for you. It breaks because humans are slow, bored parsers, and the pile never stops growing.
+So the friction is in two places. The unstructured state charges rent every time you look at it. The act of structuring charges a one-time cost so high that most people never pay it. Pick your tax.
 
-> AI removes the tax on *producing* structure. It does not remove the *need* for it. The leverage isn't in better chat. It's in letting the model turn your unstructured inputs into typed objects the moment it lands, so every downstream question becomes a filter instead of a re-read.
+> AI removes the tax on *producing* structure. Not the need for it. The move is letting the model turn unstructured inputs into typed objects the moment they land, so every downstream question becomes a filter instead of a re-read.
+
+In practice: it reads the email, pulls out the context, assigns a status, drafts the next action. The schema gets populated without anyone sitting down to populate it.
 
 Every org running on unstructured exhaust is paying this tax, every hour, and has been paying it forever. Until now it was just the cost of work. Now it's a choice.

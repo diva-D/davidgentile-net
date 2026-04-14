@@ -11,6 +11,7 @@ const posts = defineCollection({
     artefactHeight: z.number().optional(),  // iframe height in px
     draft: z.boolean().optional().default(false),
     tags: z.array(z.string()).optional().default([]),
+    stage: z.enum(['draft', 'edited', 'design-edited', 'read', 'polished', 'published']).optional(),
   }),
 });
 

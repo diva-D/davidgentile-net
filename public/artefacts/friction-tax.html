@@ -179,11 +179,11 @@
   }
 
   /* Field colour coding — TYPE: accent, STATUS: gold, DUE: green */
-  .item .annot-chip[data-f="type"]   { color: var(--accent); background: rgba(217,75,47,0.09); border-color: rgba(217,75,47,0.35); }
+  .item .annot-chip[data-f="context"]   { color: var(--accent); background: rgba(217,75,47,0.09); border-color: rgba(217,75,47,0.35); }
   .item .annot-chip[data-f="status"] { color: #b07c0f;       background: rgba(224,165,38,0.13); border-color: rgba(224,165,38,0.45); }
   .item .annot-chip[data-f="due"]    { color: #2f7f4a;       background: rgba(58,159,94,0.10);  border-color: rgba(58,159,94,0.4);  }
 
-  .item.show-type .annot-chip[data-f="type"],
+  .item.show-context .annot-chip[data-f="context"],
   .item.show-status .annot-chip[data-f="status"],
   .item.show-due .annot-chip[data-f="due"],
   .item.annotated .annot-chip { opacity: 1; transform: none; }
@@ -201,7 +201,7 @@
     background: transparent; color: inherit;
     transition: background 0.3s ease, color 0.3s ease;
   }
-  .item.focus-type .raw-text .hl-src[data-f="type"] {
+  .item.focus-context .raw-text .hl-src[data-f="context"] {
     background: rgba(217,75,47,0.18); color: var(--ink);
   }
   .item.focus-status .raw-text .hl-src[data-f="status"] {
@@ -215,7 +215,7 @@
      The table-head sits as the table's <thead>; each item becomes a <tr>. */
   .table-head {
     display: none;
-    grid-template-columns: 78px 64px 100px minmax(0, 1.1fr) minmax(0, 1fr);
+    grid-template-columns: 118px 72px 100px minmax(0, 1.1fr) minmax(0, 1fr);
     gap: 12px;
     padding: 6px 14px 7px;
     margin: 0;
@@ -239,16 +239,20 @@
 
   .item .typed {
     display: none;
-    grid-template-columns: 78px 64px 100px minmax(0, 1.1fr) minmax(0, 1fr);
+    grid-template-columns: 118px 72px 100px minmax(0, 1.1fr) minmax(0, 1fr);
     gap: 12px; align-items: center;
     width: 100%;
   }
+  /* !important because `body.p3 .item .annot { display: flex }` has higher
+     specificity (body element adds a tag-level bump) and would otherwise
+     force the annot row to stay flex in phase 3 post-extract, inflating
+     row height by ~20px. */
   .item.typed-view .item-row,
-  .item.typed-view .annot { display: none; }
+  .item.typed-view .annot { display: none !important; }
   .item.typed-view .typed { display: grid; }
   .item.typed-view {
     display: block;
-    padding: 6px 14px;
+    padding: 6px 14px !important;
     border-radius: 0;
     border-left: 1px solid var(--line);
     border-right: 1px solid var(--line);
@@ -260,7 +264,7 @@
   .item.typed-view:last-child { border-radius: 0 0 6px 6px; }
   /* Explicit max-height so the collapse animation has a value to transition
      from when .filtered-out sets it to 0. */
-  .item.typed-view { max-height: 80px; }
+  .item.typed-view { max-height: 80px; min-height: 0; }
 
   /* Smooth crossfade as a row converts: old contents fade out, typed grid fades in.
      No per-cell stagger — one clean swap, ~250ms. */
@@ -271,19 +275,24 @@
   .item.extracting .item-row,
   .item.extracting .annot { opacity: 0; }
 
-  .typed .type {
-    font-size: 9px; letter-spacing: 1px; text-transform: uppercase; font-weight: 800;
-    padding: 3px 7px; border-radius: 3px; background: var(--line); color: var(--ink);
+  .typed .context {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px; color: var(--ink-soft);
     justify-self: start; align-self: center;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
   }
+  /* Status: soft-tinted chip, lowercase, normal weight. Carries meaning via
+     colour (next=accent, waiting=gold, someday=grey) without shouting. Matches
+     the phase-2 annot-chip visual language. */
   .typed .status {
-    font-size: 9px; letter-spacing: 1px; text-transform: uppercase; font-weight: 700;
-    padding: 3px 7px; border-radius: 3px;
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.2px;
+    padding: 2px 8px; border-radius: 3px;
+    border: 1px solid transparent;
     justify-self: start; align-self: center;
   }
-  .status.now     { background: var(--accent); color: #fff; }
-  .status.today   { background: var(--gold);   color: #fff; }
-  .status.waiting { background: #c8c2b0;       color: var(--ink); }
+  .typed .status.next    { background: rgba(217,75,47,0.12);  color: var(--accent); border-color: rgba(217,75,47,0.35); }
+  .typed .status.waiting { background: rgba(224,165,38,0.18); color: #8c5f0b;      border-color: rgba(224,165,38,0.5); }
+  .typed .status.someday { background: #efe9d7;               color: var(--muted); border-color: #d8d1bd; }
   .typed .due {
     font-size: 10.5px; color: var(--ink-soft); line-height: 1.3;
     align-self: center;
@@ -382,12 +391,19 @@
        a stacked card, like Todoist / Things / Linear:
          row 1 (title): the task — prominent, wraps freely
          row 2 (next):  → next action — muted, wraps freely
-         row 3 (meta):  type · status · due — small chips, wrap as needed
+         row 3 (meta):  context · status · due — small chips, wrap as needed
        No truncation. No squeezed columns. Reads like a real to-do list. */
     .table-head { display: none !important; }
     .item.typed-view {
-      padding: 10px 12px;
+      padding: 10px 12px !important;
       max-height: none;
+    }
+    /* Mobile filter collapse: override the mobile typed-view padding too, so
+       filtered-out rows don't leave a 20px gap. */
+    .item.typed-view.filtered-out {
+      padding: 0 !important;
+      border-width: 0 !important;
+      max-height: 0 !important;
     }
     .item.typed-view .typed {
       display: grid;
@@ -410,10 +426,10 @@
       line-height: 1.3;
       order: 2;
     }
-    /* Meta row: type · status · due — sit on a single row, wrap if needed. */
-    .typed .type   { order: 3; font-size: 8.5px; padding: 2px 6px; justify-self: start; }
-    .typed .status { order: 4; font-size: 8.5px; padding: 2px 6px; justify-self: start; }
-    .typed .due    { order: 5; font-size: 10px; color: var(--muted); justify-self: start; white-space: nowrap; }
+    /* Meta row: context · status · due — sit on a single row, wrap if needed. */
+    .typed .context { order: 3; font-size: 10px; justify-self: start; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+    .typed .status  { order: 4; font-size: 10.5px; justify-self: start; }
+    .typed .due     { order: 5; font-size: 10px; color: var(--muted); justify-self: start; white-space: nowrap; }
 
     /* Controls: hoist above the canvas on mobile so Next is in reach without
        scrolling past twelve items. Sticky doesn't work in a self-sizing iframe,
@@ -456,7 +472,7 @@
 
     <div class="canvas">
       <div class="table-head" id="tableHead">
-        <span>Type</span>
+        <span>Context</span>
         <span>Status</span>
         <span>Due</span>
         <span>Task</span>
@@ -489,47 +505,50 @@ const ITEMS = [
   // The first three are the demo items for phase 2 — chosen to show three
   // distinct mediums (email, meeting notes, voice memo) and three different
   // ways the structure is "hidden" in the source. They run top-to-bottom.
-  { id:1,  medium:"email",   detail:"08:12",                raw:"Priya: \"look at <span class='hl-src' data-f='type'>Q2 forecast</span> before <span class='hl-src' data-f='due'>board pre-read</span>. <span class='hl-src' data-f='status'>retention curve looks off</span>\"",
-    type:"REVIEW",   status:"now",     due:"Today 2pm",        what:"Review Q2 forecast, retention curve",      next:"Open model, check retention tab" },
-  { id:2,  medium:"meeting", detail:"Wed notes",            raw:"...<span class='hl-src' data-f='status'>action item (me)</span>: <span class='hl-src' data-f='type'>draft pricing one-pager</span> before <span class='hl-src' data-f='due'>friday sync</span>...",
-    type:"WRITE",    status:"now",     due:"Thu, overdue tmrw", what:"One-pager on pricing change → exec staff", next:"Outline 5 bullets, expand" },
-  { id:3,  medium:"voice",   detail:"yesterday",            raw:"\"...<span class='hl-src' data-f='type'>ask Maya</span> about the onboarding metric, <span class='hl-src' data-f='status'>wrong denominator</span>...\"",
-    type:"QUESTION", status:"waiting", due:"any time",                what:"Ask Maya: onboarding denominator",           next:"DM Maya" },
+  // Schema (pure GTD): context (@where/with-whom), status (list: next / waiting / someday), due (hard deadline or —).
+  // Due vocabulary, normalised: "today · 2pm" | "today" | "tomorrow · 10am" | "tomorrow" | "thursday" | "this week" | "next week" | "—"
+  // "Needs now" filter = status:next AND due starts with "today".
+  { id:1,  medium:"email",   detail:"08:12",                raw:"<span class='hl-src' data-f='context'>Priya</span>: \"look at Q2 forecast before <span class='hl-src' data-f='due'>board pre-read</span>. <span class='hl-src' data-f='status'>retention curve looks off</span>\"",
+    context:"@email",           status:"next",    due:"today · 2pm",     what:"Review Q2 forecast, retention curve",     next:"Open model, check retention tab" },
+  { id:2,  medium:"meeting", detail:"Wed notes",            raw:"...<span class='hl-src' data-f='status'>action item (me)</span>: draft pricing one-pager before <span class='hl-src' data-f='due'>friday sync</span>...",
+    context:"@computer",        status:"next",    due:"thursday",        what:"One-pager on pricing change → exec staff", next:"Outline 5 bullets, expand" },
+  { id:3,  medium:"voice",   detail:"yesterday",            raw:"\"...ask <span class='hl-src' data-f='context'>Maya</span> about the onboarding metric, <span class='hl-src' data-f='status'>wrong denominator</span>...\"",
+    context:"@agenda:Maya",     status:"next",    due:"—",               what:"Ask Maya: onboarding denominator",          next:"DM Maya" },
   { id:4,  medium:"slack",   detail:"#eng-leads · 08:34",   raw:"Daniel: reminder we owe legal the vendor list by EOD tmrw",
-    type:"DELIVER",  status:"today",   due:"Tomorrow EOD",     what:"Send vendor list to legal",                  next:"Export sheet, email Rachel" },
+    context:"@computer",        status:"next",    due:"tomorrow",        what:"Send vendor list to legal",                 next:"Export sheet, email Rachel" },
   { id:5,  medium:"note",    detail:"on desk",              raw:"call back dentist",
-    type:"ERRAND",   status:"today",   due:"Today",            what:"Call dentist back",                          next:"Call 555-0198" },
+    context:"@phone",           status:"next",    due:"today",           what:"Call dentist back",                         next:"Call 555-0198" },
   { id:6,  medium:"email",   detail:"Mon 4:45pm",           raw:"Jordan: \"Acme contract attached. when you get a sec, no rush\"",
-    type:"REVIEW",   status:"waiting", due:"Fri",              what:"Review Acme contract",                       next:"Read §4 (IP) and §9 (term)" },
+    context:"@computer",        status:"someday", due:"—",               what:"Review Acme contract",                      next:"Read §4 (IP) and §9 (term)" },
   { id:7,  medium:"slack",   detail:"DM · 07:58",           raw:"Sam: ping when you want to pair on the hiring rubric 🙏",
-    type:"MEETING",  status:"waiting", due:"This week",        what:"Pair with Sam on hiring rubric",             next:"Send 2 slot options" },
-  { id:8,  medium:"email",   detail:"2 days ago",           raw:"Finance: Q1 expense reports still missing. 4 outstanding, nudge?",
-    type:"DELEGATE", status:"today",   due:"Today",            what:"Nudge team: Q1 expense reports (4 outstanding)", next:"Forward + set deadline" },
+    context:"@slack",           status:"next",    due:"this week",       what:"Pair with Sam on hiring rubric",            next:"Send 2 slot options" },
+  { id:8,  medium:"email",   detail:"Mon 5pm",              raw:"Finance: 2 Q1 expense reports still outstanding after Mon nudge (Alex + Sam)",
+    context:"@waiting:Alex+Sam", status:"waiting", due:"wednesday",      what:"Q1 expense reports — Alex, Sam",            next:"Re-chase Wed if still quiet" },
   { id:9,  medium:"cal",     detail:"tmrw 10am",            raw:"Board pre-read sync · 45 min · 4 invitees · no agenda attached",
-    type:"MEETING",  status:"today",   due:"Tomorrow 10am",    what:"Prep for board pre-read sync",               next:"Write agenda, attach to invite" },
+    context:"@computer",        status:"next",    due:"tomorrow · 10am", what:"Prep for board pre-read sync",              next:"Write agenda, attach to invite" },
   { id:10, medium:"slack",   detail:"#product · 06:40",     raw:"Designer posted v3 settings flow. \"any blockers before I build?\"",
-    type:"REVIEW",   status:"now",     due:"EOD",              what:"Review settings flow v3 → unblock design",   next:"Open Figma, leave comments" },
+    context:"@computer",        status:"next",    due:"today",           what:"Review settings flow v3 → unblock design",  next:"Open Figma, leave comments" },
   { id:11, medium:"email",   detail:"last Thu",             raw:"Recruiter: candidate asked to move intro to next week, preferences?",
-    type:"SCHEDULE", status:"waiting", due:"any time",                what:"Reschedule candidate intro",                 next:"Send 3 times next week" },
+    context:"@email",           status:"next",    due:"next week",       what:"Reschedule candidate intro",                next:"Send 3 times next week" },
   { id:12, medium:"thought", detail:"in the shower",        raw:"need to actually write up the Q2 retention thing properly someday",
-    type:"THINK",    status:"waiting", due:"any time",                what:"Write Q2 retention analysis (proper)",       next:"Block 2h Friday afternoon" },
+    context:"@computer",        status:"someday", due:"—",               what:"Write Q2 retention analysis (proper)",      next:"Block 2h Friday afternoon" },
 ];
 
 const FILTERS = [
-  { id:"now",     label:"Needs action now" },
-  { id:"today",   label:"Due today" },
+  { id:"now",     label:"Now" },
   { id:"waiting", label:"Waiting on" },
+  { id:"someday", label:"Someday" },
   { id:"all",     label:"All 12" },
 ];
 
 /* ==== PHASES ==== */
 const PHASES = [
   {
-    narration: `Your Monday morning. Twelve items land on you before your coffee cools.`,
+    narration: `It's Monday morning. Twelve items land on you before your coffee cools.`,
     enter: enterP1,
   },
   {
-    narration: `Look closer. Each has <em>hidden structure</em>. Type, status, due date. Sitting in your head, never written down.`,
+    narration: `Look closer. Each has <em>hidden structure</em>. Context, status, due. Sitting in your head, never written down.`,
     enter: enterP2,
   },
   {
@@ -551,6 +570,7 @@ function buildItems() {
     el.className = "item";
     el.dataset.id = String(it.id);
     el.dataset.status = it.status;
+    el.dataset.due = it.due;
     const m = MEDIA[it.medium];
     el.innerHTML = `
       <div class="item-row">
@@ -562,12 +582,12 @@ function buildItems() {
         <div class="raw-text">${it.raw}</div>
       </div>
       <div class="annot">
-        <span class="annot-chip" data-f="type"><span class="lbl">type</span>${it.type}</span>
+        <span class="annot-chip" data-f="context"><span class="lbl">context</span>${it.context}</span>
         <span class="annot-chip" data-f="status"><span class="lbl">status</span>${it.status}</span>
         <span class="annot-chip" data-f="due"><span class="lbl">due</span>${it.due}</span>
       </div>
       <div class="typed">
-        <span class="type">${it.type}</span>
+        <span class="context">${it.context}</span>
         <span class="status ${it.status}">${it.status}</span>
         <span class="due">${it.due}</span>
         <span class="what">${it.what}</span>
@@ -604,7 +624,11 @@ buildFilters();
 function applyFilter() {
   itemEls().forEach(el => {
     const status = el.dataset.status;
-    const show = activeFilter === "all" || status === activeFilter;
+    const due = el.dataset.due || "";
+    let show;
+    if (activeFilter === "all") show = true;
+    else if (activeFilter === "now") show = status === "next" && due.startsWith("today");
+    else show = status === activeFilter;
     el.classList.toggle("filtered-out", !show);
   });
 }
@@ -622,8 +646,8 @@ function stopHighlightCycle() {
   clearDemoTimers();
   itemEls().forEach(el => el.classList.remove(
     "highlight", "demo-focus",
-    "focus-type", "focus-status", "focus-due",
-    "show-type", "show-status", "show-due"
+    "focus-context", "focus-status", "focus-due",
+    "show-context", "show-status", "show-due"
   ));
 }
 
@@ -656,8 +680,8 @@ function enterP2() {
     el.classList.add("visible");
     el.classList.remove(
       "typed-view", "filtered-out", "annotated",
-      "show-type", "show-status", "show-due",
-      "focus-type", "focus-status", "focus-due", "demo-focus"
+      "show-context", "show-status", "show-due",
+      "focus-context", "focus-status", "focus-due", "demo-focus"
     );
   });
   runPhase2Demo();
@@ -667,30 +691,30 @@ function runPhase2Demo() {
   const els = itemEls();
   const byId = (id) => els.find(el => Number(el.dataset.id) === id);
 
-  // Demo sequence: per item, ~2.8s — focus in, reveal type, status, due (each ~700ms apart), then release.
+  // Demo sequence: per item, ~2.8s — focus in, reveal context, status, due (each ~700ms apart), then release.
   // Chips persist after release; raw-text highlights fade.
   let t = 400;
   DEMO_IDS.forEach((id) => {
     const el = byId(id);
     if (!el) return;
     demoTimers.push(setTimeout(() => el.classList.add("demo-focus"), t));
-    demoTimers.push(setTimeout(() => el.classList.add("focus-type",   "show-type"),   t + 400));
+    demoTimers.push(setTimeout(() => el.classList.add("focus-context",   "show-context"),   t + 400));
     demoTimers.push(setTimeout(() => el.classList.add("focus-status", "show-status"), t + 1100));
     demoTimers.push(setTimeout(() => el.classList.add("focus-due",    "show-due"),    t + 1800));
     demoTimers.push(setTimeout(() => {
-      el.classList.remove("demo-focus", "focus-type", "focus-status", "focus-due");
+      el.classList.remove("demo-focus", "focus-context", "focus-status", "focus-due");
     }, t + 2700));
     t += 2800;
   });
 
   // After all demos: fill the remaining 9 items. Chips reveal field-by-field
-  // (type → status → due) within each item, and items stagger across — so the
+  // (context → status → due) within each item, and items stagger across — so the
   // fill-in feels like a wave of extraction rather than a popcorn burst.
   demoTimers.push(setTimeout(() => {
     const remaining = els.filter(el => !DEMO_IDS.includes(Number(el.dataset.id)));
     remaining.forEach((el, i) => {
       const base = i * 180;
-      demoTimers.push(setTimeout(() => el.classList.add("show-type"),   base));
+      demoTimers.push(setTimeout(() => el.classList.add("show-context"),   base));
       demoTimers.push(setTimeout(() => el.classList.add("show-status"), base + 150));
       demoTimers.push(setTimeout(() => el.classList.add("show-due"),    base + 300));
     });
@@ -728,6 +752,16 @@ function extractOne(el) {
   });
 }
 
+// Strip every transient class the phase-2 demo and extract wave leave behind,
+// so post-extract rows render identical to phase 4 (fresh render). Without
+// this, residual classes (show-*, focus-*, demo-focus) plus the in-flight
+// transition leave rows visibly taller and with gaps.
+const RESIDUAL = [
+  "extracting", "annotated", "demo-focus", "highlight",
+  "show-context", "show-status", "show-due",
+  "focus-context", "focus-status", "focus-due",
+];
+
 function runExtract() {
   if (extracted) return;
   extracted = true;
@@ -744,6 +778,17 @@ function runExtract() {
 
   setTimeout(() => {
     document.body.classList.remove("pre-extract");
+    // Clean reset: phase 3 post-extract should look identical to phase 4.
+    // Suppress the 0.45s `transition: all` on .item so the final state snaps
+    // in (matches phase 4's fresh render) instead of leaving stale computed
+    // values from the card→row morph.
+    els.forEach(el => {
+      el.style.transition = "none";
+      el.classList.remove(...RESIDUAL);
+      el.classList.add("visible", "typed-view");
+      void el.offsetHeight; // force reflow
+      el.style.transition = "";
+    });
   }, els.length * stagger + 400);
 }
 
