@@ -116,12 +116,20 @@
     font-family: "Inter", sans-serif;
     transition: all 0.45s ease;
     opacity: 0; transform: translateY(6px);
-    /* grid: glyph | medium-col | raw-text */
-    display: grid;
-    grid-template-columns: 28px 104px 1fr;
-    gap: 14px; align-items: center;
+    display: flex; flex-direction: column; gap: 7px;
   }
   .item.visible { opacity: 1; transform: none; }
+
+  /* Header row: glyph + medium + raw-text */
+  .item-row {
+    display: grid;
+    grid-template-columns: 28px 104px 1fr;
+    grid-template-areas: "glyph medium raw";
+    gap: 14px; align-items: center;
+  }
+  .item .glyph      { grid-area: glyph; }
+  .item .medium-col { grid-area: medium; min-width: 0; }
+  .item .raw-text   { grid-area: raw; min-width: 0; }
 
   /* Source medium — glyph + label column */
   .item .glyph {
@@ -143,24 +151,27 @@
     font-size: 12.5px; line-height: 1.4; color: var(--ink-soft);
   }
 
-  /* Phase 2: annotation — three field-coloured chips, each with label+value */
+  /* Phase 2: annotation — three field-coloured chips, each with label+value.
+     Flows inline below the raw-text row; never overlaps.
+     Container is reserved (display:flex) once phase 2/3 is active so chips can
+     fade in without a display-change interrupting the transition. */
   .item .annot {
-    position: absolute; top: 50%; right: 14px; transform: translateY(-50%);
-    display: inline-flex; align-items: center; gap: 5px;
-    opacity: 0; transition: opacity 0.3s ease;
+    display: none;
+    flex-wrap: wrap; align-items: center; gap: 5px;
+    padding-left: 42px;
     pointer-events: none;
+    min-height: 0;
   }
-  .item.show-type .annot,
-  .item.show-status .annot,
-  .item.show-due .annot,
-  .item.annotated .annot { opacity: 1; }
+  body.p2 .item .annot,
+  body.p3 .item .annot { display: flex; }
 
   .item .annot-chip {
     font-family: "Inter", sans-serif;
     font-size: 9px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase;
     padding: 3px 7px; border-radius: 4px;
     border: 1px solid transparent; background: transparent;
-    opacity: 0; transition: opacity 0.35s ease;
+    opacity: 0; transform: translateY(2px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
     white-space: nowrap;
   }
   .item .annot-chip .lbl {
@@ -175,7 +186,7 @@
   .item.show-type .annot-chip[data-f="type"],
   .item.show-status .annot-chip[data-f="status"],
   .item.show-due .annot-chip[data-f="due"],
-  .item.annotated .annot-chip { opacity: 1; }
+  .item.annotated .annot-chip { opacity: 1; transform: none; }
 
   /* Demo focus: soft accent frame around the item being explained */
   .item.demo-focus {
@@ -206,13 +217,11 @@
     grid-template-columns: auto auto 1fr auto;
     gap: 8px; align-items: center;
   }
-  .item.typed-view .raw-text,
-  .item.typed-view .glyph,
-  .item.typed-view .medium-col,
+  .item.typed-view .item-row,
   .item.typed-view .annot { display: none; }
   .item.typed-view .typed { display: grid; }
   .item.typed-view {
-    display: block; /* override the 3-col grid */
+    display: block; /* override the column flex */
     padding: 10px 14px;
   }
 
@@ -267,6 +276,58 @@
 
   /* Phase 3 — Next button disabled until extraction done */
   body.p3.pre-extract .next-btn { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+
+  /* ==== MOBILE (≤640px) ====
+   * Every artefact must work on phones. Rule of thumb: stack vertically,
+   * shrink padding, let chips wrap, keep tap targets ≥ 36px.
+   * ========================== */
+  @media (max-width: 640px) {
+    .wrap  { padding: 12px 12px 18px; }
+    .stage { padding: 18px 14px 18px; min-height: 0; border-radius: 10px; }
+
+    .phase-header { padding-bottom: 10px; margin-bottom: 12px; gap: 10px; }
+    .phase-dot { width: 20px; height: 3px; }
+    .phase-narration { font-size: 15px; min-height: 44px; }
+
+    /* Item: stack glyph/medium on one line above raw-text */
+    .item { padding: 9px 12px; }
+    .item-row {
+      grid-template-columns: auto 1fr;
+      grid-template-areas:
+        "glyph medium"
+        "raw   raw";
+      gap: 4px 10px;
+      align-items: start;
+    }
+    .item .glyph { font-size: 16px; align-self: center; }
+    .item .medium-col { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; align-self: center; }
+    .item .medium  { display: inline; font-size: 9px; }
+    .item .detail  { display: inline; margin-left: 6px; margin-top: 0; font-size: 9.5px; }
+    .item .raw-text { font-size: 12px; padding-top: 2px; }
+
+    /* Chips: flow below row, no indent, wrap freely */
+    .item .annot { padding-left: 0; gap: 4px; }
+    .item .annot-chip { font-size: 8.5px; padding: 3px 6px; }
+
+    /* Phase 3 extract button — bigger tap target */
+    .extract-btn { font-size: 13px; padding: 12px 18px; width: 100%; }
+
+    /* Phase 4 filter row */
+    .filter-row { gap: 8px; }
+    .ask { font-size: 12px; }
+    .filters { margin-left: 0; }
+    .chip { padding: 7px 11px; font-size: 10px; }
+
+    /* Typed view (phase 3/4) — shrink, wrap what/next */
+    .item.typed-view { padding: 9px 12px; }
+    .typed { grid-template-columns: auto auto; row-gap: 4px; column-gap: 6px; }
+    .typed .what { grid-column: 1 / -1; font-size: 12px; }
+    .typed .due  { grid-column: 1 / -1; font-size: 9.5px; }
+
+    /* Controls: bigger tap target, tighter */
+    .controls { padding-top: 14px; margin-top: 14px; }
+    .btn { font-size: 12px; padding: 10px 14px; }
+  }
 </style>
 </head>
 <body>
@@ -382,12 +443,14 @@ function buildItems() {
     el.dataset.status = it.status;
     const m = MEDIA[it.medium];
     el.innerHTML = `
-      <span class="glyph">${m.glyph}</span>
-      <div class="medium-col">
-        <span class="medium">${m.label}</span>
-        <span class="detail">${it.detail}</span>
+      <div class="item-row">
+        <span class="glyph">${m.glyph}</span>
+        <div class="medium-col">
+          <span class="medium">${m.label}</span>
+          <span class="detail">${it.detail}</span>
+        </div>
+        <div class="raw-text">${it.raw}</div>
       </div>
-      <div class="raw-text">${it.raw}</div>
       <div class="annot">
         <span class="annot-chip" data-f="type"><span class="lbl">type</span>${it.type}</span>
         <span class="annot-chip" data-f="status"><span class="lbl">status</span>${it.status}</span>
@@ -509,13 +572,18 @@ function runPhase2Demo() {
     t += 2800;
   });
 
-  // After all demos: fast-populate the remaining 9 items so the phase ends with all twelve structured.
+  // After all demos: fill the remaining 9 items. Chips reveal field-by-field
+  // (type → status → due) within each item, and items stagger across — so the
+  // fill-in feels like a wave of extraction rather than a popcorn burst.
   demoTimers.push(setTimeout(() => {
     const remaining = els.filter(el => !DEMO_IDS.includes(Number(el.dataset.id)));
     remaining.forEach((el, i) => {
-      demoTimers.push(setTimeout(() => el.classList.add("annotated"), i * 80));
+      const base = i * 180;
+      demoTimers.push(setTimeout(() => el.classList.add("show-type"),   base));
+      demoTimers.push(setTimeout(() => el.classList.add("show-status"), base + 150));
+      demoTimers.push(setTimeout(() => el.classList.add("show-due"),    base + 300));
     });
-  }, t + 400));
+  }, t + 500));
 }
 
 let extracted = false;
@@ -614,6 +682,13 @@ function goToPhase(i) {
     nextBtn.textContent = "Next →";
     nextBtn.onclick = () => goToPhase(phase + 1);
   }
+
+  // Tell the parent page a phase change happened so it can scroll the iframe
+  // top into view — critical on mobile where the reader is typically at the
+  // bottom of the artefact when they click Next.
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: "artefact:phase-change", phase }, "*");
+  }
 }
 
 backBtn.onclick = () => goToPhase(phase - 1);
@@ -627,7 +702,7 @@ function phaseReadyMs(i) {
   // conservative "animations complete" durations for each phase
   switch (i) {
     case 0: return 180 + 340+280+520+260+310+420+280+360+300+470+290 + 300; // stream-in wave (~4s)
-    case 1: return 400 + 3 * 2800 + 400 + 9 * 80 + 400; // demo + fast-populate (~10s)
+    case 1: return 400 + 3 * 2800 + 500 + 9 * 180 + 300 + 400; // demo + wave fill (~11s)
     case 2: return 300;                             // pre-extract still
     case 3: return 400;                             // filter applied
     default: return 400;

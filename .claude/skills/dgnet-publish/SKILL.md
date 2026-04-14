@@ -60,7 +60,18 @@ Then re-run this skill.
 
 Do not generate the hero image yourself — hand-built SVG approximations look wrong. Only actual browser screenshots of the real artefact are acceptable.
 
-### 5. Local build passes
+### 5. Mobile works
+
+Open the post at `http://localhost:4321/<slug>` in Chrome, open DevTools device emulation (Cmd+Shift+M), and walk through the post at **iPhone 13 (390×844)** and **iPad (768×1024)** widths.
+
+- No horizontal scroll anywhere on the page.
+- Artefact iframe fits cleanly — no cut-off content, no overlapping elements.
+- Every phase (if artefact is phased) is readable and usable; Next/Back buttons stay tappable.
+- Essay body text reads without zooming.
+
+If any of these fail, stop. Fix in the artefact's `@media (max-width: 640px)` block or the post CSS before pushing. A post that ships broken on phones cuts off most of its readers.
+
+### 6. Local build passes
 
 Run `npm run build` and verify it exits 0. If it fails, show the user the error and stop. Do not push a post that breaks the build.
 

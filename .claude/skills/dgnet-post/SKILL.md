@@ -98,6 +98,17 @@ Wait for the user's response. Expect one of:
 
 Do not skip this checkpoint out of politeness or perceived momentum. Honest mid-build reactions are the whole reason this skill exists.
 
+## Stage 5.5 — Mobile check (mandatory)
+
+Before moving on to capture, view the artefact at **375px (iPhone portrait)** and **768px (tablet)**. Report back what you see. Fix any of these that are true:
+
+- Horizontal scrolling anywhere.
+- Content clipped, overflowing, or forced behind another element.
+- Tap targets smaller than 36px on clickable controls.
+- Text smaller than 12px for body content.
+
+Most scrollers are on phones. A broken phone experience is a broken artefact, regardless of how good the desktop version looks. This stage is not skippable.
+
 ## Stage 6 — Capture
 
 Invoke `dgnet-capture`. Generate hero PNG and (if appropriate) social MP4/GIF. Show the user the outputs. If they read badly as a scroll-past, loop back to Stage 5 — the artefact needs a clearer payoff state.

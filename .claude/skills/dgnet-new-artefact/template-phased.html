@@ -94,6 +94,22 @@
     background: var(--paper); border: 1px solid var(--line); border-radius: 8px;
     padding: 10px 12px; font-family: "Inter", sans-serif;
   }
+
+  /* ==== MOBILE (≤640px) — required baseline ====
+   * Every artefact must work on phones. Extend this block for your mechanism:
+   * stack vertically, shrink padding, let chips wrap, keep tap targets ≥ 36px.
+   * ============================================= */
+  @media (max-width: 640px) {
+    .wrap  { padding: 12px 12px 18px; }
+    .stage { padding: 18px 14px 18px; min-height: 0; border-radius: 10px; }
+    .phase-header    { padding-bottom: 10px; margin-bottom: 12px; gap: 10px; }
+    .phase-dot       { width: 20px; height: 3px; }
+    .phase-narration { font-size: 15px; min-height: 44px; }
+    .controls        { padding-top: 14px; }
+    .btn             { font-size: 12px; padding: 10px 14px; }
+    .chip            { padding: 7px 11px; font-size: 10px; }
+    /* Add artefact-specific mobile rules here. NEVER rely on horizontal overflow. */
+  }
 </style>
 </head>
 <body>
@@ -194,6 +210,13 @@
     } else {
       nextBtn.textContent = "Next →";
       nextBtn.onclick = () => goToPhase(phase + 1);
+    }
+
+    // Notify the parent page so it can scroll the iframe top into view —
+    // critical on mobile where the reader is at the bottom of the artefact
+    // when they tap Next.
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: "artefact:phase-change", phase }, "*");
     }
   }
 

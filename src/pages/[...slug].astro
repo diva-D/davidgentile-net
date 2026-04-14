@@ -59,18 +59,45 @@ const artefactHeight = post.data.artefactHeight ?? 780;
   </article>
 
   {post.data.artefact && (
-    <script is:inline>
-      // Auto-size the artefact iframe based on its self-reported content height.
-      // Artefacts post { type: "artefact:height", height: <px> } via postMessage.
-      window.addEventListener("message", (e) => {
-        const msg = e.data;
-        if (!msg || msg.type !== "artefact:height" || typeof msg.height !== "number") return;
-        const frame = document.querySelector("iframe[data-artefact-iframe]");
-        if (!frame) return;
-        // Only accept messages from our own iframe
-        if (e.source !== frame.contentWindow) return;
-        frame.style.height = msg.height + "px";
-      });
-    </script>
+    <>
+      <style is:global>
+        iframe[data-artefact-iframe] {
+          transition: height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+          width: 100%; border: 0; display: block;
+        }
+      </style>
+      <script is:inline>
+        // Artefact <-> post-page contract over postMessage:
+        //   { type: "artefact:height", height }       → resize iframe smoothly
+        //   { type: "artefact:phase-change" }         → scroll iframe top into view
+        (function () {
+          const frame = document.querySelector("iframe[data-artefact-iframe]");
+          if (!frame) return;
+
+          window.addEventListener("message", (e) => {
+            const msg = e.data;
+            if (!msg || e.source !== frame.contentWindow) return;
+
+            if (msg.type === "artefact:height" && typeof msg.height === "number") {
+              frame.style.height = msg.height + "px";
+              return;
+            }
+
+            if (msg.type === "artefact:phase-change") {
+              // On phase change the new narration is at the TOP of the iframe,
+              // but the reader may have scrolled down inside it. Nudge the page
+              // so the iframe's top is at the top of the viewport (or just
+              // below a small margin). Matters most on mobile.
+              const rect = frame.getBoundingClientRect();
+              const absoluteTop = window.scrollY + rect.top - 12;
+              // Only scroll if the iframe top is not already visible near the top
+              if (rect.top < 0 || rect.top > 80) {
+                window.scrollTo({ top: absoluteTop, behavior: "smooth" });
+              }
+            }
+          });
+        })();
+      </script>
+    </>
   )}
 </Base>

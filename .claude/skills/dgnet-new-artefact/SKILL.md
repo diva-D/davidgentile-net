@@ -40,6 +40,22 @@ If you're unsure, default to phased. Sandbox mode is the exception and has to ea
 
 **The artefact embodies one claim, made vivid through one mechanism or one journey.** Not two claims. Not a survey of related ideas. If the artefact tries to make two arguments, split it into two posts.
 
+## Mobile is non-negotiable
+
+**Most scrollers are on phones.** An artefact that's broken at 375px is broken, full stop — it cuts off the majority of the audience and the whole format (short shareable ideas + clean visuals) assumes phone-first distribution. This is not a polish step at the end; it is a design constraint from the first line of CSS.
+
+Hard rules every artefact must meet:
+
+- **No horizontal scrolling, ever, at any viewport from 320px up.** If content doesn't fit, it stacks, it wraps, or it shrinks — it never overflows.
+- **No absolutely-positioned elements that overlap other content.** If you reach for `position: absolute`, explain to yourself why flow layout won't do it. On mobile, overlap becomes collision.
+- **Tap targets ≥ 36px on any clickable control.** Buttons, chips, filter toggles.
+- **Typography holds at 12px minimum for body content, 9px for UI microcopy.** Anything smaller is unreadable on phones.
+- **Every template ships with a `@media (max-width: 640px)` block at the baseline.** Extend it for your mechanism. Never delete it.
+
+If the desktop version uses a multi-column grid or a side-pinned panel, the mobile version almost certainly needs to be a vertical stack. Plan the stack at the same time you plan the desktop layout — not as an afterthought.
+
+Before shipping, view the artefact at 375px (iPhone portrait) and 768px (tablet). If it feels cramped, awkward, or clipped, it's not ready.
+
 ## The visual system (copy exactly, never modify)
 
 Every artefact uses this palette and typography. Consistency across posts is how the site reads as one author's voice.
@@ -144,7 +160,8 @@ Phase narration is *not* framing — it's a beat of the mechanism. A single prov
 - [ ] No `<h1>`, no kicker, no lede, no closing paragraphs, no footer.
 - [ ] `.wrap` max-width is 1040px.
 - [ ] Runs with no console errors. No external JS libraries unless strictly necessary.
-- [ ] Works at 400px viewport width (mobile).
+- [ ] **Tested at 375px (iPhone portrait) and 768px (tablet) — no horizontal scroll, no clipped content, no overlapping elements, tap targets ≥ 36px.**
+- [ ] `@media (max-width: 640px)` block is present and actually does something meaningful for this mechanism (not just inherited empty baseline).
 - [ ] Reader leaves with a *feeling* that matches the post's claim, not a tutorial lesson.
 
 ## After building
