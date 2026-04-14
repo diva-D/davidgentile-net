@@ -71,7 +71,24 @@ Open the post at `http://localhost:4321/<slug>` in Chrome, open DevTools device 
 
 If any of these fail, stop. Fix in the artefact's `@media (max-width: 640px)` block or the post CSS before pushing. A post that ships broken on phones cuts off most of its readers.
 
-### 6. Local build passes
+### 6. Voice pass
+
+Load the `dgnet-voice` skill and apply its review checklist to the post body, the description in frontmatter, and every string the artefact renders to the reader (narration, raw item text, typed cell values, button labels).
+
+The two non-negotiable mechanical checks:
+
+```bash
+grep -n "—" src/content/posts/<slug>.md public/artefacts/<slug>.html
+# expected: zero hits in any reader-visible string. Any hit gets fixed.
+
+grep -niE "delve|leverage|robust|seamless|multifaceted|ultimately|in essence|that said|moreover|furthermore" \
+  src/content/posts/<slug>.md public/artefacts/<slug>.html
+# expected: zero. Each hit gets reviewed and almost always cut.
+```
+
+If anything trips, stop. Rewrite. Re-run. The voice rules are the bar; a post that sounds AI-generated has failed before it shipped.
+
+### 7. Local build passes
 
 Run `npm run build` and verify it exits 0. If it fails, show the user the error and stop. Do not push a post that breaks the build.
 

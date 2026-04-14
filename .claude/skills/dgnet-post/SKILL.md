@@ -75,10 +75,11 @@ Also agree on the essay shape:
 
 Now invoke the mechanics skills:
 
-1. `dgnet-new-post` — creates the markdown skeleton with frontmatter.
-2. If artefact: `dgnet-new-artefact` — copies the phased template, implements the beats.
-3. Fill in the essay prose.
-4. Fill in the artefact JS to realise the agreed beats.
+1. `dgnet-new-post`. Creates the markdown skeleton with frontmatter.
+2. If artefact: `dgnet-new-artefact`. Copies the phased template, implements the beats.
+3. **Load `dgnet-voice` before writing any prose.** Voice rules for the site (no em dashes, no AI tells, no filler). Every word that ships (post body, artefact narration, raw item text inside artefacts, the description string in frontmatter) must pass the voice rules.
+4. Fill in the essay prose.
+5. Fill in the artefact JS to realise the agreed beats.
 
 Work in small increments. After any substantive change to the artefact, **stop and checkpoint** (Stage 5) before continuing.
 

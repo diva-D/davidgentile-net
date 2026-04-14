@@ -10,7 +10,7 @@ interface Props {
 
 const {
   title,
-  description = 'David Gentile — notes and artefacts on AI, structure, and the intelligence interface.',
+  description = 'David Gentile. Notes and artefacts on AI, structure, and the intelligence interface.',
   ogImage = '/images/og-default.png',
   canonical,
   type = 'website',
@@ -57,6 +57,9 @@ const ogImageAbs = ogImage.startsWith('http') ? ogImage : `${site}${ogImage}`;
 <body>
   <header class="site-header">
     <a href="/" class="brand">David Gentile</a>
+    <nav class="site-nav">
+      <a href="/about">About</a>
+    </nav>
   </header>
   <main>
     <slot />
@@ -66,9 +69,11 @@ const ogImageAbs = ogImage.startsWith('http') ? ogImage : `${site}${ogImage}`;
     <span class="sep">·</span>
     <a href="/rss.xml">rss</a>
     <span class="sep">·</span>
-    <a href="https://twitter.com/" rel="me">twitter</a>
+    <a href="https://x.com/dfgentile" rel="me">X</a>
     <span class="sep">·</span>
-    <a href="https://www.linkedin.com/" rel="me">linkedin</a>
+    <a href="https://www.linkedin.com/in/davidfgentile/" rel="me">LinkedIn</a>
+    <span class="sep">·</span>
+    <a href="https://www.github.com/diva-D" rel="me">GitHub</a>
   </footer>
 </body>
 </html>

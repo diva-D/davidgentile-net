@@ -7,6 +7,10 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft))
 
 const fmt = (d: Date) =>
   d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+
+const featured = posts[0];
+const next = posts.slice(1, 3);
+const rest = posts.slice(3);
 ---
 <Base title="David Gentile">
   <div class="home-wrap">
@@ -16,14 +20,79 @@ const fmt = (d: Date) =>
       <p>One idea at a time. Published when it's useful, not when it's polished.</p>
     </section>
 
-    <ul class="post-list">
-      {posts.map((post) => (
-        <li>
-          <span class="date">{fmt(post.data.date)}</span>
-          <a class="title" href={`/${post.slug}`}>{post.data.title}</a>
-          <div class="summary">{post.data.description}</div>
-        </li>
-      ))}
-    </ul>
+    {featured && (
+      <a class="featured" href={`/${featured.slug}`}>
+        <div class="featured-meta">
+          <span class="featured-kicker">Latest</span>
+          <span class="featured-date">{fmt(featured.data.date)}</span>
+        </div>
+        <h2 class="featured-title">{featured.data.title}</h2>
+        <p class="featured-summary">{featured.data.description}</p>
+        {featured.data.artefact ? (
+          <div class="featured-artefact">
+            <iframe
+              src={featured.data.artefact}
+              loading="eager"
+              scrolling="no"
+              title={`${featured.data.title} (preview)`}
+              data-home-iframe
+            ></iframe>
+            <div class="featured-artefact-fade"></div>
+          </div>
+        ) : featured.data.heroImage ? (
+          <div class="featured-image">
+            <img src={featured.data.heroImage} alt={featured.data.title} />
+          </div>
+        ) : null}
+        <span class="featured-cta">Read the post →</span>
+      </a>
+    )}
+
+    {next.length > 0 && (
+      <ul class="post-grid">
+        {next.map((post) => (
+          <li>
+            <a href={`/${post.slug}`}>
+              {post.data.heroImage && (
+                <div class="post-grid-img">
+                  <img src={post.data.heroImage} alt={post.data.title} />
+                </div>
+              )}
+              <span class="date">{fmt(post.data.date)}</span>
+              <span class="title">{post.data.title}</span>
+              <span class="summary">{post.data.description}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    {rest.length > 0 && (
+      <ul class="post-list">
+        {rest.map((post) => (
+          <li>
+            <span class="date">{fmt(post.data.date)}</span>
+            <a class="title" href={`/${post.slug}`}>{post.data.title}</a>
+            <div class="summary">{post.data.description}</div>
+          </li>
+        ))}
+      </ul>
+    )}
   </div>
+
+  <script is:inline>
+    // Auto-size the homepage featured artefact iframe to its content,
+    // capped so it stays a teaser (not a full-height embed).
+    (function () {
+      const frame = document.querySelector("iframe[data-home-iframe]");
+      if (!frame) return;
+      const CAP = 360; // px — enough to show narration + first beat, not the whole canvas
+      window.addEventListener("message", (e) => {
+        if (!e.data || e.source !== frame.contentWindow) return;
+        if (e.data.type === "artefact:height") {
+          frame.style.height = Math.min(e.data.height, CAP) + "px";
+        }
+      });
+    })();
+  </script>
 </Base>

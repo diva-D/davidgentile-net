@@ -434,7 +434,7 @@
     </div>
 
     <div class="phase-narration fade-in" id="narration">
-      Your Monday morning — twelve items land on you before your coffee cools.
+      Your Monday morning. Twelve items land on you before your coffee cools.
     </div>
 
     <!-- Phase 3: extract control -->
@@ -483,30 +483,30 @@ const ITEMS = [
   // The first three are the demo items for phase 2 — chosen to show three
   // distinct mediums (email, meeting notes, voice memo) and three different
   // ways the structure is "hidden" in the source. They run top-to-bottom.
-  { id:1,  medium:"email",   detail:"08:12",                raw:"Priya: \"look at <span class='hl-src' data-f='type'>Q2 forecast</span> before <span class='hl-src' data-f='due'>board pre-read</span> — <span class='hl-src' data-f='status'>retention curve looks off</span>\"",
-    type:"REVIEW",   status:"now",     due:"Today 2pm",        what:"Review Q2 forecast — retention curve",      next:"Open model, check retention tab" },
+  { id:1,  medium:"email",   detail:"08:12",                raw:"Priya: \"look at <span class='hl-src' data-f='type'>Q2 forecast</span> before <span class='hl-src' data-f='due'>board pre-read</span>. <span class='hl-src' data-f='status'>retention curve looks off</span>\"",
+    type:"REVIEW",   status:"now",     due:"Today 2pm",        what:"Review Q2 forecast, retention curve",      next:"Open model, check retention tab" },
   { id:2,  medium:"meeting", detail:"Wed notes",            raw:"...<span class='hl-src' data-f='status'>action item (me)</span>: <span class='hl-src' data-f='type'>draft pricing one-pager</span> before <span class='hl-src' data-f='due'>friday sync</span>...",
-    type:"WRITE",    status:"now",     due:"Thu · overdue tmrw", what:"One-pager on pricing change → exec staff", next:"Outline 5 bullets, expand" },
-  { id:3,  medium:"voice",   detail:"yesterday",            raw:"\"...<span class='hl-src' data-f='type'>ask Maya</span> about the onboarding metric — <span class='hl-src' data-f='status'>wrong denominator</span>...\"",
-    type:"QUESTION", status:"waiting", due:"—",                what:"Ask Maya: onboarding denominator",           next:"DM Maya" },
+    type:"WRITE",    status:"now",     due:"Thu, overdue tmrw", what:"One-pager on pricing change → exec staff", next:"Outline 5 bullets, expand" },
+  { id:3,  medium:"voice",   detail:"yesterday",            raw:"\"...<span class='hl-src' data-f='type'>ask Maya</span> about the onboarding metric, <span class='hl-src' data-f='status'>wrong denominator</span>...\"",
+    type:"QUESTION", status:"waiting", due:"any time",                what:"Ask Maya: onboarding denominator",           next:"DM Maya" },
   { id:4,  medium:"slack",   detail:"#eng-leads · 08:34",   raw:"Daniel: reminder we owe legal the vendor list by EOD tmrw",
     type:"DELIVER",  status:"today",   due:"Tomorrow EOD",     what:"Send vendor list to legal",                  next:"Export sheet, email Rachel" },
   { id:5,  medium:"note",    detail:"on desk",              raw:"call back dentist",
     type:"ERRAND",   status:"today",   due:"Today",            what:"Call dentist back",                          next:"Call 555-0198" },
-  { id:6,  medium:"email",   detail:"Mon 4:45pm",           raw:"Jordan: \"Acme contract attached — when you get a sec. no rush\"",
+  { id:6,  medium:"email",   detail:"Mon 4:45pm",           raw:"Jordan: \"Acme contract attached. when you get a sec, no rush\"",
     type:"REVIEW",   status:"waiting", due:"Fri",              what:"Review Acme contract",                       next:"Read §4 (IP) and §9 (term)" },
   { id:7,  medium:"slack",   detail:"DM · 07:58",           raw:"Sam: ping when you want to pair on the hiring rubric 🙏",
     type:"MEETING",  status:"waiting", due:"This week",        what:"Pair with Sam on hiring rubric",             next:"Send 2 slot options" },
-  { id:8,  medium:"email",   detail:"2 days ago",           raw:"Finance: Q1 expense reports still missing — 4 outstanding. Nudge?",
+  { id:8,  medium:"email",   detail:"2 days ago",           raw:"Finance: Q1 expense reports still missing. 4 outstanding, nudge?",
     type:"DELEGATE", status:"today",   due:"Today",            what:"Nudge team: Q1 expense reports (4 outstanding)", next:"Forward + set deadline" },
-  { id:9,  medium:"cal",     detail:"tmrw 10am",            raw:"Board pre-read sync — 45 min — 4 invitees — no agenda attached",
+  { id:9,  medium:"cal",     detail:"tmrw 10am",            raw:"Board pre-read sync · 45 min · 4 invitees · no agenda attached",
     type:"MEETING",  status:"today",   due:"Tomorrow 10am",    what:"Prep for board pre-read sync",               next:"Write agenda, attach to invite" },
-  { id:10, medium:"slack",   detail:"#product · 06:40",     raw:"Designer posted v3 settings flow — \"any blockers before I build?\"",
+  { id:10, medium:"slack",   detail:"#product · 06:40",     raw:"Designer posted v3 settings flow. \"any blockers before I build?\"",
     type:"REVIEW",   status:"now",     due:"EOD",              what:"Review settings flow v3 → unblock design",   next:"Open Figma, leave comments" },
-  { id:11, medium:"email",   detail:"last Thu",             raw:"Recruiter: candidate asked to move intro to next week — preferences?",
-    type:"SCHEDULE", status:"waiting", due:"—",                what:"Reschedule candidate intro",                 next:"Send 3 times next week" },
+  { id:11, medium:"email",   detail:"last Thu",             raw:"Recruiter: candidate asked to move intro to next week, preferences?",
+    type:"SCHEDULE", status:"waiting", due:"any time",                what:"Reschedule candidate intro",                 next:"Send 3 times next week" },
   { id:12, medium:"thought", detail:"in the shower",        raw:"need to actually write up the Q2 retention thing properly someday",
-    type:"THINK",    status:"waiting", due:"—",                what:"Write Q2 retention analysis (proper)",       next:"Block 2h Friday afternoon" },
+    type:"THINK",    status:"waiting", due:"any time",                what:"Write Q2 retention analysis (proper)",       next:"Block 2h Friday afternoon" },
 ];
 
 const FILTERS = [
@@ -519,11 +519,11 @@ const FILTERS = [
 /* ==== PHASES ==== */
 const PHASES = [
   {
-    narration: `Your Monday morning — twelve items land on you before your coffee cools.`,
+    narration: `Your Monday morning. Twelve items land on you before your coffee cools.`,
     enter: enterP1,
   },
   {
-    narration: `Look closer. Each has <em>hidden structure</em> — type, status, due date — sitting in your head, never written down.`,
+    narration: `Look closer. Each has <em>hidden structure</em>. Type, status, due date. Sitting in your head, never written down.`,
     enter: enterP2,
   },
   {
