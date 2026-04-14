@@ -517,6 +517,32 @@ function goToPhase(i) {
 backBtn.onclick = () => goToPhase(phase - 1);
 document.getElementById("extractBtn").onclick = runExtract;
 
+/* ==== CAPTURE CONTRACT ====
+ * window.__artefact is the deterministic interface used by scripts/capture.mjs.
+ * Every artefact that wants to be captured should expose the same shape.
+ * ========================= */
+function phaseReadyMs(i) {
+  // conservative "animations complete" durations for each phase
+  switch (i) {
+    case 0: return 120 + 12 * 130 + 300;            // stream-in wave
+    case 1: return 1200 + 200;                      // first highlight settled
+    case 2: return 300;                             // pre-extract still
+    case 3: return 400;                             // filter applied
+    default: return 400;
+  }
+}
+window.__artefact = {
+  slug: "friction-tax",
+  phaseCount: PHASES.length,
+  currentPhase: () => phase,
+  goToPhase: (i) => { goToPhase(i); return window.__artefact.phaseReady(); },
+  runExtract: () => {
+    runExtract();
+    return new Promise(r => setTimeout(r, 12 * 110 + 400));
+  },
+  phaseReady: () => new Promise(r => setTimeout(r, phaseReadyMs(phase))),
+};
+
 goToPhase(0);
 </script>
 </body>

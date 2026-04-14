@@ -198,6 +198,26 @@
   }
 
   backBtn.onclick = () => goToPhase(phase - 1);
+
+  /* ==== CAPTURE CONTRACT ====
+   * Every artefact exposes this shape so scripts/capture.mjs can drive it
+   * deterministically. Replace `phaseReadyMs` with real animation durations
+   * (in ms) for your phases. Add custom action hooks as needed.
+   * ========================= */
+  function phaseReadyMs(i) {
+    // Per-phase "animations finished" estimate. Tune per artefact.
+    return 400;
+  }
+  window.__artefact = {
+    slug: "REPLACE-ME",
+    phaseCount: PHASES.length,
+    currentPhase: () => phase,
+    goToPhase: (i) => { goToPhase(i); return window.__artefact.phaseReady(); },
+    phaseReady: () => new Promise(r => setTimeout(r, phaseReadyMs(phase))),
+    // Add custom action hooks if phases have buttons the capture script presses:
+    //   runSomething: () => { ...; return new Promise(r => setTimeout(r, 800)); },
+  };
+
   goToPhase(0);
 </script>
 </body>
