@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>The Friction Tax · a tiny explorable</title>
+<title>The friction tax · artefact</title>
+<link rel="preconnect" href="https://rsms.me/" />
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
 <style>
   :root {
     --bg: #faf7f0;
@@ -23,22 +25,16 @@
     font-family: "Iowan Old Style", "Palatino", ui-serif, Georgia, serif;
     -webkit-font-smoothing: antialiased;
   }
-  .wrap { max-width: 860px; margin: 0 auto; padding: 60px 24px 120px; }
-  .kicker { font-family: "Inter", sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); font-weight: 700; }
-  h1 { font-size: 40px; line-height: 1.1; letter-spacing: -0.5px; margin: 8px 0 16px; font-weight: 700; }
-  .lede { font-size: 17px; line-height: 1.6; color: var(--ink-soft); margin: 0 0 24px; }
-  p { font-size: 16px; line-height: 1.7; color: var(--ink-soft); }
-  p em { color: var(--ink); font-style: italic; font-weight: 600; }
-  p b { color: var(--ink); font-weight: 700; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 24px 24px 28px; }
 
   .stage {
     background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
-    padding: 24px; margin: 32px 0; box-shadow: 0 2px 0 rgba(0,0,0,0.03);
+    padding: 24px; box-shadow: 0 2px 0 rgba(0,0,0,0.03);
   }
   .ask {
-    font-family: "Inter", sans-serif; font-size: 13px; font-weight: 700;
+    font-family: "Inter", sans-serif; font-size: 14px; font-weight: 700;
     letter-spacing: 0.3px; color: var(--ink); text-align: center;
-    padding: 10px 0 18px; border-bottom: 1px solid var(--line); margin-bottom: 20px;
+    padding: 4px 0 18px; border-bottom: 1px solid var(--line); margin-bottom: 20px;
   }
   .ask span { color: var(--accent); }
 
@@ -55,7 +51,6 @@
   .panel h3 b { color: var(--ink); }
   .panel .sub { font-family: "Inter", sans-serif; font-size: 12px; color: var(--ink-soft); margin-bottom: 14px; }
 
-  /* LEFT: raw scrolling inbox */
   .raw { font-family: "Inter", sans-serif; }
   .item {
     padding: 10px 12px; border-bottom: 1px dashed #d8cfbc; font-size: 13px;
@@ -65,7 +60,6 @@
   .item .src { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 3px; }
   .item.missed { background: #fbe3dd; border-left: 3px solid var(--accent); padding-left: 9px; }
 
-  /* RIGHT: typed, filtered */
   .filters { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
   .chip {
     font-family: "Inter", sans-serif; font-size: 10px; font-weight: 700;
@@ -99,7 +93,6 @@
     text-align: center; padding: 20px; font-style: italic;
   }
 
-  /* counters */
   .counter-row {
     display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;
   }
@@ -129,36 +122,17 @@
     padding: 10px 14px; margin-top: 16px; line-height: 1.5;
   }
   .note b { color: var(--ink); }
-
-  .callout {
-    margin: 32px 0; padding: 22px 26px; background: #f1ede2;
-    border-left: 3px solid var(--ink); border-radius: 4px;
-  }
-  .callout p { margin: 0; color: var(--ink); font-size: 16px; line-height: 1.65; font-family: inherit; }
-
-  footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); font-family: "Inter", sans-serif; font-size: 12px; color: var(--muted); line-height: 1.6; }
-  footer b { color: var(--ink); }
 </style>
 </head>
 <body>
 <div class="wrap">
-
-  <div class="kicker">Artefact 01 · Structure layer</div>
-  <h1>The friction tax</h1>
-  <p class="lede">Two people. Same twelve items landed on them this morning. Same brain, same AI, same workday ahead. The only difference: one runs on loose notes, the other runs on typed objects with states, deadlines, and next actions. Watch the tax compound.</p>
-
-  <p>
-    <b>Same work. Same person. Same AI.</b> One has ontology, one doesn't. The question on the page is just: <em>what needs my attention right now?</em>
-    Try to answer it from the left panel. Then try from the right.
-  </p>
-
   <div class="stage">
     <div class="ask">What needs your attention <span>right now</span>?</div>
 
     <div class="panels">
       <div class="panel left">
         <h3><b>Unstructured</b> · what actually shows up</h3>
-        <div class="sub">Inbox, Slack, voice memos, a sticky note, meeting scribbles. All in reverse-chron. You re-read everything, every time.</div>
+        <div class="sub">Inbox, Slack, voice memos, a sticky note, meeting scribbles. You re-read everything, every time.</div>
         <div class="raw" id="rawList"></div>
       </div>
 
@@ -172,12 +146,12 @@
 
     <div class="counter-row">
       <div class="counter">
-        <div class="lbl">Left panel · items to re-read</div>
+        <div class="lbl">Left · items to re-read</div>
         <div class="big bad" id="leftCount">12</div>
         <div class="hint" id="leftHint">You scan all of them to find what's urgent. Every time.</div>
       </div>
       <div class="counter">
-        <div class="lbl">Right panel · items matching filter</div>
+        <div class="lbl">Right · items matching filter</div>
         <div class="big good" id="rightCount">3</div>
         <div class="hint" id="rightHint">Filter does the scanning. You read only what you act on.</div>
       </div>
@@ -190,49 +164,16 @@
 
     <div class="note" id="insight"><b>Start here.</b> On the left, find every item that is <em>blocking you right now</em>. Then on the right, click <b>Needs action now</b>. Same answer. Different cost.</div>
   </div>
-
-  <p>
-    The friction tax isn't the work. It's the <em>re-reading</em>. The <em>remembering what state this thing was in</em>. The
-    <em>digging through Slack to find what Priya said on Tuesday</em>. Every item without type, state, and a next action
-    charges rent on your attention, every time you look at the pile.
-  </p>
-
-  <p>
-    GTD was ontology engineering in disguise. <b>Inbox → Next Action → Waiting-On → Someday/Maybe</b> is a tiny schema
-    — <i>type, status, owner</i> — enforced by hand with paper and folders. It worked because the structure did the thinking.
-    It was brutal to maintain because humans are slow, boring parsers.
-  </p>
-
-  <div class="callout">
-    <p>AI removes the tax on <em>producing</em> structure. It does not remove the <em>need</em> for structure. The leverage isn't in better chat — it's in letting the model turn your unstructured exhaust into typed objects the moment it lands, so every downstream question becomes a filter instead of a re-read.</p>
-  </div>
-
-  <p>
-    Simulate a day passing. Watch the left panel drift — items go stale, two quietly slip past their deadline, nothing tells you.
-    The right panel reshuffles: <em>Waiting-on</em> items that timed out move to <em>Needs action now</em>. The schema notices. The pile doesn't.
-  </p>
-
-  <p>
-    This is the whole argument for the structure layer in one screen. Every org running on unstructured exhaust is paying this tax,
-    every hour, and has been paying it forever. Until now it was just <em>the cost of work</em>. Now it's a choice.
-  </p>
-
-  <footer>
-    <b>Artefact 01 of 11.</b> Part of a series on ontology engineering — the thesis that the real leverage from AI isn't in the models,
-    it's in giving the messy real world enough structure for models to act on it. Next: <i>why AI automation breaks in production</i>.
-  </footer>
-
 </div>
 
 <script>
-// 12 items, same content, two representations
 const ITEMS = [
   { id:1, src:"Email · 08:12", raw:"From Priya: \"hey can you look at the Q2 forecast before the board pre-read goes out? think the retention curve is off\"",
-    type:"REVIEW", status:"now", due:"Today 2pm", what:"Review Q2 forecast — retention curve", next:"Open model, check retention tab", from:"Priya" },
+    type:"REVIEW", status:"now", due:"Today 2pm", what:"Review Q2 forecast — retention curve", next:"Open model, check retention tab" },
   { id:2, src:"Slack #eng-leads · 08:34", raw:"Daniel: \"reminder we owe legal the vendor list by EOD tmrw\"",
     type:"DELIVER", status:"today", due:"Tomorrow EOD", what:"Send vendor list to legal", next:"Export vendor sheet, email Rachel" },
   { id:3, src:"Voice memo · yesterday", raw:"\"...and ask Maya about the onboarding metric — I think we're measuring the wrong denominator, something about day-7 vs first-session...\"",
-    type:"QUESTION", status:"waiting", due:"—", what:"Ask Maya: onboarding denominator (day-7 vs first-session)", next:"DM Maya", from:"Self" },
+    type:"QUESTION", status:"waiting", due:"—", what:"Ask Maya: onboarding denominator (day-7 vs first-session)", next:"DM Maya" },
   { id:4, src:"Sticky note on desk", raw:"call back dentist",
     type:"ERRAND", status:"today", due:"Today", what:"Call dentist back", next:"Call 555-0198" },
   { id:5, src:"Email · Mon 4:45pm", raw:"From Jordan: \"contract from Acme attached — when you get a sec. no rush\"",
@@ -240,7 +181,7 @@ const ITEMS = [
   { id:6, src:"Slack DM · 07:58", raw:"Sam: \"ping when you want to pair on the hiring rubric 🙏\"",
     type:"MEETING", status:"waiting", due:"This week", what:"Pair with Sam on hiring rubric", next:"Send 2 slot options" },
   { id:7, src:"Meeting notes · Wed", raw:"...action item (me): draft a one-pager on the pricing change, circulate to exec staff before friday sync...",
-    type:"WRITE", status:"now", due:"Thu (overdue tmrw)", what:"One-pager on pricing change → exec staff", next:"Outline 5 bullets, expand", from:"Self (Wed meeting)" },
+    type:"WRITE", status:"now", due:"Thu (overdue tmrw)", what:"One-pager on pricing change → exec staff", next:"Outline 5 bullets, expand" },
   { id:8, src:"Email · 2 days ago", raw:"From Finance: \"Q1 expense reports still missing from your team — 4 outstanding. Can you nudge?\"",
     type:"DELEGATE", status:"today", due:"Today", what:"Nudge team: Q1 expense reports (4 outstanding)", next:"Forward Finance email + set deadline" },
   { id:9, src:"Calendar · tmrw 10am", raw:"Board pre-read sync — 45 min — 4 invitees — no agenda attached",
@@ -253,12 +194,7 @@ const ITEMS = [
     type:"THINK", status:"waiting", due:"—", what:"Write Q2 retention analysis (proper)", next:"Block 2h Friday afternoon" },
 ];
 
-let state = {
-  filter: "now",
-  dayPassed: false,
-  overdue: new Set(),
-  missed: new Set(),
-};
+let state = { filter: "now", dayPassed: false, overdue: new Set(), missed: new Set() };
 
 const FILTERS = [
   { id:"now",     label:"Needs action now" },
@@ -346,8 +282,7 @@ function updateInsight() {
 
 function simulateDay() {
   state.dayPassed = true;
-  // items that were "waiting" and had a near deadline tick over
-  state.overdue = new Set([5, 11]);   // Acme contract, candidate reschedule
+  state.overdue = new Set([5, 11]);
   state.missed = new Set([5, 11]);
   render();
 }

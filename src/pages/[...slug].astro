@@ -18,7 +18,7 @@ const fmt = (d: Date) =>
   d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
 const kicker = post.data.tags?.[0] ?? 'Note';
-const artefactHeight = post.data.artefactHeight ?? 720;
+const artefactHeight = post.data.artefactHeight ?? 780;
 ---
 <Base
   title={post.data.title}
@@ -27,33 +27,32 @@ const artefactHeight = post.data.artefactHeight ?? 720;
   type="article"
   publishedTime={post.data.date}
 >
-  <article class="post-wrap">
-    <div class="post-kicker">{kicker}</div>
-    <h1>{post.data.title}</h1>
-    <div class="post-meta">{fmt(post.data.date)}</div>
+  <article>
+    {/* Narrow header strip — kicker + title + date */}
+    <header class="post-head">
+      <div class="post-kicker">{kicker}</div>
+      <h1>{post.data.title}</h1>
+      <div class="post-meta">{fmt(post.data.date)}</div>
+    </header>
 
-    {post.data.heroImage && (
-      <img class="post-hero" src={post.data.heroImage} alt={post.data.title} />
+    {/* Wide artefact stage — hero */}
+    {post.data.artefact && (
+      <section class="post-artefact">
+        <iframe
+          src={post.data.artefact}
+          height={artefactHeight}
+          loading="eager"
+          title={`${post.data.title} — interactive`}
+        ></iframe>
+        <div class="artefact-caption">
+          <a href={post.data.artefact} target="_blank" rel="noopener">open the artefact full-screen →</a>
+        </div>
+      </section>
     )}
 
+    {/* Narrow essay body */}
     <div class="post-body">
       <Content />
     </div>
-
-    {post.data.artefact && (
-      <>
-        <div class="artefact-frame">
-          <iframe
-            src={post.data.artefact}
-            height={artefactHeight}
-            loading="lazy"
-            title={`${post.data.title} — interactive`}
-          ></iframe>
-        </div>
-        <div class="artefact-caption">
-          <a href={post.data.artefact}>open the artefact in its own page →</a>
-        </div>
-      </>
-    )}
   </article>
 </Base>

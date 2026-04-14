@@ -22,12 +22,12 @@ a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 .site-header {
-  max-width: 720px; margin: 0 auto; padding: 28px 24px 0;
+  max-width: 1080px; margin: 0 auto; padding: 28px 24px 0;
   display: flex; align-items: center; justify-content: space-between;
 }
 .site-header .brand {
   font-family: "Inter", sans-serif; font-size: 13px; font-weight: 700;
-  letter-spacing: 0.3px; color: var(--ink); text-transform: none;
+  letter-spacing: 0.3px; color: var(--ink);
 }
 .site-header .brand:hover { text-decoration: none; color: var(--accent); }
 
@@ -74,26 +74,45 @@ main { display: block; }
 
 /* ---------- Post ---------- */
 
-.post-wrap { max-width: 720px; margin: 0 auto; padding: 60px 24px 40px; }
+/* Narrow header */
+.post-head {
+  max-width: 720px; margin: 0 auto; padding: 48px 24px 20px;
+}
 .post-kicker {
   font-family: "Inter", sans-serif; font-size: 11px; letter-spacing: 3px;
   text-transform: uppercase; color: var(--accent); font-weight: 700;
   margin-bottom: 8px;
 }
-.post-wrap h1 {
+.post-head h1 {
   font-size: 40px; line-height: 1.1; letter-spacing: -0.6px;
-  margin: 0 0 12px; font-weight: 700;
+  margin: 0 0 10px; font-weight: 700;
 }
 .post-meta {
   font-family: "Inter", sans-serif; font-size: 12px; color: var(--muted);
-  letter-spacing: 0.3px; margin-bottom: 24px;
+  letter-spacing: 0.3px;
 }
-.post-hero {
-  width: 100%; height: auto; margin: 8px 0 28px; border-radius: 10px;
-  border: 1px solid var(--line); display: block;
+
+/* Wide artefact stage */
+.post-artefact {
+  max-width: 1080px; margin: 24px auto 8px; padding: 0 24px;
+}
+.post-artefact iframe {
+  width: 100%; border: 0; display: block; background: var(--bg);
+}
+.artefact-caption {
+  font-family: "Inter", sans-serif; font-size: 11px; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--muted); text-align: center;
+  margin-top: 10px;
+}
+.artefact-caption a { color: var(--muted); }
+.artefact-caption a:hover { color: var(--accent); text-decoration: none; }
+
+/* Narrow essay body */
+.post-body {
+  max-width: 680px; margin: 40px auto 40px; padding: 0 24px;
 }
 .post-body p {
-  font-size: 17px; line-height: 1.7; color: var(--ink-soft); margin: 0 0 18px;
+  font-size: 18px; line-height: 1.7; color: var(--ink-soft); margin: 0 0 20px;
 }
 .post-body p em { color: var(--ink); font-style: italic; font-weight: 600; }
 .post-body p strong { color: var(--ink); font-weight: 700; }
@@ -106,16 +125,4 @@ main { display: block; }
   margin: 28px 0; padding: 18px 22px; background: #f1ede2;
   border-left: 3px solid var(--ink); border-radius: 4px;
 }
-.post-body blockquote p { margin: 0; color: var(--ink); font-size: 16px; }
-
-.artefact-frame {
-  width: 100%; margin: 32px 0; border: 1px solid var(--line);
-  border-radius: 12px; overflow: hidden; background: var(--paper);
-}
-.artefact-frame iframe { width: 100%; border: 0; display: block; }
-.artefact-caption {
-  font-family: "Inter", sans-serif; font-size: 11px; letter-spacing: 1.5px;
-  text-transform: uppercase; color: var(--muted); text-align: center; margin-top: -14px;
-}
-.artefact-caption a { color: var(--muted); }
-.artefact-caption a:hover { color: var(--accent); }
+.post-body blockquote p { margin: 0; color: var(--ink); font-size: 17px; line-height: 1.6; }
