@@ -1,6 +1,6 @@
 ---
 title: "The friction tax of unstructured work"
-[Ontology engineering) - Wikipedia](https://en.wikipedia.org/wiki/Ontology_engineering))tured work and how AI can become the bridge towards clarity and flow."
+[Ontology engineering) - Wikipedia](https://en.wikipedia.org/wiki/Ontology_engineering))rent on your attention. That rent used to be the cost of doing business. Now it's a choice."
 date: 2026-04-14
 heroImage: "/images/friction-tax-hero.png"
 artefact: "/artefacts/friction-tax.html"
@@ -14,8 +14,8 @@ GTD (Getting Things Done) was [Ontology engineering](https://en.wikipedia.org/wi
 
 **Inbox • Next Action • Waiting-On • Someday/Maybe**
 
-A tiny schema (type, status, owner) enforced by hand with paper and folders. It worked because the structure did the thinking for you. It becomes brutal to maintain because humans are slow, bored parsers, and the friction and volume of incoming requests builds continuously.
+A tiny schema (type, status, owner) enforced by hand with paper and folders. It works because the structure does the thinking for you. It breaks because humans are slow, bored parsers, and the pile never stops growing.
 
-> AI removes the tax on *producing* structure. It does not remove the *need* for it. The leverage isn't in better chat. It's in letting the model turn your unstructured exhaust into typed objects the moment it lands, so every downstream question becomes a filter instead of a re-read.
+> AI removes the tax on *producing* structure. It does not remove the *need* for it. The leverage isn't in better chat. It's in letting the model turn your unstructured inputs into typed objects the moment it lands, so every downstream question becomes a filter instead of a re-read.
 
 Every org running on unstructured exhaust is paying this tax, every hour, and has been paying it forever. Until now it was just the cost of work. Now it's a choice.
