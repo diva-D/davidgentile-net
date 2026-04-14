@@ -4,7 +4,7 @@ description: "Same twelve items. Same person. Same AI. One has ontology, one doe
 date: 2026-04-14
 heroImage: "/images/friction-tax-hero.png"
 artefact: "/artefacts/friction-tax.html"
-artefactHeight: 860
+artefactHeight: 880
 tags: ["Intelligence interface"]
 ---
 

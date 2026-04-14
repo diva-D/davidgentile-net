@@ -17,292 +17,507 @@
     --gold: #e0a526;
     --green: #3a9f5e;
     --paper: #fff;
-    --panel-left: #fbf5ea;
-    --panel-right: #f3f7f4;
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; background: var(--bg); color: var(--ink);
+  html, body {
+    margin: 0; background: var(--bg); color: var(--ink);
     font-family: "Iowan Old Style", "Palatino", ui-serif, Georgia, serif;
     -webkit-font-smoothing: antialiased;
   }
-  .wrap { max-width: 1040px; margin: 0 auto; padding: 24px 24px 28px; }
 
+  /* ==== STRUCTURAL ==== */
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 24px 24px 28px; }
   .stage {
     background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
-    padding: 24px; box-shadow: 0 2px 0 rgba(0,0,0,0.03);
+    padding: 24px 28px 22px; box-shadow: 0 2px 0 rgba(0,0,0,0.03);
+    display: flex; flex-direction: column; min-height: 720px;
   }
+
+  /* ==== PHASE HEADER ==== */
+  .phase-header {
+    display: flex; align-items: center; gap: 14px;
+    padding-bottom: 14px; border-bottom: 1px solid var(--line); margin-bottom: 16px;
+  }
+  .phase-progress { display: flex; gap: 6px; }
+  .phase-dot {
+    width: 30px; height: 4px; border-radius: 2px; background: var(--line);
+    transition: background 0.3s ease;
+  }
+  .phase-dot.done { background: var(--muted); }
+  .phase-dot.active { background: var(--accent); }
+  .phase-counter {
+    font-family: "Inter", sans-serif; font-size: 10px; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--muted); font-weight: 700;
+    margin-left: auto;
+  }
+  .phase-narration {
+    font-size: 18px; line-height: 1.5; color: var(--ink); font-weight: 600;
+    min-height: 54px; max-width: 820px;
+  }
+  .phase-narration em { color: var(--accent); font-style: italic; font-weight: 600; }
+  .phase-narration.fade-in { animation: fadeSlide 0.45s ease; }
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ==== PHASE-SPECIFIC CONTROLS (appear/disappear per phase) ==== */
+
+  /* Phase 3 "Extract" trigger */
+  .extract-control {
+    display: none; margin: 12px 0 8px;
+    align-items: center; justify-content: center; gap: 10px;
+  }
+  body.p3 .extract-control { display: flex; }
+  .extract-btn {
+    font-family: "Inter", sans-serif; font-size: 12px; font-weight: 700;
+    padding: 10px 18px; border-radius: 8px; border: 1px solid var(--ink);
+    background: var(--ink); color: var(--paper); cursor: pointer; letter-spacing: 0.3px;
+  }
+  .extract-btn:hover { background: var(--accent); border-color: var(--accent); }
+  .extract-btn:disabled {
+    background: var(--paper); color: var(--muted); border-color: var(--line); cursor: default;
+  }
+  .extract-btn .spark { margin-right: 6px; }
+
+  /* Phase 4 filter row */
+  .filter-row {
+    display: none; margin: 8px 0 14px; align-items: center; gap: 14px; flex-wrap: wrap;
+  }
+  body.p4 .filter-row { display: flex; }
   .ask {
-    font-family: "Inter", sans-serif; font-size: 14px; font-weight: 700;
-    letter-spacing: 0.3px; color: var(--ink); text-align: center;
-    padding: 4px 0 18px; border-bottom: 1px solid var(--line); margin-bottom: 20px;
+    font-family: "Inter", sans-serif; font-size: 13px; font-weight: 700;
+    color: var(--ink); letter-spacing: 0.2px;
   }
-  .ask span { color: var(--accent); }
-
-  .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media (max-width: 720px) { .panels { grid-template-columns: 1fr; } }
-
-  .panel { border: 1px solid var(--line); border-radius: 10px; padding: 16px; min-height: 520px; }
-  .panel.left { background: var(--panel-left); }
-  .panel.right { background: var(--panel-right); }
-  .panel h3 {
-    font-family: "Inter", sans-serif; font-size: 11px; font-weight: 800;
-    letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin: 0 0 4px;
-  }
-  .panel h3 b { color: var(--ink); }
-  .panel .sub { font-family: "Inter", sans-serif; font-size: 12px; color: var(--ink-soft); margin-bottom: 14px; }
-
-  .raw { font-family: "Inter", sans-serif; }
-  .item {
-    padding: 10px 12px; border-bottom: 1px dashed #d8cfbc; font-size: 13px;
-    line-height: 1.45; color: var(--ink-soft);
-  }
-  .item b { color: var(--ink); font-weight: 700; }
-  .item .src { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 3px; }
-  .item.missed { background: #fbe3dd; border-left: 3px solid var(--accent); padding-left: 9px; }
-
-  .filters { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .ask em { color: var(--accent); font-style: italic; font-weight: 700; }
+  .filters { display: flex; gap: 6px; flex-wrap: wrap; margin-left: auto; }
   .chip {
     font-family: "Inter", sans-serif; font-size: 10px; font-weight: 700;
-    letter-spacing: 0.5px; padding: 5px 9px; border-radius: 999px;
+    letter-spacing: 0.5px; padding: 5px 10px; border-radius: 999px;
     border: 1px solid var(--line); background: var(--paper); cursor: pointer; color: var(--ink-soft);
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
   }
+  .chip:hover { border-color: var(--ink); }
   .chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  .typed-item {
+
+  /* ==== CANVAS ==== */
+  .canvas {
+    flex: 1; position: relative;
+  }
+  .items {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+
+  /* ==== ITEM: same element, multiple states ==== */
+  .item {
+    position: relative;
     background: var(--paper); border: 1px solid var(--line); border-radius: 8px;
-    padding: 10px 12px; margin-bottom: 8px; font-family: "Inter", sans-serif;
+    padding: 9px 14px;
+    font-family: "Inter", sans-serif;
+    transition: all 0.45s ease;
+    opacity: 0; transform: translateY(6px);
   }
-  .typed-item .row1 { display: flex; gap: 8px; align-items: center; margin-bottom: 4px; }
-  .typed-item .type {
+  .item.visible { opacity: 1; transform: none; }
+
+  /* Phase 1/2: raw view */
+  .item .src {
+    font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted);
+    display: block; margin-bottom: 2px;
+  }
+  .item .raw-text {
+    font-size: 12.5px; line-height: 1.45; color: var(--ink-soft);
+  }
+
+  /* Phase 2: annotation overlay (visible when annotated) */
+  .item .annot {
+    position: absolute; top: 50%; right: 14px; transform: translateY(-50%);
+    display: none; align-items: center; gap: 4px;
+    background: rgba(217,75,47,0.08); border: 1px dashed var(--accent);
+    border-radius: 6px; padding: 4px 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .item.annotated .annot { display: inline-flex; opacity: 1; }
+  .item .annot-chip {
+    font-size: 8.5px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .item .annot-sep { color: var(--accent); opacity: 0.4; font-size: 8px; }
+
+  /* Phase 2: highlight cycling */
+  .item.highlight {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(217,75,47,0.12);
+    background: #fffaf8;
+  }
+
+  /* Phase 3/4: typed view — layout flips. Raw text fades away, typed data fades in. */
+  .item .typed {
+    display: none;
+    grid-template-columns: auto auto 1fr auto;
+    gap: 8px; align-items: center;
+  }
+  .item.typed-view .raw-text,
+  .item.typed-view .src,
+  .item.typed-view .annot { display: none; }
+  .item.typed-view .typed { display: grid; }
+  .item.typed-view {
+    padding: 10px 14px;
+  }
+
+  .typed .type {
     font-size: 9px; letter-spacing: 1px; text-transform: uppercase; font-weight: 800;
-    padding: 2px 6px; border-radius: 3px; background: var(--line); color: var(--ink);
+    padding: 2px 7px; border-radius: 3px; background: var(--line); color: var(--ink);
   }
-  .typed-item .status {
+  .typed .status {
     font-size: 9px; letter-spacing: 1px; text-transform: uppercase; font-weight: 700;
-    padding: 2px 6px; border-radius: 3px;
+    padding: 2px 7px; border-radius: 3px;
   }
-  .status.now { background: var(--accent); color: white; }
-  .status.today { background: var(--gold); color: white; }
-  .status.waiting { background: #c8c2b0; color: var(--ink); }
-  .status.done { background: var(--green); color: white; }
-  .typed-item .due { margin-left: auto; font-size: 10px; color: var(--muted); }
-  .typed-item .what { font-size: 13px; color: var(--ink); font-weight: 600; line-height: 1.4; }
-  .typed-item .next { font-size: 11px; color: var(--ink-soft); margin-top: 4px; }
-  .typed-item .next span { color: var(--accent); font-weight: 700; }
-  .empty {
-    font-family: "Inter", sans-serif; font-size: 12px; color: var(--muted);
-    text-align: center; padding: 20px; font-style: italic;
+  .status.now     { background: var(--accent); color: #fff; }
+  .status.today   { background: var(--gold);   color: #fff; }
+  .status.waiting { background: #c8c2b0;       color: var(--ink); }
+  .typed .what {
+    font-size: 12.5px; color: var(--ink); font-weight: 600; line-height: 1.3;
+  }
+  .typed .what .next {
+    display: block; font-size: 10.5px; color: var(--ink-soft); font-weight: 400; margin-top: 2px;
+  }
+  .typed .what .next .arrow { color: var(--accent); font-weight: 700; margin-right: 4px; }
+  .typed .due {
+    font-size: 10px; color: var(--muted); white-space: nowrap;
   }
 
-  .counter-row {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;
+  /* Phase 4 filter hiding */
+  .item.filtered-out {
+    opacity: 0; transform: translateY(-4px) scale(0.98);
+    margin-top: -46px; /* collapse gap */
+    pointer-events: none;
+    max-height: 0; padding-top: 0; padding-bottom: 0; border-color: transparent;
   }
-  .counter {
-    font-family: "Inter", sans-serif; padding: 12px 14px; border-radius: 8px;
-    border: 1px solid var(--line); background: var(--paper);
-  }
-  .counter .lbl { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); font-weight: 700; }
-  .counter .big { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.1; margin-top: 2px; }
-  .counter .big.bad { color: var(--accent); }
-  .counter .big.good { color: var(--green); }
-  .counter .hint { font-size: 11px; color: var(--ink-soft); margin-top: 4px; }
 
-  .controls { margin-top: 18px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  /* ==== CONTROLS (bottom) ==== */
+  .controls {
+    display: flex; align-items: center; gap: 10px; justify-content: space-between;
+    padding-top: 16px; border-top: 1px solid var(--line); margin-top: 18px;
+  }
   .btn {
     font-family: "Inter", sans-serif; font-size: 12px; font-weight: 700;
-    padding: 9px 14px; border-radius: 8px; border: 1px solid var(--ink);
+    padding: 10px 16px; border-radius: 8px; border: 1px solid var(--ink);
     background: var(--paper); color: var(--ink); cursor: pointer; letter-spacing: 0.3px;
+    transition: background 0.2s, color 0.2s;
   }
   .btn:hover { background: var(--ink); color: var(--paper); }
   .btn.primary { background: var(--ink); color: var(--paper); }
   .btn.primary:hover { background: var(--accent); border-color: var(--accent); }
+  .btn.ghost { border-color: transparent; color: var(--muted); background: transparent; padding-left: 4px; }
+  .btn.ghost:hover { color: var(--ink); background: transparent; }
+  .btn:disabled { opacity: 0.25; cursor: not-allowed; }
+  .btn:disabled:hover { background: var(--paper); color: var(--ink); }
 
-  .note {
-    font-family: "Inter", sans-serif; font-size: 12px; color: var(--ink-soft);
-    background: #fffbe8; border: 1px solid #e8d68a; border-radius: 8px;
-    padding: 10px 14px; margin-top: 16px; line-height: 1.5;
-  }
-  .note b { color: var(--ink); }
+  /* Phase 3 — Next button disabled until extraction done */
+  body.p3.pre-extract .next-btn { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="stage">
-    <div class="ask">What needs your attention <span>right now</span>?</div>
 
-    <div class="panels">
-      <div class="panel left">
-        <h3><b>Unstructured</b> · what actually shows up</h3>
-        <div class="sub">Inbox, Slack, voice memos, a sticky note, meeting scribbles. You re-read everything, every time.</div>
-        <div class="raw" id="rawList"></div>
-      </div>
-
-      <div class="panel right">
-        <h3><b>Typed</b> · same items, but structured</h3>
-        <div class="sub">Each item is an object: {type, status, due, next_action}. Same info — filterable.</div>
-        <div class="filters" id="filters"></div>
-        <div id="typedList"></div>
-      </div>
+    <div class="phase-header">
+      <div class="phase-progress" id="progress"></div>
+      <div class="phase-counter" id="counter">1 / 4</div>
     </div>
 
-    <div class="counter-row">
-      <div class="counter">
-        <div class="lbl">Left · items to re-read</div>
-        <div class="big bad" id="leftCount">12</div>
-        <div class="hint" id="leftHint">You scan all of them to find what's urgent. Every time.</div>
-      </div>
-      <div class="counter">
-        <div class="lbl">Right · items matching filter</div>
-        <div class="big good" id="rightCount">3</div>
-        <div class="hint" id="rightHint">Filter does the scanning. You read only what you act on.</div>
-      </div>
+    <div class="phase-narration fade-in" id="narration">
+      Your Monday morning — twelve items land on you before your coffee cools.
+    </div>
+
+    <!-- Phase 3: extract control -->
+    <div class="extract-control">
+      <button class="extract-btn" id="extractBtn"><span class="spark">⚡</span>Extract structure with AI</button>
+    </div>
+
+    <!-- Phase 4: filter row -->
+    <div class="filter-row">
+      <div class="ask">What needs your attention <em>right now</em>?</div>
+      <div class="filters" id="filters"></div>
+    </div>
+
+    <div class="canvas">
+      <div class="items" id="items"></div>
     </div>
 
     <div class="controls">
-      <button class="btn primary" id="simBtn">Simulate a day passing →</button>
-      <button class="btn" id="resetBtn">Reset</button>
+      <button class="btn ghost" id="backBtn">← back</button>
+      <button class="btn primary next-btn" id="nextBtn">Next →</button>
     </div>
 
-    <div class="note" id="insight"><b>Start here.</b> On the left, find every item that is <em>blocking you right now</em>. Then on the right, click <b>Needs action now</b>. Same answer. Different cost.</div>
   </div>
 </div>
 
 <script>
+/* ==== DATA ==== */
 const ITEMS = [
-  { id:1, src:"Email · 08:12", raw:"From Priya: \"hey can you look at the Q2 forecast before the board pre-read goes out? think the retention curve is off\"",
-    type:"REVIEW", status:"now", due:"Today 2pm", what:"Review Q2 forecast — retention curve", next:"Open model, check retention tab" },
-  { id:2, src:"Slack #eng-leads · 08:34", raw:"Daniel: \"reminder we owe legal the vendor list by EOD tmrw\"",
-    type:"DELIVER", status:"today", due:"Tomorrow EOD", what:"Send vendor list to legal", next:"Export vendor sheet, email Rachel" },
-  { id:3, src:"Voice memo · yesterday", raw:"\"...and ask Maya about the onboarding metric — I think we're measuring the wrong denominator, something about day-7 vs first-session...\"",
-    type:"QUESTION", status:"waiting", due:"—", what:"Ask Maya: onboarding denominator (day-7 vs first-session)", next:"DM Maya" },
-  { id:4, src:"Sticky note on desk", raw:"call back dentist",
-    type:"ERRAND", status:"today", due:"Today", what:"Call dentist back", next:"Call 555-0198" },
-  { id:5, src:"Email · Mon 4:45pm", raw:"From Jordan: \"contract from Acme attached — when you get a sec. no rush\"",
-    type:"REVIEW", status:"waiting", due:"Fri", what:"Review Acme contract", next:"Read §4 (IP) and §9 (term)" },
-  { id:6, src:"Slack DM · 07:58", raw:"Sam: \"ping when you want to pair on the hiring rubric 🙏\"",
-    type:"MEETING", status:"waiting", due:"This week", what:"Pair with Sam on hiring rubric", next:"Send 2 slot options" },
-  { id:7, src:"Meeting notes · Wed", raw:"...action item (me): draft a one-pager on the pricing change, circulate to exec staff before friday sync...",
-    type:"WRITE", status:"now", due:"Thu (overdue tmrw)", what:"One-pager on pricing change → exec staff", next:"Outline 5 bullets, expand" },
-  { id:8, src:"Email · 2 days ago", raw:"From Finance: \"Q1 expense reports still missing from your team — 4 outstanding. Can you nudge?\"",
-    type:"DELEGATE", status:"today", due:"Today", what:"Nudge team: Q1 expense reports (4 outstanding)", next:"Forward Finance email + set deadline" },
-  { id:9, src:"Calendar · tmrw 10am", raw:"Board pre-read sync — 45 min — 4 invitees — no agenda attached",
-    type:"MEETING", status:"today", due:"Tomorrow 10am", what:"Prep for board pre-read sync", next:"Write agenda, attach to invite" },
-  { id:10, src:"Slack #product · 06:40", raw:"Designer posted v3 of the settings flow — \"any blockers before I build?\"",
-    type:"REVIEW", status:"today", due:"Today", what:"Review settings flow v3 → unblock design", next:"Open Figma, leave comments" },
-  { id:11, src:"Email · last Thu", raw:"From recruiter: \"candidate asked if we can move intro to next week — any preferences?\"",
-    type:"SCHEDULE", status:"waiting", due:"—", what:"Reschedule candidate intro", next:"Send 3 times next week" },
-  { id:12, src:"Thought · in shower", raw:"need to actually write up the Q2 retention thing properly someday, keeps coming back",
-    type:"THINK", status:"waiting", due:"—", what:"Write Q2 retention analysis (proper)", next:"Block 2h Friday afternoon" },
+  { id:1,  src:"Email · 08:12",            raw:"Priya: \"look at Q2 forecast before board pre-read — retention curve looks off\"",
+    type:"REVIEW",   status:"now",     due:"Today 2pm",        what:"Review Q2 forecast — retention curve",      next:"Open model, check retention tab" },
+  { id:2,  src:"Slack #eng-leads · 08:34", raw:"Daniel: reminder we owe legal the vendor list by EOD tmrw",
+    type:"DELIVER",  status:"today",   due:"Tomorrow EOD",     what:"Send vendor list to legal",                  next:"Export sheet, email Rachel" },
+  { id:3,  src:"Voice memo · yesterday",   raw:"\"...ask Maya about the onboarding metric — wrong denominator...\"",
+    type:"QUESTION", status:"waiting", due:"—",                what:"Ask Maya: onboarding denominator",           next:"DM Maya" },
+  { id:4,  src:"Sticky note on desk",      raw:"call back dentist",
+    type:"ERRAND",   status:"today",   due:"Today",            what:"Call dentist back",                          next:"Call 555-0198" },
+  { id:5,  src:"Email · Mon 4:45pm",       raw:"Jordan: \"Acme contract attached — when you get a sec. no rush\"",
+    type:"REVIEW",   status:"waiting", due:"Fri",              what:"Review Acme contract",                       next:"Read §4 (IP) and §9 (term)" },
+  { id:6,  src:"Slack DM · 07:58",         raw:"Sam: ping when you want to pair on the hiring rubric 🙏",
+    type:"MEETING",  status:"waiting", due:"This week",        what:"Pair with Sam on hiring rubric",             next:"Send 2 slot options" },
+  { id:7,  src:"Meeting notes · Wed",      raw:"...action item (me): draft pricing one-pager before friday sync...",
+    type:"WRITE",    status:"now",     due:"Thu · overdue tmrw", what:"One-pager on pricing change → exec staff", next:"Outline 5 bullets, expand" },
+  { id:8,  src:"Email · 2 days ago",       raw:"Finance: Q1 expense reports still missing — 4 outstanding. Nudge?",
+    type:"DELEGATE", status:"today",   due:"Today",            what:"Nudge team: Q1 expense reports (4 outstanding)", next:"Forward + set deadline" },
+  { id:9,  src:"Calendar · tmrw 10am",     raw:"Board pre-read sync — 45 min — 4 invitees — no agenda attached",
+    type:"MEETING",  status:"today",   due:"Tomorrow 10am",    what:"Prep for board pre-read sync",               next:"Write agenda, attach to invite" },
+  { id:10, src:"Slack #product · 06:40",   raw:"Designer posted v3 settings flow — \"any blockers before I build?\"",
+    type:"REVIEW",   status:"now",     due:"EOD",              what:"Review settings flow v3 → unblock design",   next:"Open Figma, leave comments" },
+  { id:11, src:"Email · last Thu",         raw:"Recruiter: candidate asked to move intro to next week — preferences?",
+    type:"SCHEDULE", status:"waiting", due:"—",                what:"Reschedule candidate intro",                 next:"Send 3 times next week" },
+  { id:12, src:"Thought · in shower",      raw:"need to actually write up the Q2 retention thing properly someday",
+    type:"THINK",    status:"waiting", due:"—",                what:"Write Q2 retention analysis (proper)",       next:"Block 2h Friday afternoon" },
 ];
-
-let state = { filter: "now", dayPassed: false, overdue: new Set(), missed: new Set() };
 
 const FILTERS = [
   { id:"now",     label:"Needs action now" },
   { id:"today",   label:"Due today" },
   { id:"waiting", label:"Waiting on" },
-  { id:"all",     label:"All" },
+  { id:"all",     label:"All 12" },
 ];
 
-function renderFilters() {
-  const f = document.getElementById("filters");
-  f.innerHTML = "";
-  FILTERS.forEach(x => {
-    const c = document.createElement("button");
-    c.className = "chip" + (state.filter === x.id ? " on" : "");
-    c.textContent = x.label;
-    c.onclick = () => { state.filter = x.id; render(); };
-    f.appendChild(c);
+/* ==== PHASES ==== */
+const PHASES = [
+  {
+    narration: `Your Monday morning — twelve items land on you before your coffee cools.`,
+    enter: enterP1,
+  },
+  {
+    narration: `Look closer. Each has <em>hidden structure</em> — type, status, due date — sitting in your head, never written down.`,
+    enter: enterP2,
+  },
+  {
+    narration: `AI doesn't invent the structure. It <em>surfaces what was already there</em>.`,
+    enter: enterP3,
+  },
+  {
+    narration: `Same question. Different cost. The schema does the scanning.`,
+    enter: enterP4,
+  },
+];
+
+/* ==== DOM BUILD ==== */
+const itemsEl = document.getElementById("items");
+function buildItems() {
+  itemsEl.innerHTML = "";
+  ITEMS.forEach(it => {
+    const el = document.createElement("div");
+    el.className = "item";
+    el.dataset.id = String(it.id);
+    el.dataset.status = it.status;
+    el.innerHTML = `
+      <span class="src">${it.src}</span>
+      <div class="raw-text">${it.raw}</div>
+      <div class="annot">
+        <span class="annot-chip">${it.type}</span>
+        <span class="annot-sep">·</span>
+        <span class="annot-chip">${it.status}</span>
+        <span class="annot-sep">·</span>
+        <span class="annot-chip">${it.due}</span>
+      </div>
+      <div class="typed">
+        <span class="type">${it.type}</span>
+        <span class="status ${it.status}">${it.status}</span>
+        <div class="what">${it.what}<span class="next"><span class="arrow">Next:</span>${it.next}</span></div>
+        <span class="due">${it.due}</span>
+      </div>
+    `;
+    itemsEl.appendChild(el);
+  });
+}
+buildItems();
+
+const itemEls = () => Array.from(itemsEl.querySelectorAll(".item"));
+
+/* ==== FILTER CHIPS ==== */
+const filtersEl = document.getElementById("filters");
+let activeFilter = "now";
+function buildFilters() {
+  filtersEl.innerHTML = "";
+  FILTERS.forEach(f => {
+    const b = document.createElement("button");
+    b.className = "chip" + (f.id === activeFilter ? " on" : "");
+    b.textContent = f.label;
+    b.dataset.filter = f.id;
+    b.onclick = () => {
+      activeFilter = f.id;
+      buildFilters();
+      applyFilter();
+    };
+    filtersEl.appendChild(b);
+  });
+}
+buildFilters();
+
+function applyFilter() {
+  itemEls().forEach(el => {
+    const status = el.dataset.status;
+    const show = activeFilter === "all" || status === activeFilter;
+    el.classList.toggle("filtered-out", !show);
   });
 }
 
-function effectiveStatus(it) {
-  if (state.dayPassed && state.overdue.has(it.id)) return "now";
-  return it.status;
+/* ==== PHASE ENTER HANDLERS ==== */
+
+let highlightTimer = null;
+function stopHighlightCycle() {
+  if (highlightTimer) { clearInterval(highlightTimer); highlightTimer = null; }
+  itemEls().forEach(el => el.classList.remove("highlight"));
 }
 
-function renderLeft() {
-  const el = document.getElementById("rawList");
-  el.innerHTML = "";
-  ITEMS.slice().reverse().forEach(it => {
+function enterP1() {
+  clearBodyPhaseClass();
+  document.body.classList.add("p1");
+  stopHighlightCycle();
+  // Reset everything
+  const els = itemEls();
+  els.forEach(el => {
+    el.classList.remove("visible", "annotated", "typed-view", "highlight", "filtered-out");
+  });
+  // Stream items in one by one
+  els.forEach((el, i) => {
+    setTimeout(() => el.classList.add("visible"), 120 + i * 130);
+  });
+}
+
+function enterP2() {
+  clearBodyPhaseClass();
+  document.body.classList.add("p2");
+  // Ensure all visible (in case of reset or back)
+  const els = itemEls();
+  els.forEach(el => {
+    el.classList.add("visible");
+    el.classList.remove("typed-view", "filtered-out");
+    el.classList.add("annotated");
+  });
+  // Cycle highlight through items so reader sees each structure revealed
+  stopHighlightCycle();
+  let i = 0;
+  const step = () => {
+    els.forEach(el => el.classList.remove("highlight"));
+    els[i % els.length].classList.add("highlight");
+    i += 1;
+  };
+  step();
+  highlightTimer = setInterval(step, 1200);
+}
+
+let extracted = false;
+function enterP3() {
+  clearBodyPhaseClass();
+  document.body.classList.add("p3");
+  stopHighlightCycle();
+  // Keep annotated state visually, then morph on extract
+  const els = itemEls();
+  els.forEach(el => {
+    el.classList.add("visible");
+    el.classList.remove("highlight", "filtered-out");
+    // If coming back from phase 4, undo typed view
+    el.classList.remove("typed-view");
+    el.classList.add("annotated");
+  });
+  extracted = false;
+  document.body.classList.add("pre-extract");
+  const btn = document.getElementById("extractBtn");
+  btn.disabled = false;
+  btn.innerHTML = `<span class="spark">⚡</span>Extract structure with AI`;
+}
+
+function runExtract() {
+  if (extracted) return;
+  extracted = true;
+  const btn = document.getElementById("extractBtn");
+  btn.disabled = true;
+  btn.innerHTML = `Extracted.`;
+  const els = itemEls();
+  // Wave-transform from top to bottom
+  els.forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.remove("annotated");
+      el.classList.add("typed-view");
+    }, i * 110);
+  });
+  // Enable Next once the wave finishes
+  setTimeout(() => {
+    document.body.classList.remove("pre-extract");
+  }, els.length * 110 + 200);
+}
+
+function enterP4() {
+  clearBodyPhaseClass();
+  document.body.classList.add("p4");
+  stopHighlightCycle();
+  const els = itemEls();
+  els.forEach(el => {
+    el.classList.add("visible", "typed-view");
+    el.classList.remove("annotated", "highlight");
+  });
+  activeFilter = "now";
+  buildFilters();
+  applyFilter();
+}
+
+function clearBodyPhaseClass() {
+  document.body.classList.remove("p1", "p2", "p3", "p4", "pre-extract");
+}
+
+/* ==== PHASE MACHINERY ==== */
+const narrationEl = document.getElementById("narration");
+const counterEl = document.getElementById("counter");
+const progressEl = document.getElementById("progress");
+const nextBtn = document.getElementById("nextBtn");
+const backBtn = document.getElementById("backBtn");
+
+let phase = 0;
+
+function renderProgress() {
+  progressEl.innerHTML = "";
+  PHASES.forEach((_, i) => {
     const d = document.createElement("div");
-    d.className = "item" + (state.dayPassed && state.missed.has(it.id) ? " missed" : "");
-    d.innerHTML = `<span class="src">${it.src}</span>${it.raw}`;
-    el.appendChild(d);
+    d.className = "phase-dot" + (i < phase ? " done" : i === phase ? " active" : "");
+    progressEl.appendChild(d);
   });
 }
 
-function renderRight() {
-  const el = document.getElementById("typedList");
-  el.innerHTML = "";
-  const filtered = ITEMS.filter(it => {
-    if (state.filter === "all") return true;
-    return effectiveStatus(it) === state.filter;
-  });
-  if (filtered.length === 0) {
-    el.innerHTML = `<div class="empty">Nothing matches this filter.</div>`;
-  } else {
-    filtered.forEach(it => {
-      const s = effectiveStatus(it);
-      const d = document.createElement("div");
-      d.className = "typed-item";
-      d.innerHTML = `
-        <div class="row1">
-          <span class="type">${it.type}</span>
-          <span class="status ${s}">${s}</span>
-          <span class="due">${it.due}</span>
-        </div>
-        <div class="what">${it.what}</div>
-        <div class="next">Next: <span>${it.next}</span></div>
-      `;
-      el.appendChild(d);
-    });
-  }
-  document.getElementById("rightCount").textContent = filtered.length;
-  const flabel = FILTERS.find(f => f.id === state.filter).label;
-  document.getElementById("rightHint").textContent = `Filter: "${flabel}". You read only what you'll act on.`;
-}
+function goToPhase(i) {
+  phase = Math.max(0, Math.min(PHASES.length - 1, i));
+  const p = PHASES[phase];
+  narrationEl.innerHTML = p.narration;
+  narrationEl.classList.remove("fade-in");
+  void narrationEl.offsetWidth;
+  narrationEl.classList.add("fade-in");
+  p.enter();
+  counterEl.textContent = `${phase + 1} / ${PHASES.length}`;
+  renderProgress();
 
-function renderCounters() {
-  document.getElementById("leftCount").textContent = ITEMS.length;
-  if (state.dayPassed) {
-    document.getElementById("leftHint").innerHTML = `<b style="color:var(--accent)">${state.missed.size} items silently went overdue.</b> Nothing on the left told you.`;
+  backBtn.disabled = phase === 0;
+  if (phase === PHASES.length - 1) {
+    nextBtn.textContent = "Reset ↺";
+    nextBtn.onclick = () => goToPhase(0);
   } else {
-    document.getElementById("leftHint").textContent = "You scan all of them to find what's urgent. Every time.";
+    nextBtn.textContent = "Next →";
+    nextBtn.onclick = () => goToPhase(phase + 1);
   }
 }
 
-function updateInsight() {
-  const el = document.getElementById("insight");
-  if (state.dayPassed) {
-    el.innerHTML = `<b>A day passed.</b> On the right, two <em>waiting-on</em> items crossed their deadline and auto-promoted to <em>now</em>. On the left, they just sit in the pile looking the same as yesterday. <b>That gap is the friction tax.</b>`;
-  } else {
-    el.innerHTML = `<b>Start here.</b> On the left, find every item that is <em>blocking you right now</em>. Then on the right, click <b>Needs action now</b>. Same answer. Different cost.`;
-  }
-}
+backBtn.onclick = () => goToPhase(phase - 1);
+document.getElementById("extractBtn").onclick = runExtract;
 
-function simulateDay() {
-  state.dayPassed = true;
-  state.overdue = new Set([5, 11]);
-  state.missed = new Set([5, 11]);
-  render();
-}
-
-function reset() {
-  state = { filter: "now", dayPassed: false, overdue: new Set(), missed: new Set() };
-  render();
-}
-
-function render() {
-  renderFilters();
-  renderLeft();
-  renderRight();
-  renderCounters();
-  updateInsight();
-}
-
-document.getElementById("simBtn").onclick = simulateDay;
-document.getElementById("resetBtn").onclick = reset;
-render();
+goToPhase(0);
 </script>
 </body>
 </html>
