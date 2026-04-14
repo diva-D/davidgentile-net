@@ -143,27 +143,49 @@
     font-size: 12.5px; line-height: 1.4; color: var(--ink-soft);
   }
 
-  /* Phase 2: annotation overlay (visible when annotated) */
+  /* Phase 2: annotation — three independent chips that fade in one at a time */
   .item .annot {
     position: absolute; top: 50%; right: 14px; transform: translateY(-50%);
-    display: none; align-items: center; gap: 4px;
-    background: rgba(217,75,47,0.08); border: 1px dashed var(--accent);
+    display: inline-flex; align-items: center; gap: 4px;
+    background: rgba(217,75,47,0.06); border: 1px dashed var(--accent);
     border-radius: 6px; padding: 4px 8px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    opacity: 0; transition: opacity 0.3s ease;
+    pointer-events: none;
   }
-  .item.annotated .annot { display: inline-flex; opacity: 1; }
+  /* Container becomes visible as soon as ANY chip is revealed */
+  .item.show-type .annot,
+  .item.show-status .annot,
+  .item.show-due .annot,
+  .item.annotated .annot { opacity: 1; }
+
   .item .annot-chip {
     font-size: 8.5px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase;
     color: var(--accent);
+    opacity: 0; transition: opacity 0.35s ease;
   }
-  .item .annot-sep { color: var(--accent); opacity: 0.4; font-size: 8px; }
+  .item.show-type .annot-chip[data-f="type"],
+  .item.show-status .annot-chip[data-f="status"],
+  .item.show-due .annot-chip[data-f="due"],
+  .item.annotated .annot-chip { opacity: 1; }
 
-  /* Phase 2: highlight cycling */
-  .item.highlight {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(217,75,47,0.12);
-    background: #fffaf8;
+  /* Demo focus: soft accent frame around the item being explained */
+  .item.demo-focus {
+    border-color: rgba(217,75,47,0.5);
+    box-shadow: 0 0 0 3px rgba(217,75,47,0.10);
+    background: #fffaf7;
+  }
+
+  /* Raw-text highlight phrases (only lit during demo focus) */
+  .item .raw-text .hl-src {
+    padding: 0 2px; border-radius: 2px;
+    background: transparent; color: inherit;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  .item.focus-type .raw-text .hl-src[data-f="type"],
+  .item.focus-status .raw-text .hl-src[data-f="status"],
+  .item.focus-due .raw-text .hl-src[data-f="due"] {
+    background: rgba(217,75,47,0.18);
+    color: var(--ink);
   }
 
   /* Phase 3/4: typed view — layout flips. Raw text fades away, typed data fades in. */
@@ -284,11 +306,11 @@ const MEDIA = {
   thought: { glyph: "◌", label: "Thought" },
 };
 const ITEMS = [
-  { id:1,  medium:"email",   detail:"08:12",                raw:"Priya: \"look at Q2 forecast before board pre-read — retention curve looks off\"",
+  { id:1,  medium:"email",   detail:"08:12",                raw:"Priya: \"look at <span class='hl-src' data-f='type'>Q2 forecast</span> before <span class='hl-src' data-f='due'>board pre-read</span> — <span class='hl-src' data-f='status'>retention curve looks off</span>\"",
     type:"REVIEW",   status:"now",     due:"Today 2pm",        what:"Review Q2 forecast — retention curve",      next:"Open model, check retention tab" },
   { id:2,  medium:"slack",   detail:"#eng-leads · 08:34",   raw:"Daniel: reminder we owe legal the vendor list by EOD tmrw",
     type:"DELIVER",  status:"today",   due:"Tomorrow EOD",     what:"Send vendor list to legal",                  next:"Export sheet, email Rachel" },
-  { id:3,  medium:"voice",   detail:"yesterday",            raw:"\"...ask Maya about the onboarding metric — wrong denominator...\"",
+  { id:3,  medium:"voice",   detail:"yesterday",            raw:"\"...<span class='hl-src' data-f='type'>ask Maya</span> about the onboarding metric — <span class='hl-src' data-f='status'>wrong denominator</span>...\"",
     type:"QUESTION", status:"waiting", due:"—",                what:"Ask Maya: onboarding denominator",           next:"DM Maya" },
   { id:4,  medium:"note",    detail:"on desk",              raw:"call back dentist",
     type:"ERRAND",   status:"today",   due:"Today",            what:"Call dentist back",                          next:"Call 555-0198" },
@@ -296,7 +318,7 @@ const ITEMS = [
     type:"REVIEW",   status:"waiting", due:"Fri",              what:"Review Acme contract",                       next:"Read §4 (IP) and §9 (term)" },
   { id:6,  medium:"slack",   detail:"DM · 07:58",           raw:"Sam: ping when you want to pair on the hiring rubric 🙏",
     type:"MEETING",  status:"waiting", due:"This week",        what:"Pair with Sam on hiring rubric",             next:"Send 2 slot options" },
-  { id:7,  medium:"meeting", detail:"Wed notes",            raw:"...action item (me): draft pricing one-pager before friday sync...",
+  { id:7,  medium:"meeting", detail:"Wed notes",            raw:"...<span class='hl-src' data-f='status'>action item (me)</span>: <span class='hl-src' data-f='type'>draft pricing one-pager</span> before <span class='hl-src' data-f='due'>friday sync</span>...",
     type:"WRITE",    status:"now",     due:"Thu · overdue tmrw", what:"One-pager on pricing change → exec staff", next:"Outline 5 bullets, expand" },
   { id:8,  medium:"email",   detail:"2 days ago",           raw:"Finance: Q1 expense reports still missing — 4 outstanding. Nudge?",
     type:"DELEGATE", status:"today",   due:"Today",            what:"Nudge team: Q1 expense reports (4 outstanding)", next:"Forward + set deadline" },
@@ -355,11 +377,9 @@ function buildItems() {
       </div>
       <div class="raw-text">${it.raw}</div>
       <div class="annot">
-        <span class="annot-chip">${it.type}</span>
-        <span class="annot-sep">·</span>
-        <span class="annot-chip">${it.status}</span>
-        <span class="annot-sep">·</span>
-        <span class="annot-chip">${it.due}</span>
+        <span class="annot-chip" data-f="type">${it.type}</span>
+        <span class="annot-chip" data-f="status">${it.status}</span>
+        <span class="annot-chip" data-f="due">${it.due}</span>
       </div>
       <div class="typed">
         <span class="type">${it.type}</span>
@@ -406,9 +426,19 @@ function applyFilter() {
 /* ==== PHASE ENTER HANDLERS ==== */
 
 let highlightTimer = null;
+let demoTimers = [];
+function clearDemoTimers() {
+  demoTimers.forEach(t => clearTimeout(t));
+  demoTimers = [];
+}
 function stopHighlightCycle() {
   if (highlightTimer) { clearInterval(highlightTimer); highlightTimer = null; }
-  itemEls().forEach(el => el.classList.remove("highlight"));
+  clearDemoTimers();
+  itemEls().forEach(el => el.classList.remove(
+    "highlight", "demo-focus",
+    "focus-type", "focus-status", "focus-due",
+    "show-type", "show-status", "show-due"
+  ));
 }
 
 function enterP1() {
@@ -430,26 +460,50 @@ function enterP1() {
   });
 }
 
+const DEMO_IDS = [1, 7, 3]; // email, meeting notes, voice memo — three different kinds of raw input
 function enterP2() {
   clearBodyPhaseClass();
   document.body.classList.add("p2");
-  // Ensure all visible (in case of reset or back)
+  stopHighlightCycle();
   const els = itemEls();
   els.forEach(el => {
     el.classList.add("visible");
-    el.classList.remove("typed-view", "filtered-out");
-    el.classList.add("annotated");
+    el.classList.remove(
+      "typed-view", "filtered-out", "annotated",
+      "show-type", "show-status", "show-due",
+      "focus-type", "focus-status", "focus-due", "demo-focus"
+    );
   });
-  // Cycle highlight through items so reader sees each structure revealed
-  stopHighlightCycle();
-  let i = 0;
-  const step = () => {
-    els.forEach(el => el.classList.remove("highlight"));
-    els[i % els.length].classList.add("highlight");
-    i += 1;
-  };
-  step();
-  highlightTimer = setInterval(step, 1200);
+  runPhase2Demo();
+}
+
+function runPhase2Demo() {
+  const els = itemEls();
+  const byId = (id) => els.find(el => Number(el.dataset.id) === id);
+
+  // Demo sequence: per item, ~2.8s — focus in, reveal type, status, due (each ~700ms apart), then release.
+  // Chips persist after release; raw-text highlights fade.
+  let t = 400;
+  DEMO_IDS.forEach((id) => {
+    const el = byId(id);
+    if (!el) return;
+    demoTimers.push(setTimeout(() => el.classList.add("demo-focus"), t));
+    demoTimers.push(setTimeout(() => el.classList.add("focus-type",   "show-type"),   t + 400));
+    demoTimers.push(setTimeout(() => el.classList.add("focus-status", "show-status"), t + 1100));
+    demoTimers.push(setTimeout(() => el.classList.add("focus-due",    "show-due"),    t + 1800));
+    demoTimers.push(setTimeout(() => {
+      el.classList.remove("demo-focus", "focus-type", "focus-status", "focus-due");
+    }, t + 2700));
+    t += 2800;
+  });
+
+  // After all demos: fast-populate the remaining 9 items so the phase ends with all twelve structured.
+  demoTimers.push(setTimeout(() => {
+    const remaining = els.filter(el => !DEMO_IDS.includes(Number(el.dataset.id)));
+    remaining.forEach((el, i) => {
+      demoTimers.push(setTimeout(() => el.classList.add("annotated"), i * 80));
+    });
+  }, t + 400));
 }
 
 let extracted = false;
@@ -561,7 +615,7 @@ function phaseReadyMs(i) {
   // conservative "animations complete" durations for each phase
   switch (i) {
     case 0: return 180 + 340+280+520+260+310+420+280+360+300+470+290 + 300; // stream-in wave (~4s)
-    case 1: return 1200 + 200;                      // first highlight settled
+    case 1: return 400 + 3 * 2800 + 400 + 9 * 80 + 400; // demo + fast-populate (~10s)
     case 2: return 300;                             // pre-extract still
     case 3: return 400;                             // filter applied
     default: return 400;
