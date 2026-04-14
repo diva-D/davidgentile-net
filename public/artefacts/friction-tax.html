@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Friction Tax · a tiny explorable</title>
+<style>
+  :root {
+    --bg: #faf7f0;
+    --ink: #1a1a1d;
+    --ink-soft: #4a4a52;
+    --muted: #8c8c93;
+    --line: #e4dfd2;
+    --accent: #d94b2f;
+    --gold: #e0a526;
+    --green: #3a9f5e;
+    --paper: #fff;
+    --panel-left: #fbf5ea;
+    --panel-right: #f3f7f4;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Iowan Old Style", "Palatino", ui-serif, Georgia, serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 60px 24px 120px; }
+  .kicker { font-family: "Inter", sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  h1 { font-size: 40px; line-height: 1.1; letter-spacing: -0.5px; margin: 8px 0 16px; font-weight: 700; }
+  .lede { font-size: 17px; line-height: 1.6; color: var(--ink-soft); margin: 0 0 24px; }
+  p { font-size: 16px; line-height: 1.7; color: var(--ink-soft); }
+  p em { color: var(--ink); font-style: italic; font-weight: 600; }
+  p b { color: var(--ink); font-weight: 700; }
+
+  .stage {
+    background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
+    padding: 24px; margin: 32px 0; box-shadow: 0 2px 0 rgba(0,0,0,0.03);
+  }
+  .ask {
+    font-family: "Inter", sans-serif; font-size: 13px; font-weight: 700;
+    letter-spacing: 0.3px; color: var(--ink); text-align: center;
+    padding: 10px 0 18px; border-bottom: 1px solid var(--line); margin-bottom: 20px;
+  }
+  .ask span { color: var(--accent); }
+
+  .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 720px) { .panels { grid-template-columns: 1fr; } }
+
+  .panel { border: 1px solid var(--line); border-radius: 10px; padding: 16px; min-height: 520px; }
+  .panel.left { background: var(--panel-left); }
+  .panel.right { background: var(--panel-right); }
+  .panel h3 {
+    font-family: "Inter", sans-serif; font-size: 11px; font-weight: 800;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin: 0 0 4px;
+  }
+  .panel h3 b { color: var(--ink); }
+  .panel .sub { font-family: "Inter", sans-serif; font-size: 12px; color: var(--ink-soft); margin-bottom: 14px; }
+
+  /* LEFT: raw scrolling inbox */
+  .raw { font-family: "Inter", sans-serif; }
+  .item {
+    padding: 10px 12px; border-bottom: 1px dashed #d8cfbc; font-size: 13px;
+    line-height: 1.45; color: var(--ink-soft);
+  }
+  .item b { color: var(--ink); font-weight: 700; }
+  .item .src { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 3px; }
+  .item.missed { background: #fbe3dd; border-left: 3px solid var(--accent); padding-left: 9px; }
+
+  /* RIGHT: typed, filtered */
+  .filters { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .chip {
+    font-family: "Inter", sans-serif; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.5px; padding: 5px 9px; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--paper); cursor: pointer; color: var(--ink-soft);
+  }
+  .chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .typed-item {
+    background: var(--paper); border: 1px solid var(--line); border-radius: 8px;
+    padding: 10px 12px; margin-bottom: 8px; font-family: "Inter", sans-serif;
+  }
+  .typed-item .row1 { display: flex; gap: 8px; align-items: center; margin-bottom: 4px; }
+  .typed-item .type {
+    font-size: 9px; letter-spacing: 1px; text-transform: uppercase; font-weight: 800;
+    padding: 2px 6px; border-radius: 3px; background: var(--line); color: var(--ink);
+  }
+  .typed-item .status {
+    font-size: 9px; letter-spacing: 1px; text-transform: uppercase; font-weight: 700;
+    padding: 2px 6px; border-radius: 3px;
+  }
+  .status.now { background: var(--accent); color: white; }
+  .status.today { background: var(--gold); color: white; }
+  .status.waiting { background: #c8c2b0; color: var(--ink); }
+  .status.done { background: var(--green); color: white; }
+  .typed-item .due { margin-left: auto; font-size: 10px; color: var(--muted); }
+  .typed-item .what { font-size: 13px; color: var(--ink); font-weight: 600; line-height: 1.4; }
+  .typed-item .next { font-size: 11px; color: var(--ink-soft); margin-top: 4px; }
+  .typed-item .next span { color: var(--accent); font-weight: 700; }
+  .empty {
+    font-family: "Inter", sans-serif; font-size: 12px; color: var(--muted);
+    text-align: center; padding: 20px; font-style: italic;
+  }
+
+  /* counters */
+  .counter-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;
+  }
+  .counter {
+    font-family: "Inter", sans-serif; padding: 12px 14px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--paper);
+  }
+  .counter .lbl { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .counter .big { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.1; margin-top: 2px; }
+  .counter .big.bad { color: var(--accent); }
+  .counter .big.good { color: var(--green); }
+  .counter .hint { font-size: 11px; color: var(--ink-soft); margin-top: 4px; }
+
+  .controls { margin-top: 18px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    font-family: "Inter", sans-serif; font-size: 12px; font-weight: 700;
+    padding: 9px 14px; border-radius: 8px; border: 1px solid var(--ink);
+    background: var(--paper); color: var(--ink); cursor: pointer; letter-spacing: 0.3px;
+  }
+  .btn:hover { background: var(--ink); color: var(--paper); }
+  .btn.primary { background: var(--ink); color: var(--paper); }
+  .btn.primary:hover { background: var(--accent); border-color: var(--accent); }
+
+  .note {
+    font-family: "Inter", sans-serif; font-size: 12px; color: var(--ink-soft);
+    background: #fffbe8; border: 1px solid #e8d68a; border-radius: 8px;
+    padding: 10px 14px; margin-top: 16px; line-height: 1.5;
+  }
+  .note b { color: var(--ink); }
+
+  .callout {
+    margin: 32px 0; padding: 22px 26px; background: #f1ede2;
+    border-left: 3px solid var(--ink); border-radius: 4px;
+  }
+  .callout p { margin: 0; color: var(--ink); font-size: 16px; line-height: 1.65; font-family: inherit; }
+
+  footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); font-family: "Inter", sans-serif; font-size: 12px; color: var(--muted); line-height: 1.6; }
+  footer b { color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="kicker">Artefact 01 · Structure layer</div>
+  <h1>The friction tax</h1>
+  <p class="lede">Two people. Same twelve items landed on them this morning. Same brain, same AI, same workday ahead. The only difference: one runs on loose notes, the other runs on typed objects with states, deadlines, and next actions. Watch the tax compound.</p>
+
+  <p>
+    <b>Same work. Same person. Same AI.</b> One has ontology, one doesn't. The question on the page is just: <em>what needs my attention right now?</em>
+    Try to answer it from the left panel. Then try from the right.
+  </p>
+
+  <div class="stage">
+    <div class="ask">What needs your attention <span>right now</span>?</div>
+
+    <div class="panels">
+      <div class="panel left">
+        <h3><b>Unstructured</b> · what actually shows up</h3>
+        <div class="sub">Inbox, Slack, voice memos, a sticky note, meeting scribbles. All in reverse-chron. You re-read everything, every time.</div>
+        <div class="raw" id="rawList"></div>
+      </div>
+
+      <div class="panel right">
+        <h3><b>Typed</b> · same items, but structured</h3>
+        <div class="sub">Each item is an object: {type, status, due, next_action}. Same info — filterable.</div>
+        <div class="filters" id="filters"></div>
+        <div id="typedList"></div>
+      </div>
+    </div>
+
+    <div class="counter-row">
+      <div class="counter">
+        <div class="lbl">Left panel · items to re-read</div>
+        <div class="big bad" id="leftCount">12</div>
+        <div class="hint" id="leftHint">You scan all of them to find what's urgent. Every time.</div>
+      </div>
+      <div class="counter">
+        <div class="lbl">Right panel · items matching filter</div>
+        <div class="big good" id="rightCount">3</div>
+        <div class="hint" id="rightHint">Filter does the scanning. You read only what you act on.</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn primary" id="simBtn">Simulate a day passing →</button>
+      <button class="btn" id="resetBtn">Reset</button>
+    </div>
+
+    <div class="note" id="insight"><b>Start here.</b> On the left, find every item that is <em>blocking you right now</em>. Then on the right, click <b>Needs action now</b>. Same answer. Different cost.</div>
+  </div>
+
+  <p>
+    The friction tax isn't the work. It's the <em>re-reading</em>. The <em>remembering what state this thing was in</em>. The
+    <em>digging through Slack to find what Priya said on Tuesday</em>. Every item without type, state, and a next action
+    charges rent on your attention, every time you look at the pile.
+  </p>
+
+  <p>
+    GTD was ontology engineering in disguise. <b>Inbox → Next Action → Waiting-On → Someday/Maybe</b> is a tiny schema
+    — <i>type, status, owner</i> — enforced by hand with paper and folders. It worked because the structure did the thinking.
+    It was brutal to maintain because humans are slow, boring parsers.
+  </p>
+
+  <div class="callout">
+    <p>AI removes the tax on <em>producing</em> structure. It does not remove the <em>need</em> for structure. The leverage isn't in better chat — it's in letting the model turn your unstructured exhaust into typed objects the moment it lands, so every downstream question becomes a filter instead of a re-read.</p>
+  </div>
+
+  <p>
+    Simulate a day passing. Watch the left panel drift — items go stale, two quietly slip past their deadline, nothing tells you.
+    The right panel reshuffles: <em>Waiting-on</em> items that timed out move to <em>Needs action now</em>. The schema notices. The pile doesn't.
+  </p>
+
+  <p>
+    This is the whole argument for the structure layer in one screen. Every org running on unstructured exhaust is paying this tax,
+    every hour, and has been paying it forever. Until now it was just <em>the cost of work</em>. Now it's a choice.
+  </p>
+
+  <footer>
+    <b>Artefact 01 of 11.</b> Part of a series on ontology engineering — the thesis that the real leverage from AI isn't in the models,
+    it's in giving the messy real world enough structure for models to act on it. Next: <i>why AI automation breaks in production</i>.
+  </footer>
+
+</div>
+
+<script>
+// 12 items, same content, two representations
+const ITEMS = [
+  { id:1, src:"Email · 08:12", raw:"From Priya: \"hey can you look at the Q2 forecast before the board pre-read goes out? think the retention curve is off\"",
+    type:"REVIEW", status:"now", due:"Today 2pm", what:"Review Q2 forecast — retention curve", next:"Open model, check retention tab", from:"Priya" },
+  { id:2, src:"Slack #eng-leads · 08:34", raw:"Daniel: \"reminder we owe legal the vendor list by EOD tmrw\"",
+    type:"DELIVER", status:"today", due:"Tomorrow EOD", what:"Send vendor list to legal", next:"Export vendor sheet, email Rachel" },
+  { id:3, src:"Voice memo · yesterday", raw:"\"...and ask Maya about the onboarding metric — I think we're measuring the wrong denominator, something about day-7 vs first-session...\"",
+    type:"QUESTION", status:"waiting", due:"—", what:"Ask Maya: onboarding denominator (day-7 vs first-session)", next:"DM Maya", from:"Self" },
+  { id:4, src:"Sticky note on desk", raw:"call back dentist",
+    type:"ERRAND", status:"today", due:"Today", what:"Call dentist back", next:"Call 555-0198" },
+  { id:5, src:"Email · Mon 4:45pm", raw:"From Jordan: \"contract from Acme attached — when you get a sec. no rush\"",
+    type:"REVIEW", status:"waiting", due:"Fri", what:"Review Acme contract", next:"Read §4 (IP) and §9 (term)" },
+  { id:6, src:"Slack DM · 07:58", raw:"Sam: \"ping when you want to pair on the hiring rubric 🙏\"",
+    type:"MEETING", status:"waiting", due:"This week", what:"Pair with Sam on hiring rubric", next:"Send 2 slot options" },
+  { id:7, src:"Meeting notes · Wed", raw:"...action item (me): draft a one-pager on the pricing change, circulate to exec staff before friday sync...",
+    type:"WRITE", status:"now", due:"Thu (overdue tmrw)", what:"One-pager on pricing change → exec staff", next:"Outline 5 bullets, expand", from:"Self (Wed meeting)" },
+  { id:8, src:"Email · 2 days ago", raw:"From Finance: \"Q1 expense reports still missing from your team — 4 outstanding. Can you nudge?\"",
+    type:"DELEGATE", status:"today", due:"Today", what:"Nudge team: Q1 expense reports (4 outstanding)", next:"Forward Finance email + set deadline" },
+  { id:9, src:"Calendar · tmrw 10am", raw:"Board pre-read sync — 45 min — 4 invitees — no agenda attached",
+    type:"MEETING", status:"today", due:"Tomorrow 10am", what:"Prep for board pre-read sync", next:"Write agenda, attach to invite" },
+  { id:10, src:"Slack #product · 06:40", raw:"Designer posted v3 of the settings flow — \"any blockers before I build?\"",
+    type:"REVIEW", status:"today", due:"Today", what:"Review settings flow v3 → unblock design", next:"Open Figma, leave comments" },
+  { id:11, src:"Email · last Thu", raw:"From recruiter: \"candidate asked if we can move intro to next week — any preferences?\"",
+    type:"SCHEDULE", status:"waiting", due:"—", what:"Reschedule candidate intro", next:"Send 3 times next week" },
+  { id:12, src:"Thought · in shower", raw:"need to actually write up the Q2 retention thing properly someday, keeps coming back",
+    type:"THINK", status:"waiting", due:"—", what:"Write Q2 retention analysis (proper)", next:"Block 2h Friday afternoon" },
+];
+
+let state = {
+  filter: "now",
+  dayPassed: false,
+  overdue: new Set(),
+  missed: new Set(),
+};
+
+const FILTERS = [
+  { id:"now",     label:"Needs action now" },
+  { id:"today",   label:"Due today" },
+  { id:"waiting", label:"Waiting on" },
+  { id:"all",     label:"All" },
+];
+
+function renderFilters() {
+  const f = document.getElementById("filters");
+  f.innerHTML = "";
+  FILTERS.forEach(x => {
+    const c = document.createElement("button");
+    c.className = "chip" + (state.filter === x.id ? " on" : "");
+    c.textContent = x.label;
+    c.onclick = () => { state.filter = x.id; render(); };
+    f.appendChild(c);
+  });
+}
+
+function effectiveStatus(it) {
+  if (state.dayPassed && state.overdue.has(it.id)) return "now";
+  return it.status;
+}
+
+function renderLeft() {
+  const el = document.getElementById("rawList");
+  el.innerHTML = "";
+  ITEMS.slice().reverse().forEach(it => {
+    const d = document.createElement("div");
+    d.className = "item" + (state.dayPassed && state.missed.has(it.id) ? " missed" : "");
+    d.innerHTML = `<span class="src">${it.src}</span>${it.raw}`;
+    el.appendChild(d);
+  });
+}
+
+function renderRight() {
+  const el = document.getElementById("typedList");
+  el.innerHTML = "";
+  const filtered = ITEMS.filter(it => {
+    if (state.filter === "all") return true;
+    return effectiveStatus(it) === state.filter;
+  });
+  if (filtered.length === 0) {
+    el.innerHTML = `<div class="empty">Nothing matches this filter.</div>`;
+  } else {
+    filtered.forEach(it => {
+      const s = effectiveStatus(it);
+      const d = document.createElement("div");
+      d.className = "typed-item";
+      d.innerHTML = `
+        <div class="row1">
+          <span class="type">${it.type}</span>
+          <span class="status ${s}">${s}</span>
+          <span class="due">${it.due}</span>
+        </div>
+        <div class="what">${it.what}</div>
+        <div class="next">Next: <span>${it.next}</span></div>
+      `;
+      el.appendChild(d);
+    });
+  }
+  document.getElementById("rightCount").textContent = filtered.length;
+  const flabel = FILTERS.find(f => f.id === state.filter).label;
+  document.getElementById("rightHint").textContent = `Filter: "${flabel}". You read only what you'll act on.`;
+}
+
+function renderCounters() {
+  document.getElementById("leftCount").textContent = ITEMS.length;
+  if (state.dayPassed) {
+    document.getElementById("leftHint").innerHTML = `<b style="color:var(--accent)">${state.missed.size} items silently went overdue.</b> Nothing on the left told you.`;
+  } else {
+    document.getElementById("leftHint").textContent = "You scan all of them to find what's urgent. Every time.";
+  }
+}
+
+function updateInsight() {
+  const el = document.getElementById("insight");
+  if (state.dayPassed) {
+    el.innerHTML = `<b>A day passed.</b> On the right, two <em>waiting-on</em> items crossed their deadline and auto-promoted to <em>now</em>. On the left, they just sit in the pile looking the same as yesterday. <b>That gap is the friction tax.</b>`;
+  } else {
+    el.innerHTML = `<b>Start here.</b> On the left, find every item that is <em>blocking you right now</em>. Then on the right, click <b>Needs action now</b>. Same answer. Different cost.`;
+  }
+}
+
+function simulateDay() {
+  state.dayPassed = true;
+  // items that were "waiting" and had a near deadline tick over
+  state.overdue = new Set([5, 11]);   // Acme contract, candidate reschedule
+  state.missed = new Set([5, 11]);
+  render();
+}
+
+function reset() {
+  state = { filter: "now", dayPassed: false, overdue: new Set(), missed: new Set() };
+  render();
+}
+
+function render() {
+  renderFilters();
+  renderLeft();
+  renderRight();
+  renderCounters();
+  updateInsight();
+}
+
+document.getElementById("simBtn").onclick = simulateDay;
+document.getElementById("resetBtn").onclick = reset;
+render();
+</script>
+</body>
+</html>

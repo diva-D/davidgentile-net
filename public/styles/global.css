@@ -1,0 +1,121 @@
+:root {
+  --bg: #faf7f0;
+  --ink: #1a1a1d;
+  --ink-soft: #4a4a52;
+  --muted: #8c8c93;
+  --line: #e4dfd2;
+  --accent: #d94b2f;
+  --gold: #e0a526;
+  --green: #3a9f5e;
+  --paper: #fff;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+body {
+  font-family: "Iowan Old Style", "Palatino", ui-serif, Georgia, serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.site-header {
+  max-width: 720px; margin: 0 auto; padding: 28px 24px 0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.site-header .brand {
+  font-family: "Inter", sans-serif; font-size: 13px; font-weight: 700;
+  letter-spacing: 0.3px; color: var(--ink); text-transform: none;
+}
+.site-header .brand:hover { text-decoration: none; color: var(--accent); }
+
+main { display: block; }
+
+.site-footer {
+  max-width: 720px; margin: 60px auto 40px; padding: 20px 24px 0;
+  border-top: 1px solid var(--line);
+  font-family: "Inter", sans-serif; font-size: 12px; color: var(--muted);
+  display: flex; gap: 10px; flex-wrap: wrap;
+}
+.site-footer a { color: var(--muted); }
+.site-footer a:hover { color: var(--accent); text-decoration: none; }
+.site-footer .sep { color: var(--line); }
+
+/* ---------- Home ---------- */
+
+.home-wrap { max-width: 720px; margin: 0 auto; padding: 60px 24px 60px; }
+.home-wrap .intro h1 {
+  font-size: 34px; line-height: 1.15; letter-spacing: -0.5px;
+  margin: 0 0 14px; font-weight: 700;
+}
+.home-wrap .intro p {
+  font-size: 17px; line-height: 1.6; color: var(--ink-soft); margin: 0 0 10px;
+}
+
+.post-list {
+  margin-top: 44px; padding-top: 28px; border-top: 1px solid var(--line);
+  list-style: none; padding-left: 0;
+}
+.post-list li { margin-bottom: 22px; }
+.post-list .date {
+  font-family: "Inter", sans-serif; font-size: 11px; color: var(--muted);
+  letter-spacing: 1.5px; text-transform: uppercase; display: block; margin-bottom: 3px;
+}
+.post-list a.title {
+  font-size: 18px; font-weight: 700; color: var(--ink); letter-spacing: -0.2px;
+}
+.post-list a.title:hover { color: var(--accent); text-decoration: none; }
+.post-list .summary {
+  font-size: 15px; line-height: 1.55; color: var(--ink-soft);
+  margin-top: 2px; max-width: 620px;
+}
+
+/* ---------- Post ---------- */
+
+.post-wrap { max-width: 720px; margin: 0 auto; padding: 60px 24px 40px; }
+.post-kicker {
+  font-family: "Inter", sans-serif; font-size: 11px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--accent); font-weight: 700;
+  margin-bottom: 8px;
+}
+.post-wrap h1 {
+  font-size: 40px; line-height: 1.1; letter-spacing: -0.6px;
+  margin: 0 0 12px; font-weight: 700;
+}
+.post-meta {
+  font-family: "Inter", sans-serif; font-size: 12px; color: var(--muted);
+  letter-spacing: 0.3px; margin-bottom: 24px;
+}
+.post-hero {
+  width: 100%; height: auto; margin: 8px 0 28px; border-radius: 10px;
+  border: 1px solid var(--line); display: block;
+}
+.post-body p {
+  font-size: 17px; line-height: 1.7; color: var(--ink-soft); margin: 0 0 18px;
+}
+.post-body p em { color: var(--ink); font-style: italic; font-weight: 600; }
+.post-body p strong { color: var(--ink); font-weight: 700; }
+.post-body h2 {
+  font-family: "Inter", sans-serif; font-size: 13px; font-weight: 800;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--ink);
+  margin: 36px 0 12px;
+}
+.post-body blockquote {
+  margin: 28px 0; padding: 18px 22px; background: #f1ede2;
+  border-left: 3px solid var(--ink); border-radius: 4px;
+}
+.post-body blockquote p { margin: 0; color: var(--ink); font-size: 16px; }
+
+.artefact-frame {
+  width: 100%; margin: 32px 0; border: 1px solid var(--line);
+  border-radius: 12px; overflow: hidden; background: var(--paper);
+}
+.artefact-frame iframe { width: 100%; border: 0; display: block; }
+.artefact-caption {
+  font-family: "Inter", sans-serif; font-size: 11px; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--muted); text-align: center; margin-top: -14px;
+}
+.artefact-caption a { color: var(--muted); }
+.artefact-caption a:hover { color: var(--accent); }

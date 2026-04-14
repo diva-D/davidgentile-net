@@ -1,0 +1,59 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+interface Props { post: CollectionEntry<'posts'>; }
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+const kicker = post.data.tags?.[0] ?? 'Note';
+const artefactHeight = post.data.artefactHeight ?? 720;
+---
+<Base
+  title={post.data.title}
+  description={post.data.description}
+  ogImage={post.data.heroImage}
+  type="article"
+  publishedTime={post.data.date}
+>
+  <article class="post-wrap">
+    <div class="post-kicker">{kicker}</div>
+    <h1>{post.data.title}</h1>
+    <div class="post-meta">{fmt(post.data.date)}</div>
+
+    {post.data.heroImage && (
+      <img class="post-hero" src={post.data.heroImage} alt={post.data.title} />
+    )}
+
+    <div class="post-body">
+      <Content />
+    </div>
+
+    {post.data.artefact && (
+      <>
+        <div class="artefact-frame">
+          <iframe
+            src={post.data.artefact}
+            height={artefactHeight}
+            loading="lazy"
+            title={`${post.data.title} — interactive`}
+          ></iframe>
+        </div>
+        <div class="artefact-caption">
+          <a href={post.data.artefact}>open the artefact in its own page →</a>
+        </div>
+      </>
+    )}
+  </article>
+</Base>
