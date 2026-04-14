@@ -415,11 +415,17 @@
     .typed .status { order: 4; font-size: 8.5px; padding: 2px 6px; justify-self: start; }
     .typed .due    { order: 5; font-size: 10px; color: var(--muted); justify-self: start; white-space: nowrap; }
 
-    /* Controls: bigger tap target, tighter spacing. Stay at the natural
-       bottom of the artefact — the parent page handles scrolling on phase
-       change, and the reader naturally arrives at Next after walking the
-       items. (Sticky doesn't work inside a self-sizing iframe.) */
-    .controls { padding-top: 14px; margin-top: 14px; }
+    /* Controls: hoist above the canvas on mobile so Next is in reach without
+       scrolling past twelve items. Sticky doesn't work in a self-sizing iframe,
+       and the parent only scrolls on phase change, so flex order is the fix.
+       Border flips to the bottom to keep the visual separation between nav
+       and content. */
+    .controls {
+      order: 1;
+      margin-top: 14px; padding-top: 0; padding-bottom: 14px;
+      border-top: 0; border-bottom: 1px solid var(--line);
+    }
+    .canvas { order: 2; }
     .btn { font-size: 13px; padding: 12px 16px; min-height: 40px; }
   }
 </style>

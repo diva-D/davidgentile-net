@@ -14,7 +14,7 @@ GTD (Getting Things Done) was [Ontology engineering](https://en.wikipedia.org/wi
 
 **Inbox • Next Action • Waiting-On • Someday/Maybe**
 
-A tiny schema (type, status, owner) enforced by hand with paper and folders. It works because the structure does the thinking for you. It breaks because humans are slow, bored parsers, and the pile never stops growing.
+A tiny schema (type, status, due date) enforced by hand with paper and folders. It works because the structure does the thinking for you. It breaks because humans are slow, bored parsers, and the pile never stops growing.
 
 > AI removes the tax on *producing* structure. It does not remove the *need* for it. The leverage isn't in better chat. It's in letting the model turn your unstructured inputs into typed objects the moment it lands, so every downstream question becomes a filter instead of a re-read.
 
