@@ -118,16 +118,16 @@
     opacity: 0; transform: translateY(6px);
     /* grid: glyph | medium-col | raw-text */
     display: grid;
-    grid-template-columns: 22px 96px 1fr;
-    gap: 12px; align-items: center;
+    grid-template-columns: 28px 104px 1fr;
+    gap: 14px; align-items: center;
   }
   .item.visible { opacity: 1; transform: none; }
 
   /* Source medium — glyph + label column */
   .item .glyph {
     font-family: "SF Mono", "Menlo", ui-monospace, monospace;
-    font-size: 14px; color: var(--ink-soft); text-align: center; line-height: 1;
-    opacity: 0.85;
+    font-size: 20px; color: var(--ink); text-align: center; line-height: 1;
+    opacity: 0.9;
   }
   .item .medium-col { min-width: 0; }
   .item .medium {
@@ -420,9 +420,13 @@ function enterP1() {
   els.forEach(el => {
     el.classList.remove("visible", "annotated", "typed-view", "highlight", "filtered-out");
   });
-  // Stream items in one by one
+  // Stream items in one by one — irregular pacing so it feels like real
+  // arrivals (a ping, a pause, a cluster), not a metronome. Total ~4s.
+  const gaps = [0, 340, 280, 520, 260, 310, 420, 280, 360, 300, 470, 290];
+  let t = 180;
   els.forEach((el, i) => {
-    setTimeout(() => el.classList.add("visible"), 120 + i * 130);
+    t += gaps[i];
+    setTimeout(() => el.classList.add("visible"), t);
   });
 }
 
@@ -556,7 +560,7 @@ document.getElementById("extractBtn").onclick = runExtract;
 function phaseReadyMs(i) {
   // conservative "animations complete" durations for each phase
   switch (i) {
-    case 0: return 120 + 12 * 130 + 300;            // stream-in wave
+    case 0: return 180 + 340+280+520+260+310+420+280+360+300+470+290 + 300; // stream-in wave (~4s)
     case 1: return 1200 + 200;                      // first highlight settled
     case 2: return 300;                             // pre-extract still
     case 3: return 400;                             // filter applied
