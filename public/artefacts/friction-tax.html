@@ -211,48 +211,108 @@
     background: rgba(58,159,94,0.22); color: var(--ink);
   }
 
-  /* Phase 3/4: typed view — layout flips. Raw text fades away, typed data fades in. */
+  /* Phase 3/4: typed view — rows morph into a schema table with a header.
+     The table-head sits as the table's <thead>; each item becomes a <tr>. */
+  .table-head {
+    display: none;
+    grid-template-columns: 78px 64px 100px minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 12px;
+    padding: 6px 14px 7px;
+    margin: 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: #f5efe0;
+    font-family: "Inter", sans-serif;
+    font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--muted); font-weight: 800;
+    border-radius: 6px 6px 0 0;
+  }
+  body.p3 .table-head,
+  body.p4 .table-head { display: grid; }
+
+  /* Once extraction has finished, the item list collapses into a tight grid:
+     no card gaps, shared borders, hairline rows. While the wave is still
+     running we keep the small gap so converted rows don't jam against
+     un-converted ones. */
+  body.p3:not(.pre-extract) .items,
+  body.p4 .items { gap: 0; transition: gap 0.4s ease; }
+
   .item .typed {
     display: none;
-    grid-template-columns: auto auto 1fr auto;
-    gap: 8px; align-items: center;
+    grid-template-columns: 78px 64px 100px minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 12px; align-items: center;
+    width: 100%;
   }
   .item.typed-view .item-row,
   .item.typed-view .annot { display: none; }
   .item.typed-view .typed { display: grid; }
   .item.typed-view {
-    display: block; /* override the column flex */
-    padding: 10px 14px;
+    display: block;
+    padding: 6px 14px;
+    border-radius: 0;
+    border-left: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+    border-top: none;
+    border-bottom: 1px solid var(--line);
+    background: var(--paper);
+    transition: background 0.25s ease;
   }
+  .item.typed-view:last-child { border-radius: 0 0 6px 6px; }
+  /* Explicit max-height so the collapse animation has a value to transition
+     from when .filtered-out sets it to 0. */
+  .item.typed-view { max-height: 80px; }
+
+  /* Smooth crossfade as a row converts: old contents fade out, typed grid fades in.
+     No per-cell stagger — one clean swap, ~250ms. */
+  .item .typed { opacity: 0; transition: opacity 0.28s ease; }
+  .item.typed-view .typed { opacity: 1; }
+  .item .item-row,
+  .item .annot { transition: opacity 0.18s ease; }
+  .item.extracting .item-row,
+  .item.extracting .annot { opacity: 0; }
 
   .typed .type {
     font-size: 9px; letter-spacing: 1px; text-transform: uppercase; font-weight: 800;
-    padding: 2px 7px; border-radius: 3px; background: var(--line); color: var(--ink);
+    padding: 3px 7px; border-radius: 3px; background: var(--line); color: var(--ink);
+    justify-self: start; align-self: center;
   }
   .typed .status {
     font-size: 9px; letter-spacing: 1px; text-transform: uppercase; font-weight: 700;
-    padding: 2px 7px; border-radius: 3px;
+    padding: 3px 7px; border-radius: 3px;
+    justify-self: start; align-self: center;
   }
   .status.now     { background: var(--accent); color: #fff; }
   .status.today   { background: var(--gold);   color: #fff; }
   .status.waiting { background: #c8c2b0;       color: var(--ink); }
-  .typed .what {
-    font-size: 12.5px; color: var(--ink); font-weight: 600; line-height: 1.3;
-  }
-  .typed .what .next {
-    display: block; font-size: 10.5px; color: var(--ink-soft); font-weight: 400; margin-top: 2px;
-  }
-  .typed .what .next .arrow { color: var(--accent); font-weight: 700; margin-right: 4px; }
   .typed .due {
-    font-size: 10px; color: var(--muted); white-space: nowrap;
+    font-size: 10.5px; color: var(--ink-soft); line-height: 1.3;
+    align-self: center;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .typed .what {
+    font-size: 12px; color: var(--ink); font-weight: 600; line-height: 1.3;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .typed .next {
+    font-size: 11px; color: var(--ink-soft); font-weight: 400; line-height: 1.3;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .typed .next::before {
+    content: "→"; color: var(--accent); font-weight: 700; margin-right: 6px;
   }
 
-  /* Phase 4 filter hiding */
+  /* Phase 4 filter hiding — collapse rows cleanly via max-height + padding,
+     no negative margins (which caused rows to stack on top of each other
+     once typed-view tightened the row height). */
   .item.filtered-out {
-    opacity: 0; transform: translateY(-4px) scale(0.98);
-    margin-top: -46px; /* collapse gap */
+    opacity: 0;
+    max-height: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    border-top-width: 0;
+    border-bottom-width: 0;
     pointer-events: none;
-    max-height: 0; padding-top: 0; padding-bottom: 0; border-color: transparent;
+    overflow: hidden;
   }
 
   /* ==== CONTROLS (bottom) ==== */
@@ -318,15 +378,49 @@
     .filters { margin-left: 0; }
     .chip { padding: 7px 11px; font-size: 10px; }
 
-    /* Typed view (phase 3/4) — shrink, wrap what/next */
-    .item.typed-view { padding: 9px 12px; }
-    .typed { grid-template-columns: auto auto; row-gap: 4px; column-gap: 6px; }
-    .typed .what { grid-column: 1 / -1; font-size: 12px; }
-    .typed .due  { grid-column: 1 / -1; font-size: 9.5px; }
+    /* Typed view (phase 3/4) — abandon the table on mobile. Each item becomes
+       a stacked card, like Todoist / Things / Linear:
+         row 1 (title): the task — prominent, wraps freely
+         row 2 (next):  → next action — muted, wraps freely
+         row 3 (meta):  type · status · due — small chips, wrap as needed
+       No truncation. No squeezed columns. Reads like a real to-do list. */
+    .table-head { display: none !important; }
+    .item.typed-view {
+      padding: 10px 12px;
+      max-height: none;
+    }
+    .item.typed-view .typed {
+      display: grid;
+      grid-template-columns: auto auto 1fr;
+      column-gap: 6px;
+      row-gap: 5px;
+      align-items: center;
+    }
+    .typed .what {
+      grid-column: 1 / -1;
+      font-size: 13px; font-weight: 600; line-height: 1.35;
+      white-space: normal; overflow: visible;
+      color: var(--ink);
+      order: 1;
+    }
+    .typed .next {
+      grid-column: 1 / -1;
+      font-size: 11px; color: var(--ink-soft);
+      white-space: normal; overflow: visible;
+      line-height: 1.3;
+      order: 2;
+    }
+    /* Meta row: type · status · due — sit on a single row, wrap if needed. */
+    .typed .type   { order: 3; font-size: 8.5px; padding: 2px 6px; justify-self: start; }
+    .typed .status { order: 4; font-size: 8.5px; padding: 2px 6px; justify-self: start; }
+    .typed .due    { order: 5; font-size: 10px; color: var(--muted); justify-self: start; white-space: nowrap; }
 
-    /* Controls: bigger tap target, tighter */
+    /* Controls: bigger tap target, tighter spacing. Stay at the natural
+       bottom of the artefact — the parent page handles scrolling on phase
+       change, and the reader naturally arrives at Next after walking the
+       items. (Sticky doesn't work inside a self-sizing iframe.) */
     .controls { padding-top: 14px; margin-top: 14px; }
-    .btn { font-size: 12px; padding: 10px 14px; }
+    .btn { font-size: 13px; padding: 12px 16px; min-height: 40px; }
   }
 </style>
 </head>
@@ -355,6 +449,13 @@
     </div>
 
     <div class="canvas">
+      <div class="table-head" id="tableHead">
+        <span>Type</span>
+        <span>Status</span>
+        <span>Due</span>
+        <span>Task</span>
+        <span>Next</span>
+      </div>
       <div class="items" id="items"></div>
     </div>
 
@@ -379,20 +480,23 @@ const MEDIA = {
   thought: { glyph: "◌", label: "Thought" },
 };
 const ITEMS = [
+  // The first three are the demo items for phase 2 — chosen to show three
+  // distinct mediums (email, meeting notes, voice memo) and three different
+  // ways the structure is "hidden" in the source. They run top-to-bottom.
   { id:1,  medium:"email",   detail:"08:12",                raw:"Priya: \"look at <span class='hl-src' data-f='type'>Q2 forecast</span> before <span class='hl-src' data-f='due'>board pre-read</span> — <span class='hl-src' data-f='status'>retention curve looks off</span>\"",
     type:"REVIEW",   status:"now",     due:"Today 2pm",        what:"Review Q2 forecast — retention curve",      next:"Open model, check retention tab" },
-  { id:2,  medium:"slack",   detail:"#eng-leads · 08:34",   raw:"Daniel: reminder we owe legal the vendor list by EOD tmrw",
-    type:"DELIVER",  status:"today",   due:"Tomorrow EOD",     what:"Send vendor list to legal",                  next:"Export sheet, email Rachel" },
+  { id:2,  medium:"meeting", detail:"Wed notes",            raw:"...<span class='hl-src' data-f='status'>action item (me)</span>: <span class='hl-src' data-f='type'>draft pricing one-pager</span> before <span class='hl-src' data-f='due'>friday sync</span>...",
+    type:"WRITE",    status:"now",     due:"Thu · overdue tmrw", what:"One-pager on pricing change → exec staff", next:"Outline 5 bullets, expand" },
   { id:3,  medium:"voice",   detail:"yesterday",            raw:"\"...<span class='hl-src' data-f='type'>ask Maya</span> about the onboarding metric — <span class='hl-src' data-f='status'>wrong denominator</span>...\"",
     type:"QUESTION", status:"waiting", due:"—",                what:"Ask Maya: onboarding denominator",           next:"DM Maya" },
-  { id:4,  medium:"note",    detail:"on desk",              raw:"call back dentist",
+  { id:4,  medium:"slack",   detail:"#eng-leads · 08:34",   raw:"Daniel: reminder we owe legal the vendor list by EOD tmrw",
+    type:"DELIVER",  status:"today",   due:"Tomorrow EOD",     what:"Send vendor list to legal",                  next:"Export sheet, email Rachel" },
+  { id:5,  medium:"note",    detail:"on desk",              raw:"call back dentist",
     type:"ERRAND",   status:"today",   due:"Today",            what:"Call dentist back",                          next:"Call 555-0198" },
-  { id:5,  medium:"email",   detail:"Mon 4:45pm",           raw:"Jordan: \"Acme contract attached — when you get a sec. no rush\"",
+  { id:6,  medium:"email",   detail:"Mon 4:45pm",           raw:"Jordan: \"Acme contract attached — when you get a sec. no rush\"",
     type:"REVIEW",   status:"waiting", due:"Fri",              what:"Review Acme contract",                       next:"Read §4 (IP) and §9 (term)" },
-  { id:6,  medium:"slack",   detail:"DM · 07:58",           raw:"Sam: ping when you want to pair on the hiring rubric 🙏",
+  { id:7,  medium:"slack",   detail:"DM · 07:58",           raw:"Sam: ping when you want to pair on the hiring rubric 🙏",
     type:"MEETING",  status:"waiting", due:"This week",        what:"Pair with Sam on hiring rubric",             next:"Send 2 slot options" },
-  { id:7,  medium:"meeting", detail:"Wed notes",            raw:"...<span class='hl-src' data-f='status'>action item (me)</span>: <span class='hl-src' data-f='type'>draft pricing one-pager</span> before <span class='hl-src' data-f='due'>friday sync</span>...",
-    type:"WRITE",    status:"now",     due:"Thu · overdue tmrw", what:"One-pager on pricing change → exec staff", next:"Outline 5 bullets, expand" },
   { id:8,  medium:"email",   detail:"2 days ago",           raw:"Finance: Q1 expense reports still missing — 4 outstanding. Nudge?",
     type:"DELEGATE", status:"today",   due:"Today",            what:"Nudge team: Q1 expense reports (4 outstanding)", next:"Forward + set deadline" },
   { id:9,  medium:"cal",     detail:"tmrw 10am",            raw:"Board pre-read sync — 45 min — 4 invitees — no agenda attached",
@@ -459,8 +563,9 @@ function buildItems() {
       <div class="typed">
         <span class="type">${it.type}</span>
         <span class="status ${it.status}">${it.status}</span>
-        <div class="what">${it.what}<span class="next"><span class="arrow">Next:</span>${it.next}</span></div>
         <span class="due">${it.due}</span>
+        <span class="what">${it.what}</span>
+        <span class="next">${it.next}</span>
       </div>
     `;
     itemsEl.appendChild(el);
@@ -535,7 +640,7 @@ function enterP1() {
   });
 }
 
-const DEMO_IDS = [1, 7, 3]; // email, meeting notes, voice memo — three different kinds of raw input
+const DEMO_IDS = [1, 2, 3]; // first three items, top-to-bottom — email, meeting notes, voice memo
 function enterP2() {
   clearBodyPhaseClass();
   document.body.classList.add("p2");
@@ -607,6 +712,16 @@ function enterP3() {
   btn.innerHTML = `<span class="spark">⚡</span>Extract structure with AI`;
 }
 
+const wait = (ms) => new Promise(r => setTimeout(r, ms));
+function extractOne(el) {
+  el.classList.add("extracting");
+  // After the fade-out, swap to typed-view. Cells fade in via cellIn keyframe.
+  return wait(280).then(() => {
+    el.classList.remove("extracting", "annotated");
+    el.classList.add("typed-view");
+  });
+}
+
 function runExtract() {
   if (extracted) return;
   extracted = true;
@@ -614,17 +729,16 @@ function runExtract() {
   btn.disabled = true;
   btn.innerHTML = `Extracted.`;
   const els = itemEls();
-  // Wave-transform from top to bottom
+
+  // Uniform fast wave — every row converts on the same rhythm, top-to-bottom.
+  const stagger = 90;
   els.forEach((el, i) => {
-    setTimeout(() => {
-      el.classList.remove("annotated");
-      el.classList.add("typed-view");
-    }, i * 110);
+    setTimeout(() => extractOne(el), i * stagger);
   });
-  // Enable Next once the wave finishes
+
   setTimeout(() => {
     document.body.classList.remove("pre-extract");
-  }, els.length * 110 + 200);
+  }, els.length * stagger + 400);
 }
 
 function enterP4() {
@@ -715,7 +829,8 @@ window.__artefact = {
   goToPhase: (i) => { goToPhase(i); return window.__artefact.phaseReady(); },
   runExtract: () => {
     runExtract();
-    return new Promise(r => setTimeout(r, 12 * 110 + 400));
+    // 12 rows × 90ms stagger + 280ms swap + 400ms buffer ≈ 1760ms
+    return new Promise(r => setTimeout(r, 1800));
   },
   phaseReady: () => new Promise(r => setTimeout(r, phaseReadyMs(phase))),
 };
