@@ -544,6 +544,21 @@ window.__artefact = {
 };
 
 goToPhase(0);
+
+/* ==== IFRAME SELF-SIZING ====
+ * Posts content height to the parent so the iframe renders at 100%
+ * of the artefact's natural height — no scrollbars, no wasted space.
+ * Re-fires on load, resize, and any DOM size change (phase transitions).
+ * =========================== */
+function postHeight() {
+  const h = Math.ceil(document.documentElement.getBoundingClientRect().height);
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: "artefact:height", height: h }, "*");
+  }
+}
+window.addEventListener("load", postHeight);
+window.addEventListener("resize", postHeight);
+new ResizeObserver(postHeight).observe(document.body);
 </script>
 </body>
 </html>

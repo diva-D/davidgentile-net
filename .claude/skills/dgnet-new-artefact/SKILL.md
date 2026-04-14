@@ -127,7 +127,7 @@ Phase narration is *not* framing — it's a beat of the mechanism. A single prov
 
 4. **Build the stage first, then the transitions.** For phased artefacts, get the stage working in its *final* state first, then work backwards: animate state changes from phase N-1 to phase N. Don't try to build all phases linearly — you'll paint into a corner.
 
-5. **Size the iframe.** Open the artefact in a browser, note the natural height, update the post's `artefactHeight` frontmatter to match (rounded to nearest 20px). Remember the iframe has to fit the *tallest* phase — usually the last.
+5. **Iframe sizing is automatic.** Every template includes a self-sizing block that posts the artefact's real content height to the parent page on load, resize, and any DOM-size change. The post layout listens and sets the iframe height to match, so there are never scrollbars and the artefact feels part of the page. The `artefactHeight` frontmatter is now just a pre-hydration fallback — pick a value close to the tallest phase so the page doesn't reflow visibly on first load.
 
 6. **Test all phase transitions.** In a phased artefact, walk through 1→2→3→... and also reset→1. Both paths must look clean. The back button (if included) must also work.
 

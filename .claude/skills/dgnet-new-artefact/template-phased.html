@@ -219,6 +219,21 @@
   };
 
   goToPhase(0);
+
+  /* ==== IFRAME SELF-SIZING ====
+   * Posts content height to the parent page so the iframe never scrolls.
+   * Sent on load, on resize, and after any phase transition (content height
+   * may change as the stage mutates).
+   * =========================== */
+  function postHeight() {
+    const h = Math.ceil(document.documentElement.getBoundingClientRect().height);
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: "artefact:height", height: h }, "*");
+    }
+  }
+  window.addEventListener("load", postHeight);
+  window.addEventListener("resize", postHeight);
+  new ResizeObserver(postHeight).observe(document.body);
 </script>
 </body>
 </html>

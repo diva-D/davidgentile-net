@@ -42,7 +42,9 @@ const artefactHeight = post.data.artefactHeight ?? 780;
           src={post.data.artefact}
           height={artefactHeight}
           loading="eager"
+          scrolling="no"
           title={`${post.data.title} — interactive`}
+          data-artefact-iframe
         ></iframe>
         <div class="artefact-caption">
           <a href={post.data.artefact} target="_blank" rel="noopener">open the artefact full-screen →</a>
@@ -55,4 +57,20 @@ const artefactHeight = post.data.artefactHeight ?? 780;
       <Content />
     </div>
   </article>
+
+  {post.data.artefact && (
+    <script is:inline>
+      // Auto-size the artefact iframe based on its self-reported content height.
+      // Artefacts post { type: "artefact:height", height: <px> } via postMessage.
+      window.addEventListener("message", (e) => {
+        const msg = e.data;
+        if (!msg || msg.type !== "artefact:height" || typeof msg.height !== "number") return;
+        const frame = document.querySelector("iframe[data-artefact-iframe]");
+        if (!frame) return;
+        // Only accept messages from our own iframe
+        if (e.source !== frame.contentWindow) return;
+        frame.style.height = msg.height + "px";
+      });
+    </script>
+  )}
 </Base>
