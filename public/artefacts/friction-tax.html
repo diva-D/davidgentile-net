@@ -112,20 +112,35 @@
   .item {
     position: relative;
     background: var(--paper); border: 1px solid var(--line); border-radius: 8px;
-    padding: 9px 14px;
+    padding: 10px 14px;
     font-family: "Inter", sans-serif;
     transition: all 0.45s ease;
     opacity: 0; transform: translateY(6px);
+    /* grid: glyph | medium-col | raw-text */
+    display: grid;
+    grid-template-columns: 22px 96px 1fr;
+    gap: 12px; align-items: center;
   }
   .item.visible { opacity: 1; transform: none; }
 
-  /* Phase 1/2: raw view */
-  .item .src {
-    font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted);
-    display: block; margin-bottom: 2px;
+  /* Source medium — glyph + label column */
+  .item .glyph {
+    font-family: "SF Mono", "Menlo", ui-monospace, monospace;
+    font-size: 14px; color: var(--ink-soft); text-align: center; line-height: 1;
+    opacity: 0.85;
+  }
+  .item .medium-col { min-width: 0; }
+  .item .medium {
+    font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--ink); font-weight: 800; display: block;
+  }
+  .item .detail {
+    font-size: 10px; color: var(--muted); letter-spacing: 0.3px;
+    display: block; margin-top: 1px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .item .raw-text {
-    font-size: 12.5px; line-height: 1.45; color: var(--ink-soft);
+    font-size: 12.5px; line-height: 1.4; color: var(--ink-soft);
   }
 
   /* Phase 2: annotation overlay (visible when annotated) */
@@ -158,10 +173,12 @@
     gap: 8px; align-items: center;
   }
   .item.typed-view .raw-text,
-  .item.typed-view .src,
+  .item.typed-view .glyph,
+  .item.typed-view .medium-col,
   .item.typed-view .annot { display: none; }
   .item.typed-view .typed { display: grid; }
   .item.typed-view {
+    display: block; /* override the 3-col grid */
     padding: 10px 14px;
   }
 
@@ -256,30 +273,40 @@
 
 <script>
 /* ==== DATA ==== */
+/* medium is one of: email | slack | voice | note | cal | meeting | thought */
+const MEDIA = {
+  email:   { glyph: "✉", label: "Email" },
+  slack:   { glyph: "#", label: "Slack" },
+  voice:   { glyph: "◉", label: "Voice" },
+  note:    { glyph: "✎", label: "Note"  },
+  cal:     { glyph: "▣", label: "Cal"   },
+  meeting: { glyph: "▤", label: "Meeting" },
+  thought: { glyph: "◌", label: "Thought" },
+};
 const ITEMS = [
-  { id:1,  src:"Email · 08:12",            raw:"Priya: \"look at Q2 forecast before board pre-read — retention curve looks off\"",
+  { id:1,  medium:"email",   detail:"08:12",                raw:"Priya: \"look at Q2 forecast before board pre-read — retention curve looks off\"",
     type:"REVIEW",   status:"now",     due:"Today 2pm",        what:"Review Q2 forecast — retention curve",      next:"Open model, check retention tab" },
-  { id:2,  src:"Slack #eng-leads · 08:34", raw:"Daniel: reminder we owe legal the vendor list by EOD tmrw",
+  { id:2,  medium:"slack",   detail:"#eng-leads · 08:34",   raw:"Daniel: reminder we owe legal the vendor list by EOD tmrw",
     type:"DELIVER",  status:"today",   due:"Tomorrow EOD",     what:"Send vendor list to legal",                  next:"Export sheet, email Rachel" },
-  { id:3,  src:"Voice memo · yesterday",   raw:"\"...ask Maya about the onboarding metric — wrong denominator...\"",
+  { id:3,  medium:"voice",   detail:"yesterday",            raw:"\"...ask Maya about the onboarding metric — wrong denominator...\"",
     type:"QUESTION", status:"waiting", due:"—",                what:"Ask Maya: onboarding denominator",           next:"DM Maya" },
-  { id:4,  src:"Sticky note on desk",      raw:"call back dentist",
+  { id:4,  medium:"note",    detail:"on desk",              raw:"call back dentist",
     type:"ERRAND",   status:"today",   due:"Today",            what:"Call dentist back",                          next:"Call 555-0198" },
-  { id:5,  src:"Email · Mon 4:45pm",       raw:"Jordan: \"Acme contract attached — when you get a sec. no rush\"",
+  { id:5,  medium:"email",   detail:"Mon 4:45pm",           raw:"Jordan: \"Acme contract attached — when you get a sec. no rush\"",
     type:"REVIEW",   status:"waiting", due:"Fri",              what:"Review Acme contract",                       next:"Read §4 (IP) and §9 (term)" },
-  { id:6,  src:"Slack DM · 07:58",         raw:"Sam: ping when you want to pair on the hiring rubric 🙏",
+  { id:6,  medium:"slack",   detail:"DM · 07:58",           raw:"Sam: ping when you want to pair on the hiring rubric 🙏",
     type:"MEETING",  status:"waiting", due:"This week",        what:"Pair with Sam on hiring rubric",             next:"Send 2 slot options" },
-  { id:7,  src:"Meeting notes · Wed",      raw:"...action item (me): draft pricing one-pager before friday sync...",
+  { id:7,  medium:"meeting", detail:"Wed notes",            raw:"...action item (me): draft pricing one-pager before friday sync...",
     type:"WRITE",    status:"now",     due:"Thu · overdue tmrw", what:"One-pager on pricing change → exec staff", next:"Outline 5 bullets, expand" },
-  { id:8,  src:"Email · 2 days ago",       raw:"Finance: Q1 expense reports still missing — 4 outstanding. Nudge?",
+  { id:8,  medium:"email",   detail:"2 days ago",           raw:"Finance: Q1 expense reports still missing — 4 outstanding. Nudge?",
     type:"DELEGATE", status:"today",   due:"Today",            what:"Nudge team: Q1 expense reports (4 outstanding)", next:"Forward + set deadline" },
-  { id:9,  src:"Calendar · tmrw 10am",     raw:"Board pre-read sync — 45 min — 4 invitees — no agenda attached",
+  { id:9,  medium:"cal",     detail:"tmrw 10am",            raw:"Board pre-read sync — 45 min — 4 invitees — no agenda attached",
     type:"MEETING",  status:"today",   due:"Tomorrow 10am",    what:"Prep for board pre-read sync",               next:"Write agenda, attach to invite" },
-  { id:10, src:"Slack #product · 06:40",   raw:"Designer posted v3 settings flow — \"any blockers before I build?\"",
+  { id:10, medium:"slack",   detail:"#product · 06:40",     raw:"Designer posted v3 settings flow — \"any blockers before I build?\"",
     type:"REVIEW",   status:"now",     due:"EOD",              what:"Review settings flow v3 → unblock design",   next:"Open Figma, leave comments" },
-  { id:11, src:"Email · last Thu",         raw:"Recruiter: candidate asked to move intro to next week — preferences?",
+  { id:11, medium:"email",   detail:"last Thu",             raw:"Recruiter: candidate asked to move intro to next week — preferences?",
     type:"SCHEDULE", status:"waiting", due:"—",                what:"Reschedule candidate intro",                 next:"Send 3 times next week" },
-  { id:12, src:"Thought · in shower",      raw:"need to actually write up the Q2 retention thing properly someday",
+  { id:12, medium:"thought", detail:"in the shower",        raw:"need to actually write up the Q2 retention thing properly someday",
     type:"THINK",    status:"waiting", due:"—",                what:"Write Q2 retention analysis (proper)",       next:"Block 2h Friday afternoon" },
 ];
 
@@ -319,8 +346,13 @@ function buildItems() {
     el.className = "item";
     el.dataset.id = String(it.id);
     el.dataset.status = it.status;
+    const m = MEDIA[it.medium];
     el.innerHTML = `
-      <span class="src">${it.src}</span>
+      <span class="glyph">${m.glyph}</span>
+      <div class="medium-col">
+        <span class="medium">${m.label}</span>
+        <span class="detail">${it.detail}</span>
+      </div>
       <div class="raw-text">${it.raw}</div>
       <div class="annot">
         <span class="annot-chip">${it.type}</span>
