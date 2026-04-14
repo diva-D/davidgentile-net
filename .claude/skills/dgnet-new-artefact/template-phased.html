@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ARTEFACT · phased</title>
+<link rel="preconnect" href="https://rsms.me/" />
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+<style>
+  :root {
+    --bg: #faf7f0;
+    --ink: #1a1a1d;
+    --ink-soft: #4a4a52;
+    --muted: #8c8c93;
+    --line: #e4dfd2;
+    --accent: #d94b2f;
+    --gold: #e0a526;
+    --green: #3a9f5e;
+    --paper: #fff;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Iowan Old Style", "Palatino", ui-serif, Georgia, serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ==== STRUCTURAL — do not change ==== */
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 24px 24px 28px; }
+  .stage {
+    background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
+    padding: 28px; box-shadow: 0 2px 0 rgba(0,0,0,0.03);
+    min-height: 520px; display: flex; flex-direction: column;
+  }
+
+  /* ==== PHASE UI ==== */
+  .phase-header {
+    display: flex; align-items: center; gap: 14px;
+    padding-bottom: 16px; border-bottom: 1px solid var(--line); margin-bottom: 20px;
+  }
+  .phase-progress {
+    display: flex; gap: 6px;
+  }
+  .phase-dot {
+    width: 26px; height: 4px; border-radius: 2px; background: var(--line);
+    transition: background 0.3s ease;
+  }
+  .phase-dot.done { background: var(--muted); }
+  .phase-dot.active { background: var(--accent); }
+  .phase-counter {
+    font-family: "Inter", sans-serif; font-size: 11px; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--muted); font-weight: 700;
+    margin-left: auto;
+  }
+  .phase-narration {
+    font-size: 18px; line-height: 1.5; color: var(--ink); font-weight: 600;
+    min-height: 54px;
+    animation: fadeIn 0.4s ease;
+  }
+  .phase-narration em { color: var(--accent); font-style: italic; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  /* ==== MAIN MECHANISM AREA ==== */
+  .canvas {
+    flex: 1; margin: 20px 0; min-height: 280px;
+    /* the stage for your visualization — mutates as phases advance */
+  }
+
+  /* ==== CONTROLS ==== */
+  .controls {
+    display: flex; align-items: center; gap: 10px; justify-content: space-between;
+    padding-top: 18px; border-top: 1px solid var(--line);
+  }
+  .btn {
+    font-family: "Inter", sans-serif; font-size: 12px; font-weight: 700;
+    padding: 10px 16px; border-radius: 8px; border: 1px solid var(--ink);
+    background: var(--paper); color: var(--ink); cursor: pointer; letter-spacing: 0.3px;
+  }
+  .btn:hover { background: var(--ink); color: var(--paper); }
+  .btn.primary { background: var(--ink); color: var(--paper); }
+  .btn.primary:hover { background: var(--accent); border-color: var(--accent); }
+  .btn.ghost { border-color: transparent; color: var(--muted); background: transparent; }
+  .btn.ghost:hover { color: var(--ink); background: transparent; }
+  .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* ==== PRIMITIVES — reuse where helpful ==== */
+  .chip {
+    font-family: "Inter", sans-serif; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.5px; padding: 5px 9px; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--paper); color: var(--ink-soft);
+  }
+  .chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .card {
+    background: var(--paper); border: 1px solid var(--line); border-radius: 8px;
+    padding: 10px 12px; font-family: "Inter", sans-serif;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="stage">
+
+    <div class="phase-header">
+      <div class="phase-progress" id="progress"></div>
+      <div class="phase-counter" id="counter">1 / N</div>
+    </div>
+
+    <div class="phase-narration" id="narration">
+      <!-- phase narration injected by JS -->
+    </div>
+
+    <div class="canvas" id="canvas">
+      <!-- the main visualization — mutates as phases advance -->
+    </div>
+
+    <div class="controls">
+      <button class="btn ghost" id="backBtn">← back</button>
+      <button class="btn primary" id="nextBtn">Next →</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  /* ====================================
+   * PHASES — write the beats here.
+   * Each phase is an object with:
+   *   narration: one short sentence (HTML ok, use <em> for accent)
+   *   enter(canvas): called when phase becomes active — mutate canvas state
+   * Keep phases to 3–5. Each should take 5–15s.
+   * ==================================== */
+  const PHASES = [
+    {
+      narration: `Your Monday morning — twelve items land on you before your coffee cools.`,
+      enter(canvas) {
+        // e.g. animate items streaming in
+      },
+    },
+    {
+      narration: `Look closer. Each one has <em>hidden structure</em> — type, status, due date — sitting in your head, never written down.`,
+      enter(canvas) {
+        // e.g. reveal tooltips / annotations
+      },
+    },
+    {
+      narration: `Now give it shape. AI doesn't invent the structure — it <em>surfaces what was already there</em>.`,
+      enter(canvas) {
+        // e.g. morph raw → typed
+      },
+    },
+    {
+      narration: `Same question. Different cost. The schema does the scanning.`,
+      enter(canvas) {
+        // e.g. show filter-driven view
+      },
+    },
+  ];
+
+  const canvas = document.getElementById("canvas");
+  const narrationEl = document.getElementById("narration");
+  const counterEl = document.getElementById("counter");
+  const progressEl = document.getElementById("progress");
+  const nextBtn = document.getElementById("nextBtn");
+  const backBtn = document.getElementById("backBtn");
+
+  let phase = 0;
+
+  function renderProgress() {
+    progressEl.innerHTML = "";
+    PHASES.forEach((_, i) => {
+      const d = document.createElement("div");
+      d.className = "phase-dot" + (i < phase ? " done" : i === phase ? " active" : "");
+      progressEl.appendChild(d);
+    });
+  }
+
+  function goToPhase(i) {
+    phase = Math.max(0, Math.min(PHASES.length - 1, i));
+    const p = PHASES[phase];
+    narrationEl.innerHTML = p.narration;
+    // re-trigger fade-in animation
+    narrationEl.style.animation = "none";
+    void narrationEl.offsetWidth;
+    narrationEl.style.animation = "";
+    p.enter(canvas);
+    counterEl.textContent = `${phase + 1} / ${PHASES.length}`;
+    renderProgress();
+
+    // update controls
+    backBtn.disabled = phase === 0;
+    if (phase === PHASES.length - 1) {
+      nextBtn.textContent = "Reset ↺";
+      nextBtn.onclick = () => goToPhase(0);
+    } else {
+      nextBtn.textContent = "Next →";
+      nextBtn.onclick = () => goToPhase(phase + 1);
+    }
+  }
+
+  backBtn.onclick = () => goToPhase(phase - 1);
+  goToPhase(0);
+</script>
+</body>
+</html>

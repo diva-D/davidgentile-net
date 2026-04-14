@@ -1,25 +1,48 @@
 ---
 name: dgnet-new-artefact
-description: Build a single-file interactive HTML artefact for davidgentile.net, following the site's visual system. Use when the user wants to create, build, prototype, or design an interactive, artefact, demo, widget, explorable, or visual mechanism for a post. Also triggers on "new artefact", "make an interactive", "build a prototype for the site".
+description: Build an interactive HTML artefact for davidgentile.net, following the site's visual system and phased-narrative default. Use when the user wants to create, build, prototype, or design an interactive, artefact, demo, widget, explorable, or visual mechanism for a post. Also triggers on "new artefact", "make an interactive", "build a prototype for the site".
 ---
 
 # Building an artefact for davidgentile.net
 
 Artefacts are small, self-contained interactive HTML files in the tradition of Bret Victor, Nicky Case, and Bartosz Ciechanowski — explorable explanations where the reader *feels* the idea by playing with it. They live at `public/artefacts/<slug>.html` and are iframed into the post page as the wide hero.
 
-## The one rule that matters most
+## The guiding principle
 
-**The artefact embodies one mechanism that makes the idea feel real.** Not two. Not three. One. If you find yourself adding a second interactive mechanic, the idea is probably blurry and needs sharpening before any code gets written.
+**A good artefact takes the reader on a journey to an insight they earn.** It does not dump the argument on them and ask them to reverse-engineer it. The point isn't to *show* the reader the answer; it's to *walk them through the discovery* so the payoff lands.
 
-Good mechanic examples from existing artefacts:
-- *Friction tax*: clicking a filter on the typed side reveals what the scan-everything side has to do manually.
-- *Skill decay lab*: skipping a day drops every freshness meter while you try to keep them green.
+This principle tends to push artefacts toward phased / guided structure by default.
 
-Each is one action, one reveal, one argument. The reader leaves with a feeling, not a tutorial.
+## Two artefact modes
 
-## The visual system (copy exactly)
+Pick one before writing code. Most posts want mode 1.
 
-Every artefact uses this palette and typography. Do not introduce new colors or fonts. Consistency across posts is how the site reads as one author's voice.
+### Mode 1 — Phased / guided (DEFAULT)
+
+A sequence of 3–5 beats, reader advances via a *Next* button (or scroll trigger). Best for ideas with narrative arc: setup → complication → revelation → implication.
+
+Examples of ideas that want this mode:
+- *"Hidden structure in unstructured work"* — phase 1 shows the mess, phase 2 reveals the latent structure, phase 3 extracts it, phase 4 shows the payoff.
+- *"Why automations break"* — phase 1 works, phase 2 introduces drift, phase 3 shows confident garbage, phase 4 shows the fix.
+- *"Agents need landscape not routes"* — phase 1 ships a route, phase 2 reality changes, phase 3 the agent breaks, phase 4 landscape-based agent adapts.
+
+### Mode 2 — Single-mechanism / sandbox
+
+One system, many possible interactions, no prescribed path. Best when the argument is about a *tradeoff inside a space* and the reader's own exploration *is* the point.
+
+Examples of ideas that want this mode:
+- *"You can't maintain every skill"* — one freshness model, many skills, reader discovers scarcity by trying to keep everything green.
+- *"The approval bottleneck"* — one queue of AI-drafted actions, reader has to rate them all and feels the new work shape.
+
+If you're unsure, default to phased. Sandbox mode is the exception and has to earn its shape.
+
+## The one rule that matters most (still)
+
+**The artefact embodies one claim, made vivid through one mechanism or one journey.** Not two claims. Not a survey of related ideas. If the artefact tries to make two arguments, split it into two posts.
+
+## The visual system (copy exactly, never modify)
+
+Every artefact uses this palette and typography. Consistency across posts is how the site reads as one author's voice.
 
 ```css
 :root {
@@ -38,65 +61,92 @@ Every artefact uses this palette and typography. Do not introduce new colors or 
 Typography:
 - **Framing / narrative text:** `"Iowan Old Style", "Palatino", ui-serif, Georgia, serif`
 - **UI / labels / data:** `"Inter", sans-serif` (loaded from `https://rsms.me/inter/inter.css`)
-- Framing text is for anything a reader reads as prose. UI text is for labels, buttons, metrics, chips, small annotations.
 
 ## Structural conventions
-
-Every artefact wraps its content in this pattern:
 
 ```html
 <div class="wrap">              <!-- max-width: 1040px -->
   <div class="stage">            <!-- white card, border, rounded -->
-    ...the one mechanism...
+    ...the journey or the mechanism...
   </div>
 </div>
 ```
 
-The `.wrap` is 1040px max-width because the post page gives the artefact a 1080px stage (minus gutter). Going wider breaks the layout. Going narrower wastes the space we fought for.
+## Anatomy of a phased artefact
 
-## What NOT to include inside the artefact
+A phased artefact has these elements — they are the grammar of the format.
 
-**Strip all post-page framing.** The post provides the title, kicker, date, and the prose argument. The artefact must NOT duplicate any of:
+1. **Progress indicator** (top, small, muted). `1 / 4`, or four dots, or a thin bar. Tells the reader where they are.
+2. **Phase narration** (one short sentence, serif, reading-size). States what's happening in this beat. Not didactic. Not a tutorial step. A beat in a story.
+3. **The stage** — the main visualization that mutates as phases advance. The stage persists across phases (don't wipe it and redraw a new thing — the *same* stage changes state, so the reader sees cause and effect).
+4. **Advance control** — `Next →` button, primary style. Positioned bottom-right or bottom-center. On the final phase, this becomes `Reset ↺`.
+5. **Optional back control** — subtle `← back` in phase 2+. Lets a reader re-check a step without resetting.
+6. **Optional per-phase interaction** — some phases let the reader *do something* (hover, click, drag) before advancing. The best artefacts mix passive reveals with active moments.
+
+### Phase design heuristics
+
+- **3–5 phases.** Fewer than 3 and it's not a journey. More than 5 and the reader loses the arc.
+- **Each phase should take 5–15 seconds.** If a phase needs more than 15 seconds, break it in two.
+- **Each phase reveals exactly one thing.** If a phase makes two new claims, the second one belongs in the next phase.
+- **The final phase should feel like a payoff, not a conclusion.** Show the transformed state, let the reader click around, don't write a summary.
+- **The first phase should feel like the reader's own world.** Start in familiarity, not in the abstraction. If the reader can't see themselves in phase 1, you lose them before phase 2.
+
+## Anatomy of a sandbox artefact
+
+Used only when the argument is about a space the reader should explore freely.
+
+1. **A single system** — one model, one state.
+2. **Multiple interaction points** — clickable elements, sliders, buttons — but all operating on the same system.
+3. **A live insight line** — one line of text that updates based on state, nudging the reader toward the argument. Not a tutorial. A *provocation* that changes as they play.
+4. **Reset always available.**
+
+## What NOT to include inside the artefact (any mode)
+
+**Strip all post-page framing.** The post provides title, kicker, date, and prose argument. The artefact must NOT duplicate any of:
 
 - ❌ A kicker like `ARTEFACT 01 · STRUCTURE LAYER`
 - ❌ An `<h1>` title
-- ❌ A lede paragraph explaining what the artefact is
+- ❌ A lede paragraph explaining what the artefact is about
 - ❌ Closing paragraphs, callouts, or footers with interpretive text
 - ❌ "What this is" / "Why this matters" meta-commentary
 
-The artefact is the mechanism. Nothing else. If the artefact alone doesn't make sense without those framings, the *mechanism* isn't clear enough — rebuild it sharper.
+Phase narration is *not* framing — it's a beat of the mechanism. A single provocation-line in sandbox mode is *not* framing — it's the mechanic's voice. But standalone prose that explains the argument outside the interactive itself is always a sign the mechanism isn't doing its job.
 
-**One exception:** a single short question or prompt at the top of the stage (e.g., *"What needs your attention right now?"*) is fine if it's part of the mechanic, not framing. Keep it to one line.
+## Steps for building
 
-## Starter template
+1. **Pick the mode.** Phased or sandbox. Default phased.
 
-See `template.html` in this skill's directory. Copy it, rename to the target slug, and modify *only* the `<body>` content (the mechanism) and any `<script>` logic. Do not change `:root` variables. Do not change the `.wrap`/`.stage` structure. Do not add external libraries unless strictly necessary — vanilla JS and CSS are almost always enough.
+2. **Write the beats in prose before writing code.**
+   - Phased: write 3–5 one-sentence descriptions of each phase. If any phase description contains the word "and" joining two claims, split it.
+   - Sandbox: write the one-sentence provocation and list the 2–4 interaction points.
 
-## Steps
+3. **Copy the right template** from this skill's directory:
+   - `template-phased.html` for phased mode
+   - `template-sandbox.html` for sandbox mode
+   Rename to `public/artefacts/<slug>.html`.
 
-1. **Confirm the idea is an artefact, not an image.** If the idea can be expressed in a static diagram with no interaction, it's probably a diagram. Only build an artefact when the argument *is* the reader doing something.
+4. **Build the stage first, then the transitions.** For phased artefacts, get the stage working in its *final* state first, then work backwards: animate state changes from phase N-1 to phase N. Don't try to build all phases linearly — you'll paint into a corner.
 
-2. **Sketch the mechanic in prose before writing code.** One sentence: *"The reader does X, and Y happens, which reveals Z."* If that sentence is hard to write, the mechanic isn't ready.
+5. **Size the iframe.** Open the artefact in a browser, note the natural height, update the post's `artefactHeight` frontmatter to match (rounded to nearest 20px). Remember the iframe has to fit the *tallest* phase — usually the last.
 
-3. **Copy the template** to `public/artefacts/<slug>.html`. Match the slug to the post's slug.
-
-4. **Build the mechanism.** Keep the artefact under ~500 lines total. If it grows past that, you're probably building two mechanisms — cut one.
-
-5. **Size the iframe.** After building, open the artefact in a browser, note the natural height of the content, and update the post's frontmatter `artefactHeight` to match (rounded to nearest 20px).
-
-6. **Do not add the post's title, kicker, or explanatory copy inside the artefact.** Re-read the file and delete any framing text you accidentally added.
+6. **Test all phase transitions.** In a phased artefact, walk through 1→2→3→... and also reset→1. Both paths must look clean. The back button (if included) must also work.
 
 ## Self-review checklist before shipping
 
-- [ ] One mechanism only. No secondary interactive features.
+- [ ] Mode chosen deliberately (phased by default).
+- [ ] One claim only. No secondary arguments.
+- [ ] Phased: 3–5 phases, each revealing one thing, 5–15s each.
+- [ ] Sandbox: one system, multiple interactions, live insight line.
+- [ ] First phase (or first-glance state) starts in the reader's world, not in abstraction.
+- [ ] Final phase is payoff, not summary.
 - [ ] Uses only the declared `--*` CSS variables — no rogue hex colors.
 - [ ] Serif for framing, Inter for UI, no other fonts.
 - [ ] No `<h1>`, no kicker, no lede, no closing paragraphs, no footer.
 - [ ] `.wrap` max-width is 1040px.
-- [ ] Runs with no console errors. No external JS libraries unless necessary.
-- [ ] Works without JavaScript failing silently on mobile (test the layout at 400px width).
-- [ ] The reader leaves with a feeling that matches the post's claim, not a tutorial lesson.
+- [ ] Runs with no console errors. No external JS libraries unless strictly necessary.
+- [ ] Works at 400px viewport width (mobile).
+- [ ] Reader leaves with a *feeling* that matches the post's claim, not a tutorial lesson.
 
 ## After building
 
-Report to the user: file path, line count, suggested `artefactHeight` for the frontmatter, and the reminder that they need to take a hero screenshot (instructions in `dgnet-publish`).
+Report to the user: file path, line count, mode (phased/sandbox), phase count if phased, suggested `artefactHeight` for frontmatter, and the reminder to take a hero screenshot of the final / payoff phase (instructions in `dgnet-publish`).
