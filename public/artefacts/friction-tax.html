@@ -45,11 +45,6 @@
   }
   .phase-dot.done { background: var(--muted); }
   .phase-dot.active { background: var(--accent); }
-  .phase-counter {
-    font-family: "Inter", sans-serif; font-size: 10px; letter-spacing: 1.5px;
-    text-transform: uppercase; color: var(--muted); font-weight: 700;
-    margin-left: auto;
-  }
   .phase-narration {
     font-size: 18px; line-height: 1.5; color: var(--ink); font-weight: 600;
     min-height: 54px; max-width: 820px;
@@ -452,12 +447,9 @@
 
     <div class="phase-header">
       <div class="phase-progress" id="progress"></div>
-      <div class="phase-counter" id="counter">1 / 4</div>
     </div>
 
-    <div class="phase-narration fade-in" id="narration">
-      Your Monday morning. Twelve items land on you before your coffee cools.
-    </div>
+    <div class="phase-narration fade-in" id="narration"></div>
 
     <!-- Phase 3: extract control -->
     <div class="extract-control">
@@ -513,17 +505,17 @@ const ITEMS = [
   { id:2,  medium:"meeting", detail:"Wed notes",            raw:"...<span class='hl-src' data-f='status'>action item (me)</span>: draft pricing one-pager before <span class='hl-src' data-f='due'>friday sync</span>...",
     context:"@computer",        status:"next",    due:"thursday",        what:"One-pager on pricing change → exec staff", next:"Outline 5 bullets, expand" },
   { id:3,  medium:"voice",   detail:"yesterday",            raw:"\"...ask <span class='hl-src' data-f='context'>Maya</span> about the onboarding metric, <span class='hl-src' data-f='status'>wrong denominator</span>...\"",
-    context:"@agenda:Maya",     status:"next",    due:"—",               what:"Ask Maya: onboarding denominator",          next:"DM Maya" },
+    context:"@agenda:Maya",     status:"next",    due:"none",            what:"Ask Maya: onboarding denominator",          next:"DM Maya" },
   { id:4,  medium:"slack",   detail:"#eng-leads · 08:34",   raw:"Daniel: reminder we owe legal the vendor list by EOD tmrw",
     context:"@computer",        status:"next",    due:"tomorrow",        what:"Send vendor list to legal",                 next:"Export sheet, email Rachel" },
   { id:5,  medium:"note",    detail:"on desk",              raw:"call back dentist",
     context:"@phone",           status:"next",    due:"today",           what:"Call dentist back",                         next:"Call 555-0198" },
   { id:6,  medium:"email",   detail:"Mon 4:45pm",           raw:"Jordan: \"Acme contract attached. when you get a sec, no rush\"",
-    context:"@computer",        status:"someday", due:"—",               what:"Review Acme contract",                      next:"Read §4 (IP) and §9 (term)" },
+    context:"@computer",        status:"someday", due:"none",            what:"Review Acme contract",                      next:"Read §4 (IP) and §9 (term)" },
   { id:7,  medium:"slack",   detail:"DM · 07:58",           raw:"Sam: ping when you want to pair on the hiring rubric 🙏",
     context:"@slack",           status:"next",    due:"this week",       what:"Pair with Sam on hiring rubric",            next:"Send 2 slot options" },
   { id:8,  medium:"email",   detail:"Mon 5pm",              raw:"Finance: 2 Q1 expense reports still outstanding after Mon nudge (Alex + Sam)",
-    context:"@waiting:Alex+Sam", status:"waiting", due:"wednesday",      what:"Q1 expense reports — Alex, Sam",            next:"Re-chase Wed if still quiet" },
+    context:"@waiting:Alex+Sam", status:"waiting", due:"wednesday",      what:"Q1 expense reports: Alex, Sam",             next:"Re-chase Wed if still quiet" },
   { id:9,  medium:"cal",     detail:"tmrw 10am",            raw:"Board pre-read sync · 45 min · 4 invitees · no agenda attached",
     context:"@computer",        status:"next",    due:"tomorrow · 10am", what:"Prep for board pre-read sync",              next:"Write agenda, attach to invite" },
   { id:10, medium:"slack",   detail:"#product · 06:40",     raw:"Designer posted v3 settings flow. \"any blockers before I build?\"",
@@ -531,7 +523,7 @@ const ITEMS = [
   { id:11, medium:"email",   detail:"last Thu",             raw:"Recruiter: candidate asked to move intro to next week, preferences?",
     context:"@email",           status:"next",    due:"next week",       what:"Reschedule candidate intro",                next:"Send 3 times next week" },
   { id:12, medium:"thought", detail:"in the shower",        raw:"need to actually write up the Q2 retention thing properly someday",
-    context:"@computer",        status:"someday", due:"—",               what:"Write Q2 retention analysis (proper)",      next:"Block 2h Friday afternoon" },
+    context:"@computer",        status:"someday", due:"none",            what:"Write Q2 retention analysis (proper)",      next:"Block 2h Friday afternoon" },
 ];
 
 const FILTERS = [
@@ -635,17 +627,15 @@ function applyFilter() {
 
 /* ==== PHASE ENTER HANDLERS ==== */
 
-let highlightTimer = null;
 let demoTimers = [];
 function clearDemoTimers() {
   demoTimers.forEach(t => clearTimeout(t));
   demoTimers = [];
 }
-function stopHighlightCycle() {
-  if (highlightTimer) { clearInterval(highlightTimer); highlightTimer = null; }
+function resetItemDemoState() {
   clearDemoTimers();
   itemEls().forEach(el => el.classList.remove(
-    "highlight", "demo-focus",
+    "demo-focus",
     "focus-context", "focus-status", "focus-due",
     "show-context", "show-status", "show-due"
   ));
@@ -654,11 +644,11 @@ function stopHighlightCycle() {
 function enterP1() {
   clearBodyPhaseClass();
   document.body.classList.add("p1");
-  stopHighlightCycle();
+  resetItemDemoState();
   // Reset everything
   const els = itemEls();
   els.forEach(el => {
-    el.classList.remove("visible", "annotated", "typed-view", "highlight", "filtered-out");
+    el.classList.remove("visible", "annotated", "typed-view", "filtered-out");
   });
   // Stream items in one by one — irregular pacing so it feels like real
   // arrivals (a ping, a pause, a cluster), not a metronome. Total ~4s.
@@ -674,7 +664,7 @@ const DEMO_IDS = [1, 2, 3]; // first three items, top-to-bottom — email, meeti
 function enterP2() {
   clearBodyPhaseClass();
   document.body.classList.add("p2");
-  stopHighlightCycle();
+  resetItemDemoState();
   const els = itemEls();
   els.forEach(el => {
     el.classList.add("visible");
@@ -725,12 +715,12 @@ let extracted = false;
 function enterP3() {
   clearBodyPhaseClass();
   document.body.classList.add("p3");
-  stopHighlightCycle();
+  resetItemDemoState();
   // Keep annotated state visually, then morph on extract
   const els = itemEls();
   els.forEach(el => {
     el.classList.add("visible");
-    el.classList.remove("highlight", "filtered-out");
+    el.classList.remove("filtered-out");
     // If coming back from phase 4, undo typed view
     el.classList.remove("typed-view");
     el.classList.add("annotated");
@@ -757,7 +747,7 @@ function extractOne(el) {
 // this, residual classes (show-*, focus-*, demo-focus) plus the in-flight
 // transition leave rows visibly taller and with gaps.
 const RESIDUAL = [
-  "extracting", "annotated", "demo-focus", "highlight",
+  "extracting", "annotated", "demo-focus",
   "show-context", "show-status", "show-due",
   "focus-context", "focus-status", "focus-due",
 ];
@@ -775,6 +765,8 @@ function runExtract() {
   els.forEach((el, i) => {
     setTimeout(() => extractOne(el), i * stagger);
   });
+
+  if (phase === 2) nextBtn.textContent = "Next →";
 
   setTimeout(() => {
     document.body.classList.remove("pre-extract");
@@ -795,11 +787,11 @@ function runExtract() {
 function enterP4() {
   clearBodyPhaseClass();
   document.body.classList.add("p4");
-  stopHighlightCycle();
+  resetItemDemoState();
   const els = itemEls();
   els.forEach(el => {
     el.classList.add("visible", "typed-view");
-    el.classList.remove("annotated", "highlight");
+    el.classList.remove("annotated");
   });
   activeFilter = "now";
   buildFilters();
@@ -812,7 +804,6 @@ function clearBodyPhaseClass() {
 
 /* ==== PHASE MACHINERY ==== */
 const narrationEl = document.getElementById("narration");
-const counterEl = document.getElementById("counter");
 const progressEl = document.getElementById("progress");
 const nextBtn = document.getElementById("nextBtn");
 const backBtn = document.getElementById("backBtn");
@@ -836,13 +827,15 @@ function goToPhase(i) {
   void narrationEl.offsetWidth;
   narrationEl.classList.add("fade-in");
   p.enter();
-  counterEl.textContent = `${phase + 1} / ${PHASES.length}`;
   renderProgress();
 
   backBtn.disabled = phase === 0;
   if (phase === PHASES.length - 1) {
     nextBtn.textContent = "Reset ↺";
     nextBtn.onclick = () => goToPhase(0);
+  } else if (phase === 2) {
+    nextBtn.textContent = "Run extract first";
+    nextBtn.onclick = () => goToPhase(phase + 1);
   } else {
     nextBtn.textContent = "Next →";
     nextBtn.onclick = () => goToPhase(phase + 1);
