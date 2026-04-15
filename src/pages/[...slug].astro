@@ -102,6 +102,10 @@ const ogImageAlt = existsSync(heroAltPath)
             }
 
             if (msg.type === "artefact:phase-change") {
+              // Skip phase 0 — that fires on initial iframe load and on Reset,
+              // and scrolling then hijacks the page before the user has
+              // interacted (and would hide the caption above the iframe).
+              if (msg.phase === 0) return;
               // On phase change the new narration is at the TOP of the iframe,
               // but the reader may have scrolled down inside it. Nudge the page
               // so the iframe's top is at the top of the viewport (or just
