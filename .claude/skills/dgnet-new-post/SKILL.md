@@ -54,8 +54,8 @@ Bad example opening: *"In this post, I want to explore the hidden cost of unstru
 title: "Short, declarative title. No colon-subtitle-pattern."
 description: "One-line summary — this becomes the OG/Twitter preview description. 140 chars or less. Lead with the claim, not the context."
 date: YYYY-MM-DD
-heroImage: "/images/<slug>-hero.png"    # screenshot of the artefact — user takes this manually post-build
-artefact: "/artefacts/<slug>.html"      # omit if essay-only
+heroImage: "/images/<slug>/hero.png"    # captured from beat's final frame (see dgnet-beat)
+artefact: "/artefacts/<slug>/"          # trailing slash; resolves to index.html. Omit if essay-only.
 artefactHeight: 820                     # iframe height; tune after artefact is built
 tags: ["Intelligence interface"]        # first tag is the post kicker — usually this one
 ---

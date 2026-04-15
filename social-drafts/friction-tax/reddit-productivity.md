@@ -7,33 +7,29 @@
 
 ## Title
 
-The reason your task list still feels like work: structure is free now, and most people don't know it yet.
+Your inbox has structure you never capture. That's half the reason it feels heavy.
 
-## Body (paste full text, slightly reframed opener so it's not cross-post-identical to r/GTD)
+## Body
 
-Your task list charges rent on your attention every time you look at it. You re-read the email. You dig Slack for what Daniel said Tuesday. You re-derive the next action from the raw pile, every time you look at it.
+Every email you get has hidden structure inside it. A person, a request, a deadline, a next action, a status. You feel it every time you re-read the thing at 4pm trying to remember what it actually was.
 
-Structure is how you stop paying it. GTD figured that out decades ago: a context, a status, and a next action on every item. A glance at the list tells you what to do next instead of making you re-derive it from the raw pile.
+You could capture that structure. Type it into a list, a tracker, a CRM, whatever system is fashionable this quarter. Most people don't, because sitting there converting prose into fields is worse than re-reading the prose. So the tax gets paid twice. Once on the pile you never structured. Once on the structuring work you never face.
 
-But GTD has a second tax, and it's why most people bounce off it. Someone still has to sit there and convert the pile into the schema. Read the email, decide the context, assign the status, write the next action. Humans are slow, bored parsers. The conversion work is dull enough that the pile wins.
+That's why every "just use this system" productivity pitch bounces off 99% of people. It wasn't the schema that was wrong. It was the bill for populating it.
 
-So the friction is in two places. The unstructured state charges rent every time you look at it. The act of structuring charges a one-time cost so high that most people never pay it. Pick your tax.
+The thing that changed: structured extraction is effectively free now. You can let the model turn an email into typed fields the moment it lands (who, what, status, due, next action), and every downstream question becomes a filter against that instead of a re-read of the original pile.
 
-AI removes the tax on producing structure. Not the need for it. Let the model turn unstructured inputs into typed objects the moment they land, so every downstream question becomes a filter instead of a re-read.
-
-In practice: it reads the email, pulls out the context, assigns a status, drafts the next action. The schema gets populated without anyone sitting down to populate it.
-
-Until now the structuring tax was just the cost of work. Now it's a choice.
+Nobody has to sit down to be "tidy." You just get the tidy pile.
 
 ## First comment (post immediately after)
 
-I built a small interactive demo that walks through the before/after if you want to poke at it: https://davidgentile.net/friction-tax
+Interactive demo + longer write-up: https://davidgentile.net/friction-tax
 
-Curious which part of the structuring tax people actually pay — is it the inbox triage, the status-assigning, or the "what's the real next action" step?
+Genuinely curious which of the two taxes people feel more. The re-reading, or the converting. I've always felt the converting one harder, which is why I bounced off every productivity system I ever tried.
 
 ## Notes
 
-- DO NOT cross-post from r/GTD. Reddit auto-filters those. Fresh post, slightly different opener.
-- Ask a question at the end of the first comment to prime replies.
+- DO NOT cross-post from r/GTD. Reddit auto-filters those.
+- Title is a claim / observation, not a clickbait question.
+- Comment asks a specific question to prime replies.
 - Post at least 24h after r/GTD.
-- Account karma matters. If posting from a fresh/low-karma account, expect silent auto-removal. Seed comments elsewhere first.

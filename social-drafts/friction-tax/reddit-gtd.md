@@ -2,37 +2,36 @@
 
 **Subreddit:** r/GTD (~26k)
 **Format:** self post, full text inline, link in first comment
-**Asset:** none in the post body; link to post in first comment only
+**Asset:** none in the post body
 **Post URL:** https://davidgentile.net/friction-tax
 
 ## Title
 
-The reason GTD falls apart isn't the buckets. It's the cost of populating them.
+GTD wasn't wrong. The bill for populating it was just too high.
 
-## Body (paste full text)
+## Body
 
-The friction tax isn't the work. It's the re-reading. Remembering what state this thing was in. Digging through Slack for what Daniel said on Tuesday. Every item that lands on you without a context, a status, and a next action charges rent on your attention, every time you look at the pile.
+Every email, every Slack thread, every doc you open has hidden structure inside it. A person, a request, a deadline, a status, a next action. GTD's whole premise is that once you capture that structure, the pile stops charging rent on your attention. A glance at the list tells you what to do next instead of making you re-derive it from the raw stuff.
 
-Structure is how you stop paying it. GTD is the classic version: four buckets (Inbox, Next Action, Waiting-On, Someday/Maybe) with a context, a status, and a due date on each item. A glance at the list tells you what to do next instead of making you re-derive it from the raw pile.
+The premise is right. I've believed it for years. It's why I've tried GTD three times.
 
-But GTD has a second tax, and it's why most people bounce off it. Someone still has to sit there and convert the pile into the schema. Read the email, decide the context, assign the status, write the next action. Humans are slow, bored parsers. The conversion work is dull enough that the pile wins.
+The reason it keeps falling apart (for me, and I think for most people) isn't the four buckets or the weekly review. It's the populating. Someone has to sit there, read the email, decide the context, assign the status, write the next action. That work is dull. The raw pile always wins because you'd rather re-read a mess than sit and convert it.
 
-So the friction is in two places. The unstructured state charges rent every time you look at it. The act of structuring charges a one-time cost so high that most people never pay it. Pick your tax.
+So the friction is in two places. The unstructured state charges rent every time you look at it. The structuring work charges a one-time cost so high most people never pay it.
 
-AI removes the tax on producing structure. Not the need for it. The move is letting the model turn unstructured inputs into typed objects the moment they land, so every downstream question becomes a filter instead of a re-read.
+The thing that changed: the model does the conversion. It reads the email, pulls out the fields, drafts the next action, the moment the thing lands. The schema gets populated without anyone sitting down to populate it. GTD's second tax is the part AI actually removes.
 
-In practice: it reads the email, pulls out the context, assigns a status, drafts the next action. The schema gets populated without anyone sitting down to populate it.
+Not "AI replaces GTD." More like "AI is the part of GTD David Allen couldn't ship."
 
-Until now the structuring tax was just the cost of work. Now it's a choice.
+## First comment (post immediately after)
 
-## First comment (post immediately after, seeds the thread)
+Interactive demo + full essay: https://davidgentile.net/friction-tax
 
-I wrote this up more fully with an interactive demo that lets you poke at the before/after: https://davidgentile.net/friction-tax
-
-Happy to dig into the implementation side (what the extract step actually does) if that's interesting.
+Curious whether this squares with how people who actually stick with GTD experience the conversion work. Is it just that you've internalised the buckets enough that the parse is fast? Or is there still a real weekly slog hiding under the "trusted system"?
 
 ## Notes
 
 - Title is a claim, not a headline. Discussion opener.
 - Post body has no link. Link goes in the first comment only.
+- The "three times" admission is the voice. Keep it. Don't soften to "a few times."
 - Best time: Tuesday/Wednesday, 9-11am ET.

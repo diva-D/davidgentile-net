@@ -97,9 +97,9 @@ If reader returned a red call, route nothing — roll `stage` back to `draft` an
 1. Apply any fixes from `dgnet-reader`.
 2. Re-run the voice grep (from `dgnet-publish` stage 6):
    ```bash
-   grep -n "—" src/content/posts/<slug>.md public/artefacts/<slug>.html
+   grep -n "—" src/content/posts/<slug>.md public/artefacts/<slug>/index.html
    grep -niE "delve|leverage|robust|seamless|multifaceted|ultimately|in essence|that said|moreover|furthermore" \
-     src/content/posts/<slug>.md public/artefacts/<slug>.html
+     src/content/posts/<slug>.md public/artefacts/<slug>/index.html
    ```
 3. Re-check mobile (iPhone + iPad) if the artefact changed.
 4. Re-read the post once end to end, out loud.

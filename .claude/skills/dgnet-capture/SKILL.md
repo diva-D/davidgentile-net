@@ -41,7 +41,7 @@ node scripts/capture.mjs <slug> --mode=og
 node scripts/capture.mjs <slug> --mode=social
 ```
 
-Output lands in `public/images/<slug>-hero.png` / `<slug>-social.mp4` / `<slug>-social.gif`.
+Output lands in `public/images/<slug>/hero.png` / `<slug>-social.mp4` / `<slug>-social.gif`.
 
 ## Adding a new artefact's shot list
 

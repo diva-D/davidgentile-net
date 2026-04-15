@@ -2,8 +2,8 @@
 title: "The friction tax of unstructured work"
 description: "Every hour of unstructured work pays rent on your attention. That rent used to be the cost of doing business. Now it's a choice."
 date: 2026-04-14
-heroImage: "/images/friction-tax-hero.png"
-artefact: "/artefacts/friction-tax.html"
+heroImage: "/images/friction-tax/hero.png"
+artefact: "/artefacts/friction-tax/"
 artefactHeight: 880
 tags: ["Intelligence interface"]
 stage: published
