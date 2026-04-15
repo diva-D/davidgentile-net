@@ -55,8 +55,9 @@ title: "Short, declarative title. No colon-subtitle-pattern."
 description: "One-line summary — this becomes the OG/Twitter preview description. 140 chars or less. Lead with the claim, not the context."
 date: YYYY-MM-DD
 heroImage: "/images/<slug>/hero.png"    # captured from beat's final frame (see dgnet-beat)
-artefact: "/artefacts/<slug>/"          # trailing slash; resolves to index.html. Omit if essay-only.
+artefact: "/artefacts/<slug>/index.html" # explicit; dev server 404s on trailing-slash paths under trailingSlash:'never'. Omit if essay-only.
 artefactHeight: 820                     # iframe height; tune after artefact is built
+artefactCaption: "Click the 'Next' button to walk through N phases." # italic figcaption above the iframe; name the actual control the reader must click
 tags: ["Intelligence interface"]        # first tag is the post kicker — usually this one
 ---
 ```

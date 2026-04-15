@@ -215,6 +215,20 @@ main { display: block; }
 .post-artefact iframe {
   width: 100%; border: 0; display: block; background: var(--bg);
 }
+
+/* Per-artefact figcaption — literary, serif, sits above any iframe.
+   Reusable: apply .artefact-badge to a <div> directly above any iframe. */
+.artefact-badge {
+  font-family: "Iowan Old Style", "Palatino", ui-serif, Georgia, serif;
+  font-size: 16px; font-style: italic; font-weight: 400;
+  color: var(--ink-soft);
+  text-align: center;
+  margin: 0 auto 14px;
+  line-height: 1.5;
+}
+.artefact-badge::before {
+  content: "↓ "; color: var(--accent); font-style: normal; font-weight: 700;
+}
 .artefact-caption {
   font-family: "Inter", sans-serif; font-size: 11px; letter-spacing: 1.5px;
   text-transform: uppercase; color: var(--muted); text-align: center;

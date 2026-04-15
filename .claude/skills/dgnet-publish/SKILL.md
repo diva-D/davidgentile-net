@@ -39,7 +39,7 @@ awk '/^---$/{f=!f; next} !f' src/content/posts/<slug>.md | wc -w
 
 ### 3. The artefact file exists (if referenced)
 
-If frontmatter has `artefact: "/artefacts/<slug>/"`, verify the file exists at `public/artefacts/<slug>/index.html`. If missing, stop — the post will 404 when the iframe loads.
+If frontmatter has `artefact: "/artefacts/<slug>/index.html"`, verify the file exists at `public/artefacts/<slug>/index.html`. If missing, stop — the post will 404 when the iframe loads. (Use the explicit `/index.html` path — the dev server 404s on trailing-slash URLs under `trailingSlash: 'never'`.)
 
 ### 4. The hero image exists (if referenced)
 

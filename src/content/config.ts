@@ -7,8 +7,9 @@ const posts = defineCollection({
     description: z.string(),
     date: z.coerce.date(),
     heroImage: z.string().optional(),       // e.g. "/images/friction-tax-hero.png"
-    artefact: z.string().optional(),        // e.g. "/artefacts/friction-tax.html"
+    artefact: z.string().optional(),        // e.g. "/artefacts/friction-tax/index.html"
     artefactHeight: z.number().optional(),  // iframe height in px
+    artefactCaption: z.string().optional(), // figcaption above the iframe, e.g. "An interactive in four phases. Click through."
     draft: z.boolean().optional().default(false),
     tags: z.array(z.string()).optional().default([]),
     stage: z.enum(['draft', 'edited', 'design-edited', 'read', 'polished', 'distilled', 'published']).optional(),

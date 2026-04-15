@@ -53,6 +53,9 @@ const ogImageAlt = existsSync(heroAltPath)
     {/* Wide artefact stage — hero */}
     {post.data.artefact && (
       <section class="post-artefact">
+        {post.data.artefactCaption && (
+          <div class="artefact-badge">{post.data.artefactCaption}</div>
+        )}
         <iframe
           src={post.data.artefact}
           height={artefactHeight}
