@@ -5,6 +5,8 @@ description: The voice rules for everything published on davidgentile.net. Use t
 
 # How writing for davidgentile.net should sound
 
+**Read `/AUDIENCE.md` first.** Voice rules are the mechanics; the audience doc is the target. If a sentence obeys every rule here but the reader described in `AUDIENCE.md` would skim past it, the sentence still fails.
+
 Most AI prose is grammatically perfect and emotionally dead. You can spot it from across the room. The reader's pattern-matcher fires before they finish the first sentence and they bounce. This skill exists to keep that from happening on davidgentile.net.
 
 The bar is simple: if a sentence sounds like it was generated, rewrite it. Quirks over polish. Specifics over abstractions. Short over long. Never reach for a fancier word when a plain one does the job.

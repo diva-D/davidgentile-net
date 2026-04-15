@@ -5,6 +5,8 @@ description: Scaffold a new post for davidgentile.net. Use when the user wants t
 
 # Creating a new post for davidgentile.net
 
+**Read `/AUDIENCE.md` first.** It describes the reader this post has to land with. If the idea you're about to scaffold doesn't fit that reader, stop and push back before creating files.
+
 This skill produces a single-idea post that fits the site's established format. Each post is one page with three zones: narrow header, wide interactive artefact, narrow essay. This skill creates the markdown file. Use `dgnet-new-artefact` separately to build the interactive piece.
 
 ## The format, non-negotiable

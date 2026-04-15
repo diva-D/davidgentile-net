@@ -5,6 +5,8 @@ description: Produce per-platform social drafts for a published davidgentile.net
 
 # Social drafts for a post
 
+**Read `/AUDIENCE.md` first.** It tells you who the drafts are for and where they actually live (X primary, LinkedIn secondary, Reddit long-tail, Bluesky/newsletter deferred). Don't over-optimize for channels the audience doc says aren't primary.
+
 The post is the hub. Social is the spoke. Every platform gets the same asset set but its own wrapper copy, because what works on X gets read as formal on LinkedIn and what works on LinkedIn reads as try-hard on X.
 
 This skill writes drafts to files. It never posts. The author copy-pastes.
@@ -46,10 +48,12 @@ All drafts run through `dgnet-voice`. Non-negotiable:
 
 ### X (Twitter)
 
-- **Length:** one hook line + URL. Under 240 chars total.
+- **Platform string:** `x` (use this in any tooling — matches Typefully and most multi-platform APIs).
+- **Length:** one hook line + URL. Hard cap 280 chars; aim under 240 to leave room for quote-reposts and edits.
 - **Asset:** MP4 upload (native video autoplays in feed). If no MP4, hero PNG as large card.
 - **Format:** hook → blank line → URL. No hashtags by default; add one only if directly relevant.
 - **Hook shape:** a concrete claim, a tension, or a self-contained observation. Never "just published a post about X."
+- **Threads:** if the post warrants a thread, separate tweets with a line containing only `---` (matches Typefully/standard convention). Each tweet must stand alone.
 
 Example shape (not real copy — rewrite per post):
 ```
@@ -62,14 +66,16 @@ https://davidgentile.net/posts/<slug>/
 
 ### LinkedIn
 
-- **Length:** 2–3 short paragraphs. 80–150 words.
+- **Platform string:** `linkedin`.
+- **Length:** 2–3 short paragraphs. 80–150 words. Hard cap is 3000 chars (feed truncates around line 3 regardless), so front-load the hook.
 - **Asset:** MP4 upload (LinkedIn autoplays video). If no MP4, hero PNG.
 - **Format:** opening hook (stands alone even if feed truncates), short middle that develops one idea, closing line that points at the post without begging for clicks.
 - **Avoid:** "I'm excited to share", "thoughts?", "what do you think?", "would love to hear", hashtag pileups. All of these are LinkedIn smell. One hashtag max, only if there's a genuine community tag that fits.
 
 ### Bluesky
 
-- **Length:** under 300 chars total (Bluesky cap).
+- **Platform string:** `bluesky`.
+- **Length:** hard cap 300 chars total (Bluesky limit).
 - **Asset:** MP4 upload (supports native video). If no MP4, hero PNG.
 - **Format:** same hook as X, but can be a touch longer since the cap is bigger. URL at the end.
 - **Tone:** slightly more relaxed than X. Bluesky reads closer to old Twitter. A beat of personality is fine.
@@ -182,6 +188,14 @@ Save these in `social-drafts/<slug>/followup/`. Don't generate by default; only 
 - [ ] Newsletter draft is 40–80 words
 - [ ] The punch is the same across all four — same claim, different clothes
 - [ ] README lists asset paths and posting order
+
+## Future automation (deferred)
+
+Posting stays manual until volume justifies otherwise. If that ever changes, the path of least resistance is **Typefully's API** ($19/mo Creator plan) — it covers all four platforms, accepts media once via `media:upload`, and a thin wrapper skill can read `social-drafts/<slug>/` and create drafts via `drafts:create`. Publish still happens inside Typefully's UI so the "never auto-post" rule stays intact.
+
+Bluesky's API is separately trivial (app password + `@atproto/api`) if zero-dependency posting there ever matters. Official X and LinkedIn APIs are gated (paid / partner program) and not worth the friction for weekly solo use. Chrome-MCP browser automation works but is fragile — any platform UI reskin breaks the selectors.
+
+Don't build any of this until manual posting is actually the bottleneck. This note exists so future-you doesn't re-research.
 
 ## What this skill does NOT do
 

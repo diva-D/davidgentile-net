@@ -6,7 +6,7 @@ heroImage: "/images/friction-tax-hero.png"
 artefact: "/artefacts/friction-tax.html"
 artefactHeight: 880
 tags: ["Intelligence interface"]
-stage: distilled
+stage: published
 ---
 
 The friction tax isn't the work. It's the *re-reading*. Remembering what state this thing was in. Digging through Slack for what Daniel said on Tuesday. Every item that lands on you without a context, a status, and a next action charges rent on your attention, every time you look at the pile.

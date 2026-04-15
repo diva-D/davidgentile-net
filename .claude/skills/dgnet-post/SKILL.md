@@ -5,6 +5,8 @@ description: Idea-to-first-draft orchestrator for davidgentile.net. Clarifies th
 
 # Writing a davidgentile.net post: idea to first draft
 
+**Read `/AUDIENCE.md` first.** Every clarify/decide/plan step is a test against the audience doc. A post idea that doesn't fit the reader described there, or doesn't pass the "is there a real interactive you could build for it" test, should get killed at the clarify stage rather than limp through to draft.
+
 This skill owns the **front half** of a post's life: idea → first draft. Everything after the draft exists (editing, beat authoring, reader review, polish, publish, social drafts) is owned by `dgnet-process`, which reads the post's `stage` frontmatter and routes sub-skills accordingly.
 
 This split exists because the pre-draft work is *creative* (claim clarification, beat planning, mid-build review) and the post-draft work is *mechanical* (a stage machine with checkpoints). One skill per disposition.
