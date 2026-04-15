@@ -57,6 +57,27 @@ const ogImageAbs = ogImage.startsWith('http') ? ogImage : `${site}${ogImage}`;
   <link rel="preconnect" href="https://rsms.me/" />
   <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
   <link rel="stylesheet" href="/styles/global.css" />
+
+  {/* Google Analytics 4 — cookieless (Consent Mode v2 with all storage denied).
+      Offloaded to a web worker via Partytown so it never blocks the main thread.
+      Production only — dev traffic would otherwise pollute real analytics. */}
+  {import.meta.env.PROD && (
+    <>
+      <script is:inline type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=G-W32HYCW40T"></script>
+      <script is:inline type="text/partytown">
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag("js", new Date());
+        gtag("consent", "default", {
+          ad_storage: "denied",
+          ad_user_data: "denied",
+          ad_personalization: "denied",
+          analytics_storage: "denied",
+        });
+        gtag("config", "G-W32HYCW40T");
+      </script>
+    </>
+  )}
 </head>
 <body>
   <header class="site-header">
