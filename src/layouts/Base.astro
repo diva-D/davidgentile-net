@@ -3,6 +3,7 @@ interface Props {
   title: string;
   description?: string;
   ogImage?: string;
+  ogImageAlt?: string;
   canonical?: string;
   type?: 'website' | 'article';
   publishedTime?: Date;
@@ -12,6 +13,7 @@ const {
   title,
   description = 'David Gentile. Notes and artefacts on AI, structure, and the intelligence interface.',
   ogImage = '/images/og-default.png',
+  ogImageAlt,
   canonical,
   type = 'website',
   publishedTime,
@@ -38,6 +40,7 @@ const ogImageAbs = ogImage.startsWith('http') ? ogImage : `${site}${ogImage}`;
   <meta property="og:description" content={description} />
   <meta property="og:url" content={canonicalURL} />
   <meta property="og:image" content={ogImageAbs} />
+  {ogImageAlt && <meta property="og:image:alt" content={ogImageAlt} />}
   <meta property="og:site_name" content="davidgentile.net" />
   {publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
 
@@ -46,6 +49,7 @@ const ogImageAbs = ogImage.startsWith('http') ? ogImage : `${site}${ogImage}`;
   <meta name="twitter:title" content={title} />
   <meta name="twitter:description" content={description} />
   <meta name="twitter:image" content={ogImageAbs} />
+  {ogImageAlt && <meta name="twitter:image:alt" content={ogImageAlt} />}
 
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="alternate" type="application/rss+xml" title="davidgentile.net" href="/rss.xml" />

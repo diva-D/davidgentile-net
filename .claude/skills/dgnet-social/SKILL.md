@@ -16,10 +16,27 @@ This skill writes drafts to files. It never posts. The author copy-pastes.
 Per post:
 - **Post file** — `src/content/posts/<slug>.md` (frontmatter + body)
 - **Beat MP4** — `public/images/<slug>-beat.mp4` (if present)
+- **Beat GIF** — `public/images/<slug>-beat.gif` (generate from the MP4 for LinkedIn — see below)
 - **Hero PNG** — `public/images/<slug>-hero.png`
+- **Alt text** — `public/images/<slug>-beat.alt.txt` (from `dgnet-beat`; reused across platforms)
 - **Published URL** — `https://davidgentile.net/posts/<slug>/`
 
 If the beat MP4 is missing, the skill still produces drafts — they just reference the hero PNG for every platform. If the hero is missing too, stop and send the user back to `dgnet-beat` or capture.
+
+### Generating the LinkedIn GIF
+
+The `dgnet-beat` capture writes the MP4 only. LinkedIn needs a GIF (see the LinkedIn section for why). Generate it with a two-pass palettegen + dither — single-pass GIF encodes look crosshatched:
+
+```bash
+ffmpeg -y -i public/images/<slug>-beat.mp4 \
+  -vf "fps=24,scale=1080:-1:flags=lanczos,palettegen=stats_mode=full" \
+  -frames:v 1 -update 1 /tmp/<slug>-palette.png
+ffmpeg -y -i public/images/<slug>-beat.mp4 -i /tmp/<slug>-palette.png \
+  -filter_complex "[0:v]fps=24,scale=1080:-1:flags=lanczos[x];[x][1:v]paletteuse=dither=sierra2_4a" \
+  public/images/<slug>-beat.gif
+```
+
+The beat already carries its own `davidgentile.net/<slug>` watermark (per `dgnet-beat`), so the GIF is self-attributing — no need to add overlay text.
 
 ## What it writes
 
@@ -68,8 +85,9 @@ https://davidgentile.net/posts/<slug>/
 
 - **Platform string:** `linkedin`.
 - **Length:** 2–3 short paragraphs. 80–150 words. Hard cap is 3000 chars (feed truncates around line 3 regardless), so front-load the hook.
-- **Asset:** MP4 upload (LinkedIn autoplays video). If no MP4, hero PNG.
+- **Asset:** GIF, uploaded via the **image** button (not video). LinkedIn autoloops GIFs attached as images; MP4 uploads stop with a "Watch again" prompt after one play. If no GIF, hero PNG.
 - **Format:** opening hook (stands alone even if feed truncates), short middle that develops one idea, closing line that points at the post without begging for clicks.
+- **CTA pattern:** name both assets, no verb, URL inline. *"Interactive demo + full essay at davidgentile.net/<slug>"* is the working default. Avoid verb-led CTAs ("Explore the…", "Dive in…") — `dgnet-voice` blocks "explore" and the rest read as marketing. Avoid "Read the full post" alone — the interactive is the differentiator and naming it lifts click intent.
 - **Avoid:** "I'm excited to share", "thoughts?", "what do you think?", "would love to hear", hashtag pileups. All of these are LinkedIn smell. One hashtag max, only if there's a genuine community tag that fits.
 
 ### Bluesky
@@ -139,6 +157,9 @@ Each platform file is plain markdown. Structure:
 
 **Asset:** `public/images/<slug>-beat.mp4` (or hero PNG if no beat)
 
+**Alt text (paste into upload dialog's alt field):**
+> <one line, copied verbatim from public/images/<slug>-beat.alt.txt>
+
 **Post URL:** https://davidgentile.net/posts/<slug>/
 
 ---
@@ -151,6 +172,8 @@ Each platform file is plain markdown. Structure:
 
 - (Optional) Anything the author should know before posting, e.g., "X version strips one word that only works on LinkedIn."
 ```
+
+Every platform draft includes the alt text block — X, LinkedIn, and Bluesky all expose alt fields on upload, and the author should never have to type it twice.
 
 Keep the copy block clean so copy-paste to the platform's composer is one selection.
 
@@ -182,6 +205,7 @@ Save these in `social-drafts/<slug>/followup/`. Don't generate by default; only 
 - [ ] All four draft files exist
 - [ ] Every file passes the em-dash grep
 - [ ] Every file passes the phrase-blocklist scan
+- [ ] Alt text block present in every draft, copied from `public/images/<slug>-beat.alt.txt`
 - [ ] X draft fits in 240 chars (including URL)
 - [ ] Bluesky draft fits in 300 chars
 - [ ] LinkedIn draft is 80–150 words

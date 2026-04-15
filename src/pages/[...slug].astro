@@ -1,5 +1,7 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { readFileSync, existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import Base from '../layouts/Base.astro';
 
 export async function getStaticPaths() {
@@ -19,11 +21,24 @@ const fmt = (d: Date) =>
 
 const kicker = post.data.tags?.[0] ?? 'Note';
 const artefactHeight = post.data.artefactHeight ?? 780;
+
+// OG image alt text: prefer <slug>-hero.alt.txt (hero-specific) and fall
+// back to <slug>-beat.alt.txt (written by dgnet-beat, describes the animation
+// the hero is a frame of). Read at build time; undefined if neither exists.
+const publicDir = fileURLToPath(new URL('../../public/images/', import.meta.url));
+const heroAltPath = `${publicDir}${post.slug}-hero.alt.txt`;
+const beatAltPath = `${publicDir}${post.slug}-beat.alt.txt`;
+const ogImageAlt = existsSync(heroAltPath)
+  ? readFileSync(heroAltPath, 'utf-8').trim()
+  : existsSync(beatAltPath)
+    ? readFileSync(beatAltPath, 'utf-8').trim()
+    : undefined;
 ---
 <Base
   title={post.data.title}
   description={post.data.description}
   ogImage={post.data.heroImage}
+  ogImageAlt={ogImageAlt}
   type="article"
   publishedTime={post.data.date}
 >

@@ -29,13 +29,23 @@ Bad example opening: *"In this post, I want to explore the hidden cost of unstru
 
 1. **Get the idea from the user.** Ask: title, one-line description, and whether it needs an interactive artefact. If they haven't thought about whether it needs an artefact, ask: *"Is the argument a claim (essay-only works) or a mechanism (interactive makes it feel real)?"*
 
-2. **Derive the slug** from the title: lowercase, hyphenated, no stop words if it makes the slug cleaner. E.g., "The friction tax of unstructured work" → `friction-tax`. Keep slugs short — 1–3 words ideal.
+2. **Derive the slug** from the title: lowercase, hyphenated, no stop words if it makes the slug cleaner. E.g., "The friction tax of unstructured work" → `friction-tax`. Keep slugs short, 1–3 words ideal.
 
-3. **Create the file** at `src/content/posts/<slug>.md` with the frontmatter template below.
+3. **Create a `post/<slug>` branch and switch to it.** Every post lives on its own branch until it's ready to go live. Vercel auto-deploys branches as preview URLs, so the whole review loop happens on the branch. Main stays clean; only the merge is the "go live" moment.
 
-4. **Write or draft the essay** following the voice rules above. If the user has notes, distill them; don't copy their draft verbatim if it has filler. Read aloud the opening sentence before committing — if it sounds like a LinkedIn post, rewrite it.
+   ```bash
+   git checkout main
+   git pull --ff-only
+   git checkout -b post/<slug>
+   ```
 
-5. **Stop at the essay.** Do not build the artefact inside this skill — that's `dgnet-new-artefact`. Do not commit — that's `dgnet-publish`.
+   If the branch already exists (resumed work), check it out instead: `git checkout post/<slug>`. If the working tree is dirty when this step runs, stop and ask the user how to handle it. Don't stash silently.
+
+4. **Create the file** at `src/content/posts/<slug>.md` with the frontmatter template below.
+
+5. **Write or draft the essay** following the voice rules above. If the user has notes, distill them; don't copy their draft verbatim if it has filler. Read aloud the opening sentence before committing. If it sounds like a LinkedIn post, rewrite it.
+
+6. **Stop at the essay.** Do not build the artefact inside this skill (that's `dgnet-new-artefact`). Do not commit (that's `dgnet-publish`). The branch is the workspace; commits during editing/design stages are normal, but the merge to main only happens at publish.
 
 ## Frontmatter template
 
@@ -73,4 +83,4 @@ tags: ["Intelligence interface"]        # first tag is the post kicker — usual
 
 ## After scaffolding
 
-Report to the user: file path created, current word count of the draft, and the next suggested step (build artefact with `dgnet-new-artefact`, or if essay-only, skip to `dgnet-publish`).
+Report to the user: branch name (`post/<slug>`), file path created, current word count of the draft, and the next suggested step (build artefact with `dgnet-new-artefact`, or if essay-only, skip to `dgnet-publish`). Remind the user that all further work stays on the branch until `dgnet-publish` merges it to main.

@@ -1,7 +1,7 @@
 # LinkedIn
 
 **Platform:** `linkedin` (cap 3000; feed truncates around line 3)
-**Asset:** `public/images/friction-tax-beat.mp4`
+**Asset:** `public/images/friction-tax-beat.gif` (upload via image button, not video — LinkedIn autoloops GIFs attached as images; MP4 stops with "Watch again")
 **Post URL:** https://davidgentile.net/friction-tax
 
 ---
@@ -14,7 +14,7 @@ AI removes the tax on producing structure. Not the need for it. Every org runnin
 
 Now it's a choice.
 
-davidgentile.net/friction-tax
+Interactive demo + full essay at davidgentile.net/friction-tax
 
 ---
 

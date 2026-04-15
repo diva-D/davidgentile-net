@@ -143,6 +143,43 @@ What this means for you as a beat author:
 - Don't rely on virtual-time-only tricks (e.g. requestAnimationFrame loops that need a frame budget).
 - Keep `start()` + `?capture=1` discipline. If you skip them, recording starts mid-animation.
 
+### Watermark
+
+Every beat carries a `davidgentile.net/<slug>` watermark in the bottom-right of the **stage** (not the body). Beats travel without copy when people screenshot, repost, or strip the link — the watermark is the only attribution that survives.
+
+Anchor it inside the `.stage` element, not the body. Body-anchored watermarks get clipped when the asset is rendered into a narrower iframe or feed crop. Stage-anchored sits on the card itself.
+
+Make it survive video compression. Faint grey at 13–15px gets crushed by h264 at low CRF and disappears entirely from the MP4 even though the hero PNG screenshots fine. Use solid ink colour, font-weight 600+, font-size 16–18px, with a low-opacity white chip behind it. The capture pipeline encodes at CRF 18 / preset slow, but a fragile watermark still won't survive scaling and yuv420p subsampling.
+
+### FOUT and end-trim
+
+Playwright records from page-load, not from `start()`. The first ~500–1000ms of the recording is fonts loading (Inter via external CSS swaps in) and assets resolving. The capture script trims the **end** of the webm — not the start — so the MP4 is exactly the last `duration` ms of recording, which is the beat playing with fonts loaded.
+
+If you ever need to debug capture and re-implement trimming, keep this rule: **trim from end, not start.** Trimming from start keeps the FOUT period and clips the beat's tail.
+
+### Stale webm files
+
+Playwright writes each recording to `.capture/<slug>-beat-video/page@<hash>.webm` and never cleans up. If you re-run capture and inspect "the latest webm" via `ls -t`, you may grab a stale one from a previous run that pre-dates your edits. Either delete the directory between captures or trust the MP4 that capture writes (it always uses the recording from the current run).
+
+### Alt text
+
+Every beat ships with alt text. Screen readers can't see the animation; LinkedIn, X, and the post page itself all have alt fields. Skipping it makes the post inaccessible and quietly dings social reach (platforms boost posts with descriptive alt).
+
+Write the alt at beat-author time and save it to `public/images/<slug>-beat.alt.txt` (one line, plain text). Both the GIF and MP4 reuse the same string; the hero PNG can reuse it too unless the still tells a meaningfully different story than the animation, in which case write a separate `<slug>-hero.alt.txt`.
+
+Rules:
+- **Describe the mechanism, not the moral.** What moves, in what order, with what labels. Not "the friction tax disappears." Trust the reader to draw the meaning.
+- **120–200 chars.** Long enough to be useful, short enough to be heard before the user skips.
+- **Lead with the structure.** "Split-screen animation:" or "Four-phase progression:" sets the frame before naming pieces.
+- **Name on-screen labels verbatim.** If a chip says "Next", call it "Next" — not "to-do" or "action item". Sighted and unsighted readers should hear the same words.
+- **No editorial verbs.** "Collapses", "morphs", "lands" are fine — they describe motion. "Reveals", "transforms", "unlocks" are the start of marketing copy.
+- **Voice rules apply.** Em-dash sweep + phrase blocklist (`dgnet-voice`).
+
+Example (friction-tax):
+> Split-screen animation: four lines of raw brain-dump notes on the left collapse one by one into typed task rows on the right, each tagged with a status chip (Next, Waiting, Someday) and a context. An "AI" chip sits between the columns.
+
+`dgnet-social` reads `<slug>-beat.alt.txt` and includes it in each platform draft's asset block, so the author copy-pastes it into the upload dialog without re-deriving it.
+
 ### Status / vocabulary variety
 
 If your beat shows typed objects (status chips, categories, etc.), vary them. A wall of identical chips reads as a loop, not as a populated dataset. Two of the dominant value plus one or two alternates makes the right side feel real.
@@ -158,6 +195,8 @@ Keep ctx and label vocabulary consistent with the real artefact. If the artefact
 - [ ] MP4 file under 5MB (Twitter comfortable cap)
 - [ ] Hero PNG under 500KB
 - [ ] No em dashes anywhere on-screen
+- [ ] Watermark `davidgentile.net/<slug>` rendered inside the stage, visible in both hero PNG and a sampled MP4 frame
+- [ ] Alt text written to `public/images/<slug>-beat.alt.txt` and passes the voice check
 - [ ] A reader who sees only the beat (no post) gets the argument
 
 ## What this skill does NOT do

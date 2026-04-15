@@ -5,7 +5,15 @@ description: Pre-flight check, commit, and push a davidgentile.net post to trigg
 
 # Publishing a post to davidgentile.net
 
-This skill is the final step: validate the post is complete, take the hero screenshot if missing, commit with a descriptive message, and push to trigger the Vercel/Netlify deploy. Deploys are zero-config — a `git push` to `main` is all it takes.
+This skill is the final step: validate the post is complete, confirm we're on the `post/<slug>` branch, commit any pending work there, then **merge the branch into main and push** to trigger the production deploy. Main is the deploy branch; everything until this point lived on `post/<slug>`.
+
+## Branch model
+
+- Every post is authored on its own branch: `post/<slug>`. `dgnet-new-post` creates this at scaffold time.
+- All editing, design-editing, beat capture, reader review, and polish happens on the branch. Vercel auto-deploys the branch as a preview URL, which is where the reader review actually walks through the live page.
+- `dgnet-publish` is the only skill that touches main. It merges the branch in, pushes main, and deletes the branch. That's "go live."
+
+If the current branch is already `main` when this skill runs, stop and ask. The post should have been authored on a branch; going live from main means skipping the preview-review loop. Let the user confirm the intent before proceeding (e.g., hotfix commits to an already-published post).
 
 ## Pre-flight checks (run these, don't skip)
 
@@ -92,15 +100,17 @@ If anything trips, stop. Rewrite. Re-run. The voice rules are the bar; a post th
 
 Run `npm run build` and verify it exits 0. If it fails, show the user the error and stop. Do not push a post that breaks the build.
 
-## The commit
+## The final commit on the branch
 
-Use a commit message of the form:
+First, make sure everything on the branch is committed. Pre-flight may have produced no new changes (if the branch was already clean), in which case skip this step.
+
+Commit message form:
 
 ```
 Post: <title>
 ```
 
-For follow-up edits to an existing post:
+For follow-up edits to an already-published post (hotfix flow, see below):
 
 ```
 Edit <slug>: <what changed in one phrase>
@@ -111,24 +121,57 @@ Commit only the files relevant to this post. Prefer explicit `git add` of specif
 ```bash
 git add src/content/posts/<slug>.md \
         public/artefacts/<slug>.html \
-        public/images/<slug>-hero.png
+        public/artefacts/<slug>.beat.html \
+        public/images/<slug>-hero.png \
+        public/images/<slug>-beat.mp4 \
+        public/images/<slug>-beat.gif \
+        public/images/<slug>-beat.alt.txt
 git commit -m "Post: <title>"
 ```
 
 If other unrelated files are dirty in the working tree, ask the user whether to include them before adding.
 
-## The push
+## The merge
+
+Going live = merging `post/<slug>` into main, pushing main, deleting the branch.
 
 ```bash
+# Push the branch (if not already up to date on remote)
+git push -u origin post/<slug>
+
+# Switch to main and fast-forward
+git checkout main
+git pull --ff-only
+
+# Merge the branch. Use --no-ff so main's history shows the post as a unit.
+git merge --no-ff post/<slug> -m "Publish <slug>: <title>"
+
+# Push main — this is the actual deploy trigger.
 git push origin main
+
+# Clean up the branch (local + remote)
+git branch -d post/<slug>
+git push origin --delete post/<slug>
 ```
 
-Vercel/Netlify picks this up automatically and deploys in ~20 seconds. After pushing, tell the user:
+If the merge produces conflicts, stop. Don't force anything. Show the conflicts to the user and ask how to resolve.
 
-- The commit SHA
+Vercel picks up the push to main and deploys in ~20 seconds. After pushing, tell the user:
+
+- The merge commit SHA on main
 - The URL where the post will be live (`https://davidgentile.net/<slug>`)
-- Remind them to check the deploy status (Vercel dashboard or `gh run watch` if they're using Actions)
-- Offer to draft the social post text (see below)
+- Remind them to check the deploy status on the Vercel dashboard
+- Offer to draft the social post text via `dgnet-social`
+
+## Hotfix flow (editing an already-published post)
+
+If the user wants to edit a post that's already live on main:
+
+1. Branch from main: `git checkout main && git pull --ff-only && git checkout -b post/<slug>-edit`
+2. Make the edits on that branch. Preview URL still available.
+3. Run this skill when ready. The merge commit message becomes `Edit <slug>: <what changed>` instead of `Publish`.
+
+Never commit directly to main.
 
 ## Social post drafts (offered, not automatic)
 

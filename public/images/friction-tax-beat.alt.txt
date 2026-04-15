@@ -1,0 +1,1 @@
+Split-screen animation: four lines of raw brain-dump notes on the left collapse one by one into typed task rows on the right, each tagged with a status chip (Next, Waiting, Someday) and a context. An "AI" chip sits between the columns.

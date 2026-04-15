@@ -41,6 +41,7 @@
   body {
     width: 1200px; height: 675px;
     display: flex; align-items: center; justify-content: center;
+    position: relative;
   }
 
   .stage {
@@ -197,6 +198,21 @@
     color: var(--ink-soft);
     white-space: nowrap;
   }
+
+  .watermark {
+    position: absolute;
+    bottom: 18px;
+    right: 24px;
+    font-family: "Inter", sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.85);
+    padding: 6px 12px;
+    border-radius: 6px;
+    pointer-events: none;
+  }
 </style>
 </head>
 <body>
@@ -221,6 +237,7 @@
       <div class="typed-row"><span class="status waiting">waiting</span><span class="what">Maya: onboarding denominator</span><span class="ctx">@waiting · mon</span></div>
       <div class="typed-row"><span class="status someday">someday</span><span class="what">Read Nick's essay</span><span class="ctx">@read · none</span></div>
     </div>
+    <div class="watermark">davidgentile.net/friction-tax</div>
   </div>
 
 <script>

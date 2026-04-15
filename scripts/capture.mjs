@@ -114,10 +114,14 @@ if (mode === "beat") {
 
   // Convert webm → mp4. Trim to exactly `duration` ms so the loop is tight.
   const mp4 = `${ROOT}/public/images/${slug}-beat.mp4`;
-  await run("ffmpeg", ["-y", "-i", webmPath,
-    "-t", String(duration / 1000),
+  // Trim from END of webm. The recording captures page-load (where fonts and
+  // assets resolve) plus the beat. Trimming from the start would keep the load
+  // period and clip the beat's tail; trimming from the end keeps exactly the
+  // beat — the last `duration` ms of the recording.
+  await run("ffmpeg", ["-y", "-sseof", `-${duration / 1000}`, "-i", webmPath,
     "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2",
-    "-c:v", "libx264", "-pix_fmt", "yuv420p", "-movflags", "+faststart", mp4]);
+    "-c:v", "libx264", "-crf", "18", "-preset", "slow",
+    "-pix_fmt", "yuv420p", "-movflags", "+faststart", mp4]);
   console.log(`wrote ${mp4}`);
 
   // Hero PNG — fresh page, run the beat in real time, screenshot at stillAt.
