@@ -5,7 +5,7 @@ description: Build an interactive HTML artefact for davidgentile.net, following 
 
 # Building an artefact for davidgentile.net
 
-Artefacts are small, self-contained interactive HTML files in the tradition of Bret Victor, Nicky Case, and Bartosz Ciechanowski — explorable explanations where the reader *feels* the idea by playing with it. They live at `public/artefacts/<slug>.html` and are iframed into the post page as the wide hero.
+Artefacts are small, self-contained interactive HTML files in the tradition of Bret Victor, Nicky Case, and Bartosz Ciechanowski — explorable explanations where the reader *feels* the idea by playing with it. They live at `public/artefacts/<slug>/index.html` and are iframed into the post page as the wide hero.
 
 ## The guiding principle
 
@@ -139,7 +139,7 @@ Phase narration is *not* framing — it's a beat of the mechanism. A single prov
 3. **Copy the right template** from this skill's directory:
    - `template-phased.html` for phased mode
    - `template-sandbox.html` for sandbox mode
-   Rename to `public/artefacts/<slug>.html`.
+   Rename to `public/artefacts/<slug>/index.html`.
 
 4. **Build the stage first, then the transitions.** For phased artefacts, get the stage working in its *final* state first, then work backwards: animate state changes from phase N-1 to phase N. Don't try to build all phases linearly — you'll paint into a corner.
 

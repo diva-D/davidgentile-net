@@ -1,29 +1,40 @@
 # X
 
-[dav[d](https://d).net](https://davidgentile.net/friction-tax))
-**Asset:** `public/images/friction-tax-beat.mp4`
+**Asset:** `public/images/friction-tax/beat.mp4`
+
+**Alt text (paste into upload dialog's alt field):**
+> Split-screen animation: four lines of raw brain-dump notes on the left collapse one by one into typed task rows on the right, each tagged with a status chip (Next, Waiting, Someday) and a context. An "AI" chip sits between the columns.
+
 **Post URL:** https://davidgentile.net/friction-tax
 
-## Pattern: main post + self-reply
+## Pattern: 2-tweet thread
 
-X demotes posts with external links. Post the hook standalone with the MP4, then reply to yourself with the link. Same reach as a no-link post, click is one tap away.
+280 is brutal without verification. Thread lets the pivot land without forcing the argument into a single tweet. Separate tweets with `---` (Typefully convention).
+
+Tweet 1 carries the beat MP4 (native autoplay in feed). Tweet 2 carries the link.
 
 ---
 
-### Main post (no link, attach beat MP4)
+### Tweet 1 (attach beat MP4)
 
-Every hour of unstructured work pays rent on your attention. Re-reading the email. Digging Slack for what Daniel said Tuesday.
+Every email has hidden structure inside it. A person, a request, a deadline, an action.
 
-That rent used to be the cost of work. Now it's a choice.
+You feel it at 4pm re-reading the damn thing for the fifth time trying to remember what it was.
 
-### Self-reply (posted immediately after)
+---
 
-Full post with interactive demo: davidgentile.net/friction-tax
+### Tweet 2
+
+You could capture it. A list, a tracker, a CRM. You don't, because converting text into fields is worse than re-reading the text.
+
+You're not the parser anymore.
+
+davidgentile.net/friction-tax
 
 ---
 
 ## Notes
 
-- Main post: 203 chars, zero links. Attach beat MP4 for native autoplay.
-- Reply: one line, single link.
-- Post the reply within 30 seconds so the thread stays coherent in feed.
+- Tweet 1: ~235 chars. Tweet 2: ~180 chars.
+- Voice tells to preserve: "the damn thing", "for the fifth time", "4pm", "You're not the parser anymore".
+- The pivot ("You're not the parser anymore") is the punch. Don't cut it to save chars.

@@ -1,6 +1,6 @@
 ---
 name: dgnet-beat
-description: Author the distilled "beat" for a davidgentile.net post. The beat is a purpose-built ~5s silent film that captures the post's single most argumentative moment. Lives at public/artefacts/<slug>.beat.html alongside the real artefact. Feeds social MP4, hero PNG, homepage tile. Runs at the `polished → distilled` boundary — after reader, polish, and all prose/artefact edits are frozen, and before publish. Triggers on "build the beat", "author the beat", "make the social film", "distill this post".
+description: Author the distilled "beat" for a davidgentile.net post. The beat is a purpose-built ~5s silent film that captures the post's single most argumentative moment. Lives at public/artefacts/<slug>/beat.html alongside the real artefact. Feeds social MP4, hero PNG, homepage tile. Runs at the `polished → distilled` boundary — after reader, polish, and all prose/artefact edits are frozen, and before publish. Triggers on "build the beat", "author the beat", "make the social film", "distill this post".
 ---
 
 # Authoring the beat
@@ -32,7 +32,7 @@ Before writing a line of beat code, answer these five questions. Write the answe
 
 ## The file
 
-`public/artefacts/<slug>.beat.html`. Standalone HTML. Shares visual primitives with the real artefact (same item cards, same schema panel, same colour tokens) so the social asset feels like the post, not a separate product.
+`public/artefacts/<slug>/beat.html`. Standalone HTML. Shares visual primitives with the real artefact (same item cards, same schema panel, same colour tokens) so the social asset feels like the post, not a separate product.
 
 Reuse by either:
 - **Copy primitives** from the real artefact's CSS/components block into the beat file. Faster to iterate, no cross-file dependency, duplicates code. Acceptable because the beat is small.
@@ -129,8 +129,8 @@ node scripts/capture.mjs <slug> --mode=beat
 ```
 
 This produces:
-- `public/images/<slug>-beat.mp4` — the social film
-- `public/images/<slug>-hero.png` — the still from `stillFrameAt()` or final frame
+- `public/images/<slug>/beat.mp4` — the social film
+- `public/images/<slug>/hero.png` — the still from `stillFrameAt()` or final frame
 
 ### How capture works (and why it's set up this way)
 
@@ -165,7 +165,7 @@ Playwright writes each recording to `.capture/<slug>-beat-video/page@<hash>.webm
 
 Every beat ships with alt text. Screen readers can't see the animation; LinkedIn, X, and the post page itself all have alt fields. Skipping it makes the post inaccessible and quietly dings social reach (platforms boost posts with descriptive alt).
 
-Write the alt at beat-author time and save it to `public/images/<slug>-beat.alt.txt` (one line, plain text). Both the GIF and MP4 reuse the same string; the hero PNG can reuse it too unless the still tells a meaningfully different story than the animation, in which case write a separate `<slug>-hero.alt.txt`.
+Write the alt at beat-author time and save it to `public/images/<slug>/beat.alt.txt` (one line, plain text). Both the GIF and MP4 reuse the same string; the hero PNG can reuse it too unless the still tells a meaningfully different story than the animation, in which case write a separate `<slug>-hero.alt.txt`.
 
 Rules:
 - **Describe the mechanism, not the moral.** What moves, in what order, with what labels. Not "the friction tax disappears." Trust the reader to draw the meaning.
@@ -196,7 +196,7 @@ Keep ctx and label vocabulary consistent with the real artefact. If the artefact
 - [ ] Hero PNG under 500KB
 - [ ] No em dashes anywhere on-screen
 - [ ] Watermark `davidgentile.net/<slug>` rendered inside the stage, visible in both hero PNG and a sampled MP4 frame
-- [ ] Alt text written to `public/images/<slug>-beat.alt.txt` and passes the voice check
+- [ ] Alt text written to `public/images/<slug>/beat.alt.txt` and passes the voice check
 - [ ] A reader who sees only the beat (no post) gets the argument
 
 ## What this skill does NOT do

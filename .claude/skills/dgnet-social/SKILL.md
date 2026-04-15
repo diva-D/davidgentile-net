@@ -15,10 +15,10 @@ This skill writes drafts to files. It never posts. The author copy-pastes.
 
 Per post:
 - **Post file** — `src/content/posts/<slug>.md` (frontmatter + body)
-- **Beat MP4** — `public/images/<slug>-beat.mp4` (if present)
-- **Beat GIF** — `public/images/<slug>-beat.gif` (generate from the MP4 for LinkedIn — see below)
-- **Hero PNG** — `public/images/<slug>-hero.png`
-- **Alt text** — `public/images/<slug>-beat.alt.txt` (from `dgnet-beat`; reused across platforms)
+- **Beat MP4** — `public/images/<slug>/beat.mp4` (if present)
+- **Beat GIF** — `public/images/<slug>/beat.gif` (generate from the MP4 for LinkedIn — see below)
+- **Hero PNG** — `public/images/<slug>/hero.png`
+- **Alt text** — `public/images/<slug>/beat.alt.txt` (from `dgnet-beat`; reused across platforms)
 - **Published URL** — `https://davidgentile.net/posts/<slug>/`
 
 If the beat MP4 is missing, the skill still produces drafts — they just reference the hero PNG for every platform. If the hero is missing too, stop and send the user back to `dgnet-beat` or capture.
@@ -28,12 +28,12 @@ If the beat MP4 is missing, the skill still produces drafts — they just refere
 The `dgnet-beat` capture writes the MP4 only. LinkedIn needs a GIF (see the LinkedIn section for why). Generate it with a two-pass palettegen + dither — single-pass GIF encodes look crosshatched:
 
 ```bash
-ffmpeg -y -i public/images/<slug>-beat.mp4 \
+ffmpeg -y -i public/images/<slug>/beat.mp4 \
   -vf "fps=24,scale=1080:-1:flags=lanczos,palettegen=stats_mode=full" \
   -frames:v 1 -update 1 /tmp/<slug>-palette.png
-ffmpeg -y -i public/images/<slug>-beat.mp4 -i /tmp/<slug>-palette.png \
+ffmpeg -y -i public/images/<slug>/beat.mp4 -i /tmp/<slug>-palette.png \
   -filter_complex "[0:v]fps=24,scale=1080:-1:flags=lanczos[x];[x][1:v]paletteuse=dither=sierra2_4a" \
-  public/images/<slug>-beat.gif
+  public/images/<slug>/beat.gif
 ```
 
 The beat already carries its own `davidgentile.net/<slug>` watermark (per `dgnet-beat`), so the GIF is self-attributing — no need to add overlay text.
@@ -112,7 +112,7 @@ Step through these in order. Each step has an output.
 ### 1. Read the inputs
 
 - `src/content/posts/<slug>.md` — extract title, description, body
-- Check `public/images/<slug>-beat.mp4` and `-hero.png` exist
+- Check `public/images/<slug>/beat.mp4` and `-hero.png` exist
 - Construct post URL from slug
 
 ### 2. Find the punch
@@ -155,10 +155,10 @@ Each platform file is plain markdown. Structure:
 ```markdown
 # <Platform>
 
-**Asset:** `public/images/<slug>-beat.mp4` (or hero PNG if no beat)
+**Asset:** `public/images/<slug>/beat.mp4` (or hero PNG if no beat)
 
 **Alt text (paste into upload dialog's alt field):**
-> <one line, copied verbatim from public/images/<slug>-beat.alt.txt>
+> <one line, copied verbatim from public/images/<slug>/beat.alt.txt>
 
 **Post URL:** https://davidgentile.net/posts/<slug>/
 
@@ -205,7 +205,7 @@ Save these in `social-drafts/<slug>/followup/`. Don't generate by default; only 
 - [ ] All four draft files exist
 - [ ] Every file passes the em-dash grep
 - [ ] Every file passes the phrase-blocklist scan
-- [ ] Alt text block present in every draft, copied from `public/images/<slug>-beat.alt.txt`
+- [ ] Alt text block present in every draft, copied from `public/images/<slug>/beat.alt.txt`
 - [ ] X draft fits in 240 chars (including URL)
 - [ ] Bluesky draft fits in 300 chars
 - [ ] LinkedIn draft is 80–150 words

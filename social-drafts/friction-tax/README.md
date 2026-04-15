@@ -5,8 +5,8 @@
 
 ## Assets
 
-- Beat MP4: `public/images/friction-tax-beat.mp4` (X, LinkedIn)
-- Hero PNG: `public/images/friction-tax-hero.png` (fallback)
+- Beat MP4: `public/images/friction-tax/beat.mp4` (X, LinkedIn)
+- Hero PNG: `public/images/friction-tax/hero.png` (fallback)
 
 ## Punch
 

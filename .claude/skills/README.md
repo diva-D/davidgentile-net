@@ -53,10 +53,10 @@ Each stage change requires explicit user sign-off. Nothing silently advances.
 
 The post is the hub. Every post that wants motion produces:
 
-- `public/artefacts/<slug>.html` — the real interactive, teaches at its own pace
-- `public/artefacts/<slug>.beat.html` — the purpose-built 5s film that punches
-- `public/images/<slug>-beat.mp4` — captured from the beat file (social, homepage tile)
-- `public/images/<slug>-hero.png` — captured from the beat's final frame (OG card, RSS, newsletter)
+- `public/artefacts/<slug>/index.html` — the real interactive, teaches at its own pace
+- `public/artefacts/<slug>/beat.html` — the purpose-built 5s film that punches
+- `public/images/<slug>/beat.mp4` — captured from the beat file (social, homepage tile)
+- `public/images/<slug>/hero.png` — captured from the beat's final frame (OG card, RSS, newsletter)
 
 Posts without a beat fall back to a static hero + text-only social.
 

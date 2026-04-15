@@ -39,11 +39,11 @@ awk '/^---$/{f=!f; next} !f' src/content/posts/<slug>.md | wc -w
 
 ### 3. The artefact file exists (if referenced)
 
-If frontmatter has `artefact: "/artefacts/<slug>.html"`, verify the file exists at `public/artefacts/<slug>.html`. If missing, stop — the post will 404 when the iframe loads.
+If frontmatter has `artefact: "/artefacts/<slug>/"`, verify the file exists at `public/artefacts/<slug>/index.html`. If missing, stop — the post will 404 when the iframe loads.
 
 ### 4. The hero image exists (if referenced)
 
-If frontmatter has `heroImage: "/images/<slug>-hero.png"`, verify `public/images/<slug>-hero.png` exists. **If missing, this is the most common publish-time failure.** The hero is what Twitter, LinkedIn, iMessage, and Slack render as the preview when someone shares the link. A missing OG image means your post shows up as a naked URL, which kills click-through.
+If frontmatter has `heroImage: "/images/<slug>/hero.png"`, verify `public/images/<slug>/hero.png` exists. **If missing, this is the most common publish-time failure.** The hero is what Twitter, LinkedIn, iMessage, and Slack render as the preview when someone shares the link. A missing OG image means your post shows up as a naked URL, which kills click-through.
 
 If the hero is missing, walk the user through capturing it:
 
@@ -61,7 +61,7 @@ Here's the 30-second workflow:
   5. Open the screenshot in Preview, Tools → Adjust Size →
      set width to 1200px (preserve aspect ratio)
   6. Tools → Crop → 1200×630 (standard OG aspect ratio)
-  7. Save as public/images/<slug>-hero.png
+  7. Save as public/images/<slug>/hero.png
 
 Then re-run this skill.
 ```
@@ -86,11 +86,11 @@ Load the `dgnet-voice` skill and apply its review checklist to the post body, th
 The two non-negotiable mechanical checks:
 
 ```bash
-grep -n "—" src/content/posts/<slug>.md public/artefacts/<slug>.html
+grep -n "—" src/content/posts/<slug>.md public/artefacts/<slug>/index.html
 # expected: zero hits in any reader-visible string. Any hit gets fixed.
 
 grep -niE "delve|leverage|robust|seamless|multifaceted|ultimately|in essence|that said|moreover|furthermore" \
-  src/content/posts/<slug>.md public/artefacts/<slug>.html
+  src/content/posts/<slug>.md public/artefacts/<slug>/index.html
 # expected: zero. Each hit gets reviewed and almost always cut.
 ```
 
@@ -120,14 +120,12 @@ Commit only the files relevant to this post. Prefer explicit `git add` of specif
 
 ```bash
 git add src/content/posts/<slug>.md \
-        public/artefacts/<slug>.html \
-        public/artefacts/<slug>.beat.html \
-        public/images/<slug>-hero.png \
-        public/images/<slug>-beat.mp4 \
-        public/images/<slug>-beat.gif \
-        public/images/<slug>-beat.alt.txt
+        public/artefacts/<slug>/ \
+        public/images/<slug>/
 git commit -m "Post: <title>"
 ```
+
+Per-post assets all live under `public/artefacts/<slug>/` and `public/images/<slug>/`, so adding the directories covers every file the post owns (artefact, beat, hero, mp4, gif, alt text).
 
 If other unrelated files are dirty in the working tree, ask the user whether to include them before adding.
 

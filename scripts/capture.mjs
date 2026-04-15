@@ -5,7 +5,7 @@
  * Two distinct capture paths:
  *
  *   --mode=beat    Records public/artefacts/<slug>.beat.html using Playwright's
- *                  native video capture. Produces <slug>-beat.mp4 + <slug>-hero.png.
+ *                  native video capture. Produces <slug>/beat.mp4 + <slug>/hero.png.
  *                  This is the default for new posts. Beat files expose:
  *                    window.__beat = { duration, stillFrameAt(), onReady(), start() }
  *                  Capture appends ?capture=1 to disable auto-start so the recorder
@@ -45,9 +45,9 @@ if (!slug) {
 }
 const mode = (flags.find(f => f.startsWith("--mode=")) || "--mode=og").split("=")[1];
 
-const ARTEFACT_URL = `file://${ROOT}/public/artefacts/${slug}.html`;
-const BEAT_URL     = `file://${ROOT}/public/artefacts/${slug}.beat.html`;
-const IMG_DIR = `${ROOT}/public/images`;
+const ARTEFACT_URL = `file://${ROOT}/public/artefacts/${slug}/index.html`;
+const BEAT_URL     = `file://${ROOT}/public/artefacts/${slug}/beat.html`;
+const IMG_DIR = `${ROOT}/public/images/${slug}`;
 if (!existsSync(IMG_DIR)) mkdirSync(IMG_DIR, { recursive: true });
 
 /**
@@ -113,7 +113,7 @@ if (mode === "beat") {
   const webmPath = `${videoDir}/${webm}`;
 
   // Convert webm → mp4. Trim to exactly `duration` ms so the loop is tight.
-  const mp4 = `${ROOT}/public/images/${slug}-beat.mp4`;
+  const mp4 = `${IMG_DIR}/beat.mp4`;
   // Trim from END of webm. The recording captures page-load (where fonts and
   // assets resolve) plus the beat. Trimming from the start would keep the load
   // period and clip the beat's tail; trimming from the end keeps exactly the
@@ -135,7 +135,7 @@ if (mode === "beat") {
   await heroPage.evaluate(async () => { await window.__beat.onReady(); });
   await heroPage.evaluate(() => window.__beat.start());
   await heroPage.waitForTimeout(stillAt);
-  const hero = `${ROOT}/public/images/${slug}-hero.png`;
+  const hero = `${IMG_DIR}/hero.png`;
   await heroPage.screenshot({
     path: hero,
     clip: { x: 0, y: 0, width: 1200, height: 675 },
@@ -169,7 +169,7 @@ if (mode === "og") {
     await page.evaluate((name) => window.__artefact[name](), shot.action);
   }
   await page.waitForTimeout(800);
-  const out = `${IMG_DIR}/${slug}-hero.png`;
+  const out = `${IMG_DIR}/hero.png`;
   await page.locator(".stage").screenshot({ path: out });
   console.log(`wrote ${out}`);
 } else if (mode === "social") {
@@ -195,8 +195,8 @@ if (mode === "og") {
       await shoot(s.postHold ?? 800);
     }
   }
-  const mp4 = `${IMG_DIR}/${slug}-social.mp4`;
-  const gif = `${IMG_DIR}/${slug}-social.gif`;
+  const mp4 = `${IMG_DIR}/social.mp4`;
+  const gif = `${IMG_DIR}/social.gif`;
   await run("ffmpeg", ["-y", "-framerate", String(fps), "-i", `${framesDir}/%05d.png`,
     "-c:v", "libx264", "-pix_fmt", "yuv420p", "-movflags", "+faststart", mp4]);
   await run("ffmpeg", ["-y", "-i", mp4, "-vf", `fps=20,scale=1080:-1:flags=lanczos`, gif]);

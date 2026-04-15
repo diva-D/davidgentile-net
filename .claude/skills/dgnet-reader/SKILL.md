@@ -50,7 +50,7 @@ Report: **"A cold reader's takeaway after 30 seconds would be <X>."** If that ta
 
 For each persona, actually **open the artefact in Chrome** (via the `mcp__claude-in-chrome__*` tools). Don't just read the code. Do this:
 
-1. Start dev server if needed (`npm run dev`), or open the artefact directly from `public/artefacts/<slug>.html`.
+1. Start dev server if needed (`npm run dev`), or open the artefact directly from `public/artefacts/<slug>/index.html`.
 2. Navigate to the artefact.
 3. Walk through every phase, clicking what the reader would click.
 4. At each phase, ask (in persona):
