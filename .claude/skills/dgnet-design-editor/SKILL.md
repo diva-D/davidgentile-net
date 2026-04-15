@@ -112,6 +112,16 @@ When handing back to the user:
 3. **Anything you left in that you weren't 100% sure about.** Flag judgment calls explicitly.
 4. **Mobile check.** After cuts, re-view at 375px — sometimes removing elements breaks layout assumptions. Fix or flag.
 
+## Two modes
+
+This skill runs in one of two modes:
+
+**Full-pass mode** (default, used when `dgnet-process` advances `edited` → `design-edited`): walk all six passes above, end-to-end.
+
+**Targeted-fix mode** (used when `dgnet-reader` flagged a `target: artefact` fix): apply the specific change the reader proposed, nothing else. Do not re-run all six passes. Show the diff, get sign-off, done.
+
+The orchestrator tells you which mode to run in. If unclear, default to full-pass.
+
 ## What this skill does NOT do
 
 - Redesign the artefact. If the visual system is wrong, say so and stop — don't invent a new one.

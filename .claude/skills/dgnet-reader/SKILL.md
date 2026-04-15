@@ -89,7 +89,24 @@ Hand back:
    - The symptom (where it breaks)
    - The persona that caught it
    - A suggested fix (but only if obvious — "this paragraph isn't carrying its weight" is valid without a rewrite)
+   - **`target:`** one of `prose`, `artefact`, or `both`. This tells the orchestrator which editor skill to route the fix through.
 4. **A green / yellow / red call.** Green = ship it. Yellow = fixable in a pass. Red = structural problem, go back to beats/argument.
+
+## How fixes get applied
+
+This skill **does not apply fixes**. Reader is a fresh-eyes critic; staying out of the surgery preserves that role. The orchestrator (`dgnet-process`) takes reader's fix list and routes each item:
+
+- `target: prose` → `dgnet-editor` in **targeted-fix mode** (apply the specific change, no full six-pass re-run).
+- `target: artefact` → `dgnet-design-editor` in **targeted-fix mode** (same idea, artefact side).
+- `target: both` → both, in sequence.
+
+Stage stays at the previous value during routing; it advances to `read` only once all yellow fixes are applied AND the user signs off. Reader does not roll the stage back unless the call is red.
+
+## Bias toward no-fix
+
+Before recommending a content fix, ask: *is the artefact's mechanism already teaching this?* The site's design philosophy is to **show, not declare**. If the reader will feel a point through interaction (an extract animation, a filter collapsing, a state shift), don't add narration that says the same thing in words. Telling people the moral they're about to feel is the cardinal AI-prose sin in the voice rules; the same instinct applies to artefacts.
+
+Default disposition: **prefer no fix.** Only recommend an explicit narration / prose change when the mechanism genuinely fails to carry the point — not when it carries it implicitly and you'd like it carried louder.
 
 ## What this skill does NOT do
 
@@ -100,4 +117,6 @@ Hand back:
 
 ## After this skill runs
 
-If the call is green, advance the post's frontmatter `stage` from `design-edited` (or `edited`, if no artefact) to `read`. If yellow, leave the stage where it was and let the author iterate. If red, roll the stage back to `draft` and recommend re-planning.
+- **Green:** advance `stage` to `read`.
+- **Yellow:** leave `stage` where it was. Hand the tagged fix list to `dgnet-process` for routing. Once routed fixes are applied and the user signs off, advance to `read`.
+- **Red:** roll `stage` back to `draft` and recommend re-planning beats/argument.

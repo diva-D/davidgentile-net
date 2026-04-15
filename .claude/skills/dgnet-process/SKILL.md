@@ -5,7 +5,9 @@ description: Stateful workflow orchestrator for davidgentile.net posts. Reads th
 
 # The post process
 
-`dgnet-post` owns creation (clarify → build). This skill owns everything after the first draft exists: **the editing / review / polish / ship loop**, tracked as state in frontmatter.
+`dgnet-post` owns creation (clarify → build → first draft). This skill owns everything after: **the editing / beat / review / polish / ship / social loop**, tracked as state in frontmatter.
+
+Together they're the end-to-end pipeline. `dgnet-post` hands off when a draft exists and `stage: draft` is set. From there, the user works with this skill alone — invoking sub-skills per stage, each with a checkpoint.
 
 The post itself carries its own process state. That means:
 - You can pause a post halfway through, come back in a week, and the process knows where to resume.
@@ -17,9 +19,11 @@ Very meta. Structured work using a tiny schema. Deliberate.
 ## The stages
 
 ```
-draft ──► edited ──► design-edited ──► read ──► polished ──► published
-           (skip design-edited if no artefact)
+draft ──► edited ──► design-edited ──► read ──► polished ──► distilled ──► published
+           (skip design-edited if no artefact)         (skip distilled if no artefact)
 ```
+
+**Capture happens last.** Beat authoring + MP4/hero generation runs at the `polished → distilled` boundary, after all prose and artefact edits are frozen. Capture outputs are expensive to regenerate every time a sentence or pixel changes upstream; pushing them to the end means they're produced once, against a final post.
 
 Each stage is the **output** of running one skill:
 
@@ -27,9 +31,10 @@ Each stage is the **output** of running one skill:
 |------------------|----------------------|---------------------------------------------|
 | `draft`          | `dgnet-new-post`     | First full draft exists. Prose + artefact if applicable. |
 | `edited`         | `dgnet-editor`       | Copy-edit pass done. Post is shorter, sharper. |
-| `design-edited`  | `dgnet-design-editor`| Artefact pass done. Dead state cut, noise removed. Skipped if no artefact. |
+| `design-edited`  | `dgnet-design-editor` | Artefact is tight. Dead state cut, noise removed. Skipped if no artefact. **No beat yet.** |
 | `read`           | `dgnet-reader`       | All three personas walked the post. No red flags. |
-| `polished`       | (final prose pass)   | Any reader-review fixes applied. Voice re-checked. Mobile re-checked. |
+| `polished`       | (final prose pass)   | Any reader-review fixes applied. Voice re-checked. Mobile re-checked. Prose + artefact frozen. |
+| `distilled`      | `dgnet-beat`         | Beat file authored, captured to MP4 + hero PNG. Skipped if no artefact (text-only social). |
 | `published`      | `dgnet-publish`      | Committed + pushed. Live on davidgentile.net. |
 
 ## How to invoke
@@ -57,17 +62,33 @@ If the user explicitly names a stage (`/dgnet-process <slug> read`), jump to tha
 ## The routing table
 
 ```
-current stage         next skill to load
+current stage            next skill to load
 ─────────────────────────────────────────
-(no stage set)        dgnet-new-post (if no draft exists) OR dgnet-editor (if draft exists)
-draft                 dgnet-editor
-edited + artefact     dgnet-design-editor
-edited + no artefact  dgnet-reader
-design-edited         dgnet-reader
-read                  polish pass (see below)
-polished              dgnet-publish
-published             (done — report + offer social drafts if not yet done)
+(no stage set)           dgnet-new-post (if no draft exists) OR dgnet-editor (if draft exists)
+draft                    dgnet-editor
+edited + artefact        dgnet-design-editor (completes design-edited; no beat yet)
+edited + no artefact     dgnet-reader
+design-edited            dgnet-reader
+read                     polish pass (see below)
+polished + artefact      dgnet-beat (completes distilled stage)
+polished + no artefact   dgnet-publish
+distilled                dgnet-publish
+published                dgnet-social (offer; never auto-run without sign-off)
 ```
+
+## Routing reader-flagged fixes
+
+`dgnet-reader` produces a list of fixes, each tagged `target: prose | artefact | both`. After the user signs off on the proposed fixes, route them:
+
+- `target: prose` → invoke `dgnet-editor` in **targeted-fix mode**, passing the specific fix.
+- `target: artefact` → invoke `dgnet-design-editor` in **targeted-fix mode**, passing the specific fix.
+- `target: both` → invoke `dgnet-editor` first, then `dgnet-design-editor`, both targeted-fix mode.
+
+Targeted-fix mode means: apply the named change, no broad sweep, no other content edits. The reader did the diagnostic work; the editor's job here is execution only.
+
+While reader-flagged fixes are being applied, **do not change `stage`**. Advance to `read` only once every yellow fix is in AND the user confirms. If the user declines a fix, drop it from the list and re-evaluate whether the post still warrants the `read` stage.
+
+If reader returned a red call, route nothing — roll `stage` back to `draft` and tell the user the post needs to go back to beats/argument (Stage 3 of `dgnet-post`).
 
 ## The polish pass
 

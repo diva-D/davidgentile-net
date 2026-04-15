@@ -94,6 +94,16 @@ When handing back to the user:
 
 Do not silently make sweeping changes. Show the diff and justify.
 
+## Two modes
+
+This skill runs in one of two modes:
+
+**Full-pass mode** (default, used when `dgnet-process` advances `draft` → `edited`): walk all six passes above, end-to-end.
+
+**Targeted-fix mode** (used when `dgnet-reader` flagged a `target: prose` fix): apply the specific change the reader proposed, nothing else. Do not run the full six passes. Show the diff, get sign-off, done. The reader did the diagnostic work; this is the surgical execution.
+
+The orchestrator tells you which mode to run in. If unclear, default to full-pass.
+
 ## What this skill does NOT do
 
 - Rewrite for voice. That's `dgnet-voice`.

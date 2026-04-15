@@ -1,11 +1,13 @@
 ---
 name: dgnet-post
-description: Orchestrate a full post from idea to publish — clarify the claim, decide if it needs an artefact, plan the beats, build and iterate with the user, then scaffold, capture, and publish. Use this as the FIRST step any time the user says "let's write a post", "new post idea", "I want to publish something about X", "help me turn this into a post", or describes an idea they want to put on davidgentile.net. This is the default entry point — prefer it over invoking dgnet-new-post / dgnet-new-artefact directly.
+description: Idea-to-first-draft orchestrator for davidgentile.net. Clarifies the claim, decides if it needs an artefact, plans the beats, builds and iterates with checkpoints, then hands off to dgnet-process for editing, beat authoring, reader review, polish, publish, and social. Use this as the FIRST step any time the user says "let's write a post", "new post idea", "I want to publish something about X", "help me turn this into a post", or describes an idea they want to put on davidgentile.net. Default entry point for new posts — prefer it over invoking dgnet-new-post / dgnet-new-artefact directly. Does NOT ship posts; that's dgnet-process.
 ---
 
-# Writing a davidgentile.net post, start to finish
+# Writing a davidgentile.net post: idea to first draft
 
-This skill is the orchestrator. The sub-skills (`dgnet-new-post`, `dgnet-new-artefact`, `dgnet-capture`, `dgnet-publish`) are mechanics. This skill ensures we don't skip to mechanics before the idea is sharp.
+This skill owns the **front half** of a post's life: idea → first draft. Everything after the draft exists (editing, beat authoring, reader review, polish, publish, social drafts) is owned by `dgnet-process`, which reads the post's `stage` frontmatter and routes sub-skills accordingly.
+
+This split exists because the pre-draft work is *creative* (claim clarification, beat planning, mid-build review) and the post-draft work is *mechanical* (a stage machine with checkpoints). One skill per disposition.
 
 ## The loop
 
@@ -15,7 +17,7 @@ This skill is the orchestrator. The sub-skills (`dgnet-new-post`, `dgnet-new-art
                                         └──── iterate ─┘
                                         │
                                         ▼
-                                    capture ──► publish
+                             hand off to dgnet-process
 ```
 
 At every ► there is a **checkpoint with the user**. Do not advance past a checkpoint without explicit confirmation. The checkpoints are the point of the skill.
@@ -101,7 +103,7 @@ Do not skip this checkpoint out of politeness or perceived momentum. Honest mid-
 
 ## Stage 5.5 — Mobile check (mandatory)
 
-Before moving on to capture, view the artefact at **375px (iPhone portrait)** and **768px (tablet)**. Report back what you see. Fix any of these that are true:
+Before handing off, view the artefact at **375px (iPhone portrait)** and **768px (tablet)**. Report back what you see. Fix any of these that are true:
 
 - Horizontal scrolling anywhere.
 - Content clipped, overflowing, or forced behind another element.
@@ -110,25 +112,32 @@ Before moving on to capture, view the artefact at **375px (iPhone portrait)** an
 
 Most scrollers are on phones. A broken phone experience is a broken artefact, regardless of how good the desktop version looks. This stage is not skippable.
 
-## Stage 6 — Capture
+## Stage 6 — Hand off to dgnet-process
 
-Invoke `dgnet-capture`. Generate hero PNG and (if appropriate) social MP4/GIF. Show the user the outputs. If they read badly as a scroll-past, loop back to Stage 5 — the artefact needs a clearer payoff state.
+When the user says "done" at Stage 5:
 
-## Stage 7 — Publish
+1. Set `stage: draft` in the post's frontmatter using `Edit`. Do not touch any other field.
+2. Report back in this shape:
 
-Invoke `dgnet-publish`. Run its pre-flight checks. Commit + push only after the user confirms.
+   ```
+   First draft complete.
+   Post: <slug>
+   Title: "<title>"
+   Artefact: yes/no
+   Stage: draft
+
+   Handing off to dgnet-process. Next skill: dgnet-editor.
+   Say "next" to advance, or name a specific stage to jump to.
+   ```
+
+3. Stop. Do not invoke `dgnet-editor`, `dgnet-design-editor`, `dgnet-beat`, `dgnet-reader`, `dgnet-capture`, or `dgnet-publish` yourself. The user (or `dgnet-process`) drives from here.
+
+The review loop, beat authoring, polish pass, publish, and social drafts all live downstream of this skill. Respect the seam.
 
 ## Non-negotiables
 
 - Never skip Stage 1. "I have an idea, just build it" is how posts end up off-thesis.
 - Never skip Stage 5 checkpoints. The whole value of this skill is forcing mid-build review.
 - Never advance a stage on your own judgement alone — every stage boundary is a checkpoint.
+- Never ship from this skill. Shipping is `dgnet-process` → `dgnet-publish`.
 - If at any stage the claim starts to feel tired, say so. Killing a post early is a feature.
-
-## What to report at the end
-
-When a post ships, report:
-- Slug + URL
-- Whether it had an artefact and how many phases
-- Total checkpoints hit (rough count is fine)
-- One thing that was harder than expected (feeds the skill's own evolution)

@@ -1,25 +1,32 @@
 #!/usr/bin/env node
 /**
- * capture.mjs — deterministic artefact capture
+ * capture.mjs — artefact + beat capture
  *
- * Drives an artefact through its phases using the window.__artefact contract
- * and records either a static hero PNG or an animated MP4/GIF.
+ * Two distinct capture paths:
  *
- * USAGE
- *   node scripts/capture.mjs <slug> --mode=og          # static hero PNG
- *   node scripts/capture.mjs <slug> --mode=social      # animated MP4 + GIF
+ *   --mode=beat    Records public/artefacts/<slug>.beat.html using Playwright's
+ *                  native video capture. Produces <slug>-beat.mp4 + <slug>-hero.png.
+ *                  This is the default for new posts. Beat files expose:
+ *                    window.__beat = { duration, stillFrameAt(), onReady(), start() }
+ *                  Capture appends ?capture=1 to disable auto-start so the recorder
+ *                  controls timing. The page plays in real wall-clock time —
+ *                  CSS transitions interpolate normally because the rendering
+ *                  pipeline sees real time. Earlier iterations used virtual-time
+ *                  stepping; that broke CSS transitions, so we don't anymore.
+ *
+ *   --mode=og      Static hero PNG from public/artefacts/<slug>.html (legacy,
+ *                  phase-driven). Uses window.__artefact contract + SHOTS table.
+ *
+ *   --mode=social  MP4 + GIF from public/artefacts/<slug>.html (legacy,
+ *                  phase-driven). Uses window.__artefact contract + SHOTS table.
+ *
+ * Prefer --mode=beat for new posts. The legacy modes remain for posts that
+ * predate the beat workflow.
  *
  * REQUIREMENTS
  *   npm i -D playwright
  *   npx playwright install chromium
- *   ffmpeg on PATH (for --mode=social)
- *
- * CONTRACT
- *   The artefact at public/artefacts/<slug>.html must expose:
- *     window.__artefact = {
- *       slug, phaseCount, currentPhase(), goToPhase(i), phaseReady()
- *     }
- *   Plus any phase-specific action hooks referenced in the shot list below.
+ *   ffmpeg on PATH
  */
 
 import { chromium } from "playwright";
@@ -39,6 +46,7 @@ if (!slug) {
 const mode = (flags.find(f => f.startsWith("--mode=")) || "--mode=og").split("=")[1];
 
 const ARTEFACT_URL = `file://${ROOT}/public/artefacts/${slug}.html`;
+const BEAT_URL     = `file://${ROOT}/public/artefacts/${slug}.beat.html`;
 const IMG_DIR = `${ROOT}/public/images`;
 if (!existsSync(IMG_DIR)) mkdirSync(IMG_DIR, { recursive: true });
 
@@ -59,13 +67,89 @@ const SHOTS = {
   },
 };
 
+const browser = await chromium.launch();
+
+if (mode === "beat") {
+  // Probe pass — read duration + stillAt from the beat without recording.
+  const probeContext = await browser.newContext({
+    viewport: { width: 1200, height: 675 },
+    deviceScaleFactor: 2,
+  });
+  const probePage = await probeContext.newPage();
+  await probePage.goto(BEAT_URL + "?capture=1");
+  await probePage.waitForFunction(() => !!window.__beat);
+  const { duration, stillAt } = await probePage.evaluate(async () => {
+    await window.__beat.onReady();
+    return {
+      duration: window.__beat.duration,
+      stillAt:  window.__beat.stillFrameAt ? window.__beat.stillFrameAt() : window.__beat.duration - 200,
+    };
+  });
+  await probeContext.close();
+
+  // Recording pass — Playwright's native video records the page at real
+  // wall-clock time. CSS transitions and timer-driven schedules play exactly
+  // as they would in a browser; no virtual-time stepping, no clock surgery.
+  const videoDir = `${ROOT}/.capture/${slug}-beat-video`;
+  mkdirSync(videoDir, { recursive: true });
+  const recContext = await browser.newContext({
+    viewport: { width: 1200, height: 675 },
+    deviceScaleFactor: 2,
+    recordVideo: { dir: videoDir, size: { width: 1200, height: 675 } },
+  });
+  const recPage = await recContext.newPage();
+  await recPage.goto(BEAT_URL + "?capture=1");
+  await recPage.waitForFunction(() => !!window.__beat);
+  await recPage.evaluate(async () => { await window.__beat.onReady(); });
+  await recPage.evaluate(() => window.__beat.start());
+  // Wait the beat's full duration, plus a small safety buffer.
+  await recPage.waitForTimeout(duration + 150);
+  await recContext.close();
+
+  // Find the recorded webm (Playwright names it with a hash).
+  const { readdirSync } = await import("node:fs");
+  const webm = readdirSync(videoDir).find(f => f.endsWith(".webm"));
+  if (!webm) throw new Error("Playwright did not produce a video file.");
+  const webmPath = `${videoDir}/${webm}`;
+
+  // Convert webm → mp4. Trim to exactly `duration` ms so the loop is tight.
+  const mp4 = `${ROOT}/public/images/${slug}-beat.mp4`;
+  await run("ffmpeg", ["-y", "-i", webmPath,
+    "-t", String(duration / 1000),
+    "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2",
+    "-c:v", "libx264", "-pix_fmt", "yuv420p", "-movflags", "+faststart", mp4]);
+  console.log(`wrote ${mp4}`);
+
+  // Hero PNG — fresh page, run the beat in real time, screenshot at stillAt.
+  const heroContext = await browser.newContext({
+    viewport: { width: 1200, height: 675 },
+    deviceScaleFactor: 2,
+  });
+  const heroPage = await heroContext.newPage();
+  await heroPage.goto(BEAT_URL + "?capture=1");
+  await heroPage.waitForFunction(() => !!window.__beat);
+  await heroPage.evaluate(async () => { await window.__beat.onReady(); });
+  await heroPage.evaluate(() => window.__beat.start());
+  await heroPage.waitForTimeout(stillAt);
+  const hero = `${ROOT}/public/images/${slug}-hero.png`;
+  await heroPage.screenshot({
+    path: hero,
+    clip: { x: 0, y: 0, width: 1200, height: 675 },
+  });
+  console.log(`wrote ${hero}`);
+  await heroContext.close();
+
+  await browser.close();
+  process.exit(0);
+}
+
+// ===== Legacy phase-driven modes (og, social) =====
 const shots = SHOTS[slug];
 if (!shots) {
   console.error(`No shot list for slug "${slug}". Add one to SHOTS in scripts/capture.mjs.`);
   process.exit(1);
 }
 
-const browser = await chromium.launch();
 const context = await browser.newContext({
   viewport: { width: 1080, height: 900 },
   deviceScaleFactor: 2,

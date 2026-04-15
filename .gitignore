@@ -6,4 +6,5 @@ dist/
 .env.production
 .vercel/
 .netlify/
+.capture/
 npm-debug.log*
