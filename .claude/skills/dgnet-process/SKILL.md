@@ -116,6 +116,8 @@ stage: edited  # or whatever the new stage is
 
 Do this with `Edit` on the post file. Do not touch any other frontmatter field. Do not rewrite the post file.
 
+**Always commit on stage transition.** After updating the `stage` field, create a git commit capturing all changes from that stage's work. The commit message should name the stage completed and the skill that produced it (e.g. "Author beat, update stage to distilled"). This makes the process history readable in `git log` and lets you roll back a single stage cleanly. Do not batch multiple stage transitions into one commit.
+
 **If the user doesn't sign off** (they push back on the pass's recommendations), leave the stage where it was. Stage changes require user confirmation.
 
 ## Artefact-aware routing

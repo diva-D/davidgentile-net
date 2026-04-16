@@ -6,30 +6,10 @@
 <title>The friction tax · artefact</title>
 <link rel="preconnect" href="https://rsms.me/" />
 <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+<link rel="stylesheet" href="/styles/artefact.css" />
 <style>
-  :root {
-    --bg: #faf7f0;
-    --ink: #1a1a1d;
-    --ink-soft: #4a4a52;
-    --muted: #8c8c93;
-    --line: #e4dfd2;
-    --accent: #d94b2f;
-    --gold: #e0a526;
-    --green: #3a9f5e;
-    --paper: #fff;
-  }
-  * { box-sizing: border-box; }
-  html, body {
-    margin: 0; background: var(--bg); color: var(--ink);
-    font-family: "Iowan Old Style", "Palatino", ui-serif, Georgia, serif;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  /* ==== STRUCTURAL ==== */
-  .wrap { max-width: 1040px; margin: 0 auto; padding: 24px 24px 28px; }
+  /* ==== FRICTION-TAX OVERRIDES ==== */
   .stage {
-    background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
-    padding: 24px 28px 22px; box-shadow: 0 2px 0 rgba(0,0,0,0.03);
     display: flex; flex-direction: column; min-height: 720px;
   }
 
@@ -319,27 +299,12 @@
     display: flex; align-items: center; gap: 10px; justify-content: space-between;
     padding-top: 16px; border-top: 1px solid var(--line); margin-top: 18px;
   }
-  .btn {
-    font-family: "Inter", sans-serif; font-size: 12px; font-weight: 700;
-    padding: 10px 16px; border-radius: 8px; border: 1px solid var(--ink);
-    background: var(--paper); color: var(--ink); cursor: pointer; letter-spacing: 0.3px;
-    transition: background 0.2s, color 0.2s;
-  }
-  .btn:hover { background: var(--ink); color: var(--paper); }
-  .btn.primary { background: var(--ink); color: var(--paper); }
-  .btn.primary:hover { background: var(--accent); border-color: var(--accent); }
-  .btn.ghost { border-color: transparent; color: var(--muted); background: transparent; padding-left: 4px; }
-  .btn.ghost:hover { color: var(--ink); background: transparent; }
-  .btn:disabled { opacity: 0.25; cursor: not-allowed; }
-  .btn:disabled:hover { background: var(--paper); color: var(--ink); }
-
   /* ==== MOBILE (≤640px) ====
    * Every artefact must work on phones. Rule of thumb: stack vertically,
    * shrink padding, let chips wrap, keep tap targets ≥ 36px.
    * ========================== */
   @media (max-width: 640px) {
-    .wrap  { padding: 12px 12px 18px; }
-    .stage { padding: 18px 14px 18px; min-height: 0; border-radius: 10px; }
+    .stage { min-height: 0; }
 
     .phase-header { padding-bottom: 10px; margin-bottom: 12px; gap: 10px; }
     .phase-dot { width: 20px; height: 3px; }
@@ -426,7 +391,6 @@
       border-top: 0; border-bottom: 1px solid var(--line);
     }
     .canvas { order: 2; }
-    .btn { font-size: 13px; padding: 12px 16px; min-height: 40px; }
   }
 </style>
 </head>

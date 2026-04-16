@@ -1,0 +1,79 @@
+---
+/**
+ * <Sources> — footnote-style source list for post essays.
+ * Renders a numbered list of references at the bottom of a post.
+ *
+ * Usage in MDX:
+ *   import Sources from '../../components/Sources.astro';
+ *   <Sources items={[
+ *     { label: "Anthropic: Agent Skills", url: "https://docs.anthropic.com/..." },
+ *     { label: "Skill file best practices", url: "https://docs.anthropic.com/..." },
+ *     { label: "Based on Anthropic's PDF processing skill example" },
+ *   ]} />
+ */
+interface SourceItem {
+  label: string;
+  url?: string;
+}
+interface Props {
+  items: SourceItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<aside class="post-sources">
+  <div class="post-sources-label">Sources</div>
+  <ol class="post-sources-list">
+    {items.map((item) => (
+      <li>
+        {item.url
+          ? <a href={item.url} target="_blank" rel="noopener">{item.label}</a>
+          : <span>{item.label}</span>
+        }
+      </li>
+    ))}
+  </ol>
+</aside>
+
+<style is:global>
+  .post-sources {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line, #e4dfd2);
+  }
+  .post-sources-label {
+    font-family: "Inter", sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--muted, #8c8c93);
+    margin-bottom: 8px;
+  }
+  .post-sources-list {
+    margin: 0;
+    padding: 0 0 0 20px;
+    font-family: "Inter", sans-serif;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--muted, #8c8c93);
+  }
+  .post-sources-list li::marker {
+    color: var(--muted, #8c8c93);
+    font-size: 11px;
+  }
+  .post-sources-list a {
+    color: var(--ink-soft, #4a4a52);
+    text-decoration: underline;
+    text-decoration-color: var(--line, #e4dfd2);
+    text-underline-offset: 2px;
+    transition: text-decoration-color 0.2s;
+  }
+  .post-sources-list a:hover {
+    text-decoration-color: var(--ink-soft, #4a4a52);
+  }
+  .post-sources-list span {
+    color: var(--ink-soft, #4a4a52);
+  }
+</style>

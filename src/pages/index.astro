@@ -20,7 +20,7 @@ const rest = posts.slice(3);
     </section>
 
     {featured && (
-      <a class="featured" href={`/${featured.slug}`}>
+      <a class="featured" href={`/${featured.id}`}>
         <div class="featured-meta">
           <span class="featured-kicker">Latest</span>
           <span class="featured-date">{fmt(featured.data.date)}</span>
@@ -51,12 +51,16 @@ const rest = posts.slice(3);
       <ul class="post-grid">
         {next.map((post) => (
           <li>
-            <a href={`/${post.slug}`}>
-              {post.data.heroImage && (
+            <a href={`/${post.id}`}>
+              {post.data.beatImage ? (
+                <div class="post-grid-img">
+                  <img src={post.data.beatImage} alt={post.data.title} />
+                </div>
+              ) : post.data.heroImage ? (
                 <div class="post-grid-img">
                   <img src={post.data.heroImage} alt={post.data.title} />
                 </div>
-              )}
+              ) : null}
               <span class="date">{fmt(post.data.date)}</span>
               <span class="title">{post.data.title}</span>
               <span class="summary">{post.data.description}</span>
@@ -71,7 +75,7 @@ const rest = posts.slice(3);
         {rest.map((post) => (
           <li>
             <span class="date">{fmt(post.data.date)}</span>
-            <a class="title" href={`/${post.slug}`}>{post.data.title}</a>
+            <a class="title" href={`/${post.id}`}>{post.data.title}</a>
             <div class="summary">{post.data.description}</div>
           </li>
         ))}

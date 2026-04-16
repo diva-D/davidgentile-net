@@ -91,6 +91,9 @@ if (mode === "beat") {
   // wall-clock time. CSS transitions and timer-driven schedules play exactly
   // as they would in a browser; no virtual-time stepping, no clock surgery.
   const videoDir = `${ROOT}/.capture/${slug}-beat-video`;
+  // Clean stale recordings so we don't pick up a cached webm.
+  const { rmSync } = await import("node:fs");
+  rmSync(videoDir, { recursive: true, force: true });
   mkdirSync(videoDir, { recursive: true });
   const recContext = await browser.newContext({
     viewport: { width: 1200, height: 675 },
@@ -123,6 +126,17 @@ if (mode === "beat") {
     "-c:v", "libx264", "-crf", "18", "-preset", "slow",
     "-pix_fmt", "yuv420p", "-movflags", "+faststart", mp4]);
   console.log(`wrote ${mp4}`);
+
+  // GIF — two-pass palette for sharp output at full resolution.
+  const palette = `${videoDir}/palette.png`;
+  const gif = `${IMG_DIR}/beat.gif`;
+  const gifFilter = "fps=15,scale=1080:-1:flags=lanczos";
+  await run("ffmpeg", ["-y", "-i", mp4,
+    "-vf", `${gifFilter},palettegen=stats_mode=diff`, palette]);
+  await run("ffmpeg", ["-y", "-i", mp4, "-i", palette,
+    "-lavfi", `${gifFilter}[x];[x][1:v]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle`,
+    "-loop", "0", gif]);
+  console.log(`wrote ${gif}`);
 
   // Hero PNG — fresh page, run the beat in real time, screenshot at stillAt.
   const heroContext = await browser.newContext({

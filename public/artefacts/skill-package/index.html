@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>From File to Package · artefact</title>
+<link rel="preconnect" href="https://rsms.me/" />
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+<link rel="stylesheet" href="/styles/artefact.css" />
+<style>
+/* ==== ARTEFACT-SPECIFIC ==== */
+.build {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+/* Folder stack */
+.folder {
+  background: #f8f5ed;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-family: "SF Mono", "Menlo", ui-monospace, monospace;
+  font-size: 12px;
+  line-height: 1.9;
+  color: var(--ink-soft);
+}
+.folder .dir-name {
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.file-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  margin: 0 -6px;
+  border-radius: 4px;
+}
+.file-row.new {
+  animation: fileIn 0.4s ease both;
+}
+@keyframes fileIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+.file-row .pre { color: var(--line); user-select: none; }
+.file-row .name { flex: 1; }
+.file-row .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.file-row .dot.loaded { background: var(--accent); }
+.file-row .dot.on-demand { background: var(--line); }
+.file-row .dot.executed { background: var(--green); }
+
+/* Token bar */
+.token-bar {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.token-label {
+  font-family: "Inter", sans-serif;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.token-track {
+  height: 6px;
+  background: var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.token-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+.token-val {
+  font-family: "Inter", sans-serif;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* Narration */
+.narration {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+.narration p { margin: 0 0 14px; }
+.narration p:last-child { margin-bottom: 0; }
+.narration strong { color: var(--ink); font-weight: 700; }
+.narration em { color: var(--accent); font-style: italic; }
+
+/* File preview */
+.preview {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  animation: fileIn 0.3s ease both;
+}
+.preview-header {
+  font-family: "Inter", sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.preview-header .badge {
+  font-size: 9px; font-weight: 800;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 3px;
+}
+.badge.on-demand {
+  background: rgba(0,0,0,0.04); color: var(--muted);
+  border: 1px solid var(--line);
+}
+.badge.executed {
+  background: rgba(58,159,94,0.1); color: var(--green);
+  border: 1px solid rgba(58,159,94,0.3);
+}
+.preview-code {
+  background: #f8f5ed;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-family: "SF Mono", "Menlo", ui-monospace, monospace;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  white-space: pre-wrap;
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.preview-code.exec { box-shadow: inset 3px 0 0 var(--green); }
+
+.previews-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  animation: fileIn 0.3s ease both;
+}
+
+/* ==== MOBILE ==== */
+@media (max-width: 768px) {
+  .build { grid-template-columns: 1fr; }
+  .folder { font-size: 11px; }
+  .narration { font-size: 14px; }
+  .previews-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="stage" id="stage"></div>
+</div>
+
+<script>
+const PHASES = [
+  {
+    files: [
+      { name: 'SKILL.md', pre: '\u2514\u2500 ', dot: 'loaded' },
+    ],
+    tokenPct: 10,
+    tokenLabel: '1,200 tokens \u00b7 the entire skill',
+    narration: '<p><strong>For simple tasks, this is the entire skill.</strong> One file. Everything the agent needs (discovery, knowledge, workflow, guardrails) in under 2,000 tokens (roughly a page of text in the agent\u2019s working memory).</p><p>Most skills start here and many never need more. If the use case is straightforward, a single file is the whole package.</p>',
+    previews: [],
+  },
+  {
+    files: [
+      { name: 'SKILL.md', pre: '\u251c\u2500 ', dot: 'loaded' },
+      { name: 'FORMS.md', pre: '\u2514\u2500 ', dot: 'on-demand', isNew: true },
+    ],
+    tokenPct: 37,
+    tokenLabel: '1,200 always loaded + 3,400 on demand',
+    narration: '<p><strong>Now the task gets specific.</strong> A user asks the agent to fill a PDF form. The main file has the basics, but form-filling has dozens of edge cases: field types, date formats, signature fields.</p><p>You <em>could</em> cram all that into <code>SKILL.md</code>, but then every task pays the cost of loading it. Instead, <code>FORMS.md</code> sits alongside. 3,400 tokens the agent only reads when the task actually involves forms.</p>',
+    previews: ['FORMS.md'],
+  },
+  {
+    files: [
+      { name: 'SKILL.md', pre: '\u251c\u2500 ', dot: 'loaded' },
+      { name: 'FORMS.md', pre: '\u251c\u2500 ', dot: 'on-demand' },
+      { name: 'REFERENCE.md', pre: '\u251c\u2500 ', dot: 'on-demand', isNew: true },
+      { name: 'EXAMPLES.md', pre: '\u2514\u2500 ', dot: 'on-demand', isNew: true },
+    ],
+    tokenPct: 100,
+    tokenLabel: '1,200 always loaded + 11,300 available on demand',
+    narration: '<p><strong>Same pattern for depth.</strong> <code>REFERENCE.md</code> holds the full API surface: every method, every parameter. <code>EXAMPLES.md</code> holds worked input/output pairs the agent can pattern-match against.</p><p>Each file exists because some tasks need it and most don\u2019t. The agent decides what to open based on what the task requires. <em>Depth without default cost.</em></p>',
+    previews: ['REFERENCE.md', 'EXAMPLES.md'],
+  },
+  {
+    files: [
+      { name: 'SKILL.md', pre: '\u251c\u2500 ', dot: 'loaded' },
+      { name: 'FORMS.md', pre: '\u251c\u2500 ', dot: 'on-demand' },
+      { name: 'REFERENCE.md', pre: '\u251c\u2500 ', dot: 'on-demand' },
+      { name: 'EXAMPLES.md', pre: '\u251c\u2500 ', dot: 'on-demand' },
+      { name: 'scripts/', pre: '\u2514\u2500 ', isDir: true },
+      { name: 'analyze_form.py', pre: '   \u251c\u2500 ', dot: 'executed', isNew: true },
+      { name: 'fill_form.py', pre: '   \u2514\u2500 ', dot: 'executed', isNew: true },
+    ],
+    tokenPct: 100,
+    tokenLabel: '1,200 always loaded + 11,300 on demand + scripts free',
+    narration: '<p><strong>Now the skill needs to <em>do</em> something, not just <em>know</em> something.</strong> These scripts aren\u2019t documents the agent reads into memory. They\u2019re programs it executes: call the script, read stdout, act on the result.</p><p>Zero memory cost. Knowledge encoded as runnable code instead of prose.</p>',
+    previews: ['analyze_form.py', 'fill_form.py'],
+  },
+  {
+    files: [
+      { name: 'SKILL.md', pre: '\u251c\u2500 ', dot: 'loaded' },
+      { name: 'FORMS.md', pre: '\u251c\u2500 ', dot: 'on-demand' },
+      { name: 'REFERENCE.md', pre: '\u251c\u2500 ', dot: 'on-demand' },
+      { name: 'EXAMPLES.md', pre: '\u251c\u2500 ', dot: 'on-demand' },
+      { name: 'scripts/', pre: '\u2514\u2500 ', isDir: true },
+      { name: 'analyze_form.py', pre: '   \u251c\u2500 ', dot: 'executed' },
+      { name: 'fill_form.py', pre: '   \u2514\u2500 ', dot: 'executed' },
+    ],
+    tokenPct: 100,
+    tokenLabel: '1,200 base \u00b7 up to 12,500 total \u00b7 pays only for what it uses',
+    narration: '<p><strong>What started as a single document is now a package.</strong> One main file, three reference files loaded on demand, two executable scripts. The agent always pays for 1,200 tokens. It <em>can</em> access 12,500 more, but only pays for what the task actually needs.</p><p>Not a prompt. Not a document. A program, with knowledge, branching, and tools, bundled into a single skill.</p>',
+    previews: [],
+  },
+];
+
+const FILE_PREVIEWS = {
+  'FORMS.md': {
+    badge: 'on-demand', badgeLabel: 'Loaded on demand',
+    code: '# Form Filling Guide\n\nCRITICAL: Complete steps in order.\nDo not skip ahead to filling.\n\n## Step 1: Check field type\nRun: scripts/analyze_form.py input.pdf\n\nIf output has field annotations:\n  \u2192 Go to "Fillable fields" below\nIf output is empty:\n  \u2192 Go to "Non-fillable fields"\n\n## Fillable fields\n- checkbox: use /Yes, /Off\n- radio: group by field name\n- signature: skip (requires manual)',
+  },
+  'REFERENCE.md': {
+    badge: 'on-demand', badgeLabel: 'Loaded on demand',
+    code: '# pdfplumber API Reference\n\n## Page methods\n.extract_text()    \u2192 str\n.extract_tables()  \u2192 list[list]\n.crop(bbox)        \u2192 Page\n.within_bbox(bbox) \u2192 Page\n\n## Table settings\nsnap_tolerance:  3\njoin_tolerance:  3\nedge_min_length: 3',
+  },
+  'EXAMPLES.md': {
+    badge: 'on-demand', badgeLabel: 'Loaded on demand',
+    code: '# Worked Examples\n\n## Extract table from invoice\nInput:  invoice_q4.pdf (2 pages)\nOutput: CSV with columns:\n        date, item, qty, total\n\n## Merge two PDFs\nInput:  cover.pdf + report.pdf\nOutput: combined.pdf (concatenated)',
+  },
+  'analyze_form.py': {
+    badge: 'executed', badgeLabel: 'Executed',
+    code: '#!/usr/bin/env python3\n"""Analyze PDF form fields.\nOutputs JSON field map to stdout.\n\nUsage:\n  python scripts/analyze_form.py input.pdf\n"""\nimport pdfplumber, json, sys\n\nwith pdfplumber.open(sys.argv[1]) as pdf:\n    fields = []\n    for page in pdf.pages:\n        for annot in (page.annots or []):\n            fields.append(annot)\n    print(json.dumps(fields, indent=2))',
+  },
+  'fill_form.py': {
+    badge: 'executed', badgeLabel: 'Executed',
+    code: '#!/usr/bin/env python3\n"""Fill PDF form from field values.\n\nUsage:\n  python scripts/fill_form.py in.pdf vals.json out.pdf\n"""\nfrom pypdf import PdfReader, PdfWriter\nimport json, sys\n\nreader = PdfReader(sys.argv[1])\nvals = json.load(open(sys.argv[2]))\nwriter = PdfWriter()\nwriter.append(reader)\nwriter.update_page_form_field_values(\n    writer.pages[0], vals\n)\nwriter.write(sys.argv[3])',
+  },
+};
+
+let phase = 0;
+
+function render() {
+  const p = PHASES[phase];
+  const total = PHASES.length;
+  const stage = document.getElementById('stage');
+
+  // Folder
+  let folder = '<div class="dir-name">processing-pdfs/</div>';
+  p.files.forEach(f => {
+    if (f.isDir) {
+      folder += `<div class="file-row"><span class="pre">${f.pre}</span><span class="name" style="color:var(--muted);font-weight:600">${f.name}</span></div>`;
+      return;
+    }
+    const cls = f.isNew ? ' new' : '';
+    folder += `<div class="file-row${cls}"><span class="pre">${f.pre}</span><span class="name">${f.name}</span><span class="dot ${f.dot}"></span></div>`;
+  });
+
+  // Previews
+  let previewHtml = '';
+  if (p.previews.length === 1) {
+    const fp = FILE_PREVIEWS[p.previews[0]];
+    if (fp) {
+      const ec = fp.badge === 'executed' ? ' exec' : '';
+      previewHtml = `<div class="preview"><div class="preview-header"><span>${p.previews[0]}</span><span class="badge ${fp.badge}">${fp.badgeLabel}</span></div><div class="preview-code${ec}">${fp.code}</div></div>`;
+    }
+  } else if (p.previews.length === 2) {
+    let cols = '';
+    p.previews.forEach(name => {
+      const fp = FILE_PREVIEWS[name];
+      if (!fp) return;
+      const ec = fp.badge === 'executed' ? ' exec' : '';
+      cols += `<div><div class="preview-header"><span>${name}</span><span class="badge ${fp.badge}">${fp.badgeLabel}</span></div><div class="preview-code${ec}">${fp.code}</div></div>`;
+    });
+    previewHtml = `<div class="previews-row">${cols}</div>`;
+  }
+
+  // Nav — uses shared .btn classes from artefact.css
+  let nav = `<div class="phase-step">${phase + 1} / ${total}</div><div class="btn-group">`;
+  if (phase > 0) nav += '<button class="btn ghost" id="btnBack">\u2190 Back</button>';
+  if (phase < total - 1) nav += '<button class="btn primary" id="btnNext">Next \u2192</button>';
+  else nav += '<button class="btn" id="btnReset">Reset \u21ba</button>';
+  nav += '</div>';
+
+  stage.innerHTML = `
+    <div class="build">
+      <div>
+        <div class="folder">${folder}</div>
+        <div class="token-bar">
+          <div class="token-label">Context cost</div>
+          <div class="token-track"><div class="token-fill" style="width:${p.tokenPct}%"></div></div>
+          <div class="token-val">${p.tokenLabel}</div>
+        </div>
+      </div>
+      <div>
+        <div class="narration">${p.narration}</div>
+        ${previewHtml}
+      </div>
+    </div>
+    <div class="phase-nav">${nav}</div>`;
+
+  const next = document.getElementById('btnNext');
+  const back = document.getElementById('btnBack');
+  const reset = document.getElementById('btnReset');
+  function advance(fn) { fn(); render(); document.getElementById('stage').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  if (next) next.addEventListener('click', () => advance(() => phase++));
+  if (back) back.addEventListener('click', () => advance(() => phase--));
+  if (reset) reset.addEventListener('click', () => advance(() => phase = 0));
+
+  postHeight();
+}
+
+/* ==== IFRAME SELF-SIZING ==== */
+function postHeight() {
+  const h = Math.ceil(document.documentElement.getBoundingClientRect().height);
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'artefact:height', height: h }, '*');
+  }
+}
+new ResizeObserver(postHeight).observe(document.body);
+
+/* ==== CAPTURE CONTRACT ==== */
+window.__artefact = {
+  slug: 'skill-package',
+  phaseCount: 5,
+  currentPhase: () => phase,
+  goToPhase: (n) => { phase = n; render(); return Promise.resolve(); },
+  phaseReady: () => new Promise(r => setTimeout(r, 400)),
+};
+
+window.addEventListener('load', render);
+</script>
+</body>
+</html>

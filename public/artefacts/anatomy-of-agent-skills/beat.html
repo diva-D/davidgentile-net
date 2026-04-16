@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Beat: Anatomy of Agent Skills</title>
+<link rel="preconnect" href="https://rsms.me/" />
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+<style>
+/*
+  BEAT AUTHORING BRIEF
+  1. Argument: A skill file separates knowledge, sequence, and constraints so each part can be right independently.
+  2. First 200ms: Wall of text labeled "PROMPT" with large hero text "A prompt is one block of text."
+  3. Punch: Sections split, prose crossfades into structured code, accent bars appear.
+  4. Final frame: "An agent skill is five layers." + structured specimen.
+  5. Loop: Content-to-content cut.
+  Canvas: 1200x675 (16:9 landscape, matches capture.mjs viewport)
+*/
+
+:root {
+  --bg: #faf7f0;
+  --ink: #1a1a1d;
+  --ink-soft: #4a4a52;
+  --muted: #8c8c93;
+  --line: #e4dfd2;
+  --accent: #d94b2f;
+  --paper: #fff;
+}
+
+* { box-sizing: border-box; margin: 0; }
+html, body {
+  background: var(--bg);
+  width: 1200px; height: 675px;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.stage {
+  position: relative;
+  width: 1200px; height: 675px;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  padding: 28px 48px 24px;
+  gap: 44px;
+}
+
+/* ==== HERO TEXT ==== */
+.hero {
+  flex: 0 0 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.hero .lines {
+  display: grid;
+}
+.hero .line {
+  grid-area: 1 / 1;
+  font-family: "Inter", sans-serif;
+  font-weight: 800;
+  font-size: 42px;
+  line-height: 1.18;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+  transition: opacity 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.hero .before { opacity: 1; }
+.hero .after { opacity: 0; }
+.hero .accent { color: var(--accent); }
+
+.morphed .hero .before { opacity: 0; }
+.morphed .hero .after { opacity: 1; }
+
+.hero .subtitle {
+  font-family: "Inter", sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  margin-top: 4px;
+  line-height: 1.45;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.revealed .hero .subtitle {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ==== SPECIMEN WRAP ==== */
+.specimen-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ==== TAB ==== */
+.tab {
+  font-family: "Inter", sans-serif;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--muted);
+  padding: 6px 14px;
+  border-bottom: 1px solid var(--line);
+  background: #f5f2ea;
+  border-radius: 8px 8px 0 0;
+}
+
+/* ==== SPECIMEN ==== */
+.specimen {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: visible;
+  background: var(--paper);
+  margin-left: 140px;
+}
+
+/* ==== SECTIONS ==== */
+.section {
+  display: grid;
+  font-family: "SF Mono", "Menlo", ui-monospace, monospace;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  white-space: pre-wrap;
+  position: relative;
+  overflow: visible;
+  transition: padding 1s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              border-color 0.8s ease;
+}
+
+/* Grid-stack: both layers same cell */
+.section .layer { grid-area: 1 / 1; transition: opacity 1s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+.section .wall-text { opacity: 1; }
+.section .code-text { opacity: 0; }
+.morphed .section .wall-text { opacity: 0; }
+.morphed .section .code-text { opacity: 1; }
+
+/* Wall state */
+.wall .section {
+  padding: 3px 12px;
+  border-bottom: 1px solid transparent;
+}
+.wall .section:first-of-type { padding-top: 8px; }
+.wall .section:last-of-type { padding-bottom: 8px; }
+
+/* Split state */
+.split .section {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.split .section:last-child { border-bottom: none; }
+
+/* Accent bar */
+.section::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: transparent;
+  transition: background 0.6s ease;
+}
+.structured .section::after { background: var(--accent); }
+
+/* ==== SECTION LABELS ==== */
+.section .label {
+  position: absolute;
+  right: calc(100% + 14px);
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity 0.6s ease 0.2s;
+  white-space: nowrap;
+  text-align: right;
+}
+.structured .section .label { opacity: 1; }
+
+/* ==== SYNTAX ==== */
+.ym-delim { color: var(--muted); }
+.ym-key { color: var(--ink); font-weight: 600; }
+.ym-val { color: var(--ink-soft); }
+.md-h { color: var(--ink); font-weight: 700; }
+.hash { color: var(--muted); font-weight: 400; }
+.md-code { background: rgba(0,0,0,0.045); padding: 1px 4px; border-radius: 3px; font-size: 10.5px; }
+.md-num { color: var(--accent); font-weight: 600; }
+.md-constraint { color: var(--accent); font-weight: 600; }
+.md-link { color: var(--accent); }
+.md-bold { font-weight: 700; color: var(--ink); }
+.md-kw { color: #6b5ce7; }
+.md-str { color: #2a7e4f; }
+.md-fn { color: #b07a1b; }
+
+/* ==== WATERMARK ==== */
+.watermark {
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--ink);
+  text-align: right;
+  margin-top: 8px;
+  margin-left: 140px;
+  padding-right: 2px;
+}
+</style>
+</head>
+<body>
+<div class="stage wall" id="stage">
+
+  <div class="hero">
+    <div class="lines">
+      <div class="line before">A prompt is<br>one block of text.</div>
+      <div class="line after">An agent skill is<br><span class="accent">five layers.</span></div>
+    </div>
+    <div class="subtitle">The scaffolding that makes intelligence reliable.</div>
+  </div>
+
+  <div class="specimen-wrap">
+    <div class="specimen" id="specimen">
+      <div class="tab" id="tab">PROMPT</div>
+    </div>
+    <div class="watermark">davidgentile.net/anatomy-of-agent-skills</div>
+  </div>
+
+</div>
+
+<script>
+const SECTIONS = [
+  {
+    id: 'frontmatter',
+    label: 'Identity',
+    wall: 'This skill handles PDF processing. It extracts text from PDF files, fills out form fields, merges multiple documents, and converts scanned pages to searchable text. Use it whenever the user asks about PDFs or document extraction.',
+    code: '<span class="ym-delim">---</span>\n<span class="ym-key">name:</span> <span class="ym-val">processing-pdfs</span>\n<span class="ym-key">description:</span> <span class="ym-val">Extract text and tables from</span>\n<span class="ym-val">  PDF files, fill forms, merge docs.</span>\n<span class="ym-key">allowed_tools:</span> <span class="ym-val">Bash, Read, Write</span>\n<span class="ym-delim">---</span>',
+  },
+  {
+    id: 'knowledge',
+    label: 'Knowledge',
+    wall: 'Use pdfplumber to extract text from native PDFs. Open the file, iterate over pages, call extract_text on each one. For tables use extract_tables. For scanned PDFs use pdf2image to convert pages to images, then run pytesseract OCR on each.',
+    code: '<span class="md-h"><span class="hash">#</span> Extraction</span>\n\n  <span class="md-kw">import</span> pdfplumber\n  <span class="md-kw">with</span> pdfplumber.<span class="md-fn">open</span>(<span class="md-str">"f.pdf"</span>) <span class="md-kw">as</span> pdf:\n    <span class="md-kw">for</span> page <span class="md-kw">in</span> pdf.pages:\n      text = page.<span class="md-fn">extract_text</span>()\n\nScanned: <span class="md-code">pdf2image</span> + <span class="md-code">pytesseract</span>',
+  },
+  {
+    id: 'workflow',
+    label: 'Sequence',
+    wall: 'First analyze the form structure to understand what fields exist. Then map each source value to its target field. Run the fill script. Verify the result visually. If any fields are wrong go back to the mapping step and adjust. Never skip the visual check.',
+    code: '<span class="md-h"><span class="hash">##</span> Form-filling workflow</span>\n\n<span class="md-num">1.</span> Analyze: <span class="md-code">scripts/analyze_form.py</span>\n<span class="md-num">2.</span> Map source values \u2192 target fields\n<span class="md-num">3.</span> Fill: <span class="md-code">scripts/fill_form.py</span>\n<span class="md-num">4.</span> Verify visually\n<span class="md-num">5.</span> <span class="md-constraint">If wrong \u2192 return to step 2</span>',
+  },
+  {
+    id: 'guardrails',
+    label: 'Constraints',
+    wall: 'Run scripts exactly as shown, don\'t add extra flags. Always check the output visually before delivering. Files over 50 pages must be processed in batches. Never modify the original input.',
+    code: '<span class="md-constraint">Run scripts exactly as shown. No extra flags.</span>\n<span class="md-constraint">Verify filled PDF visually before delivering.</span>\n<span class="md-constraint">Files &gt;50pp: batch in groups of 10.</span>\n<span class="md-constraint">Never modify the original input file.</span>',
+  },
+  {
+    id: 'disclosure',
+    label: 'References',
+    wall: 'For more on form filling see the forms doc. API details are in the reference. Examples directory has sample scripts. Check troubleshooting if extraction returns empty text.',
+    code: '<span class="md-bold">Form filling</span>: <span class="md-link">FORMS.md</span>\n<span class="md-bold">API reference</span>: <span class="md-link">REFERENCE.md</span>\n<span class="md-bold">Examples</span>: <span class="md-link">examples/*.py</span>\n<span class="md-bold">Troubleshooting</span>: <span class="md-link">TROUBLESHOOT.md</span>',
+  },
+];
+
+/* Build DOM */
+const specimenEl = document.getElementById('specimen');
+
+SECTIONS.forEach(s => {
+  const sec = document.createElement('div');
+  sec.className = 'section';
+  sec.dataset.section = s.id;
+  sec.innerHTML =
+    '<div class="layer wall-text">' + s.wall + '</div>' +
+    '<div class="layer code-text">' + s.code + '</div>' +
+    '<div class="label">' + s.label + '</div>';
+  specimenEl.appendChild(sec);
+});
+
+/* ==== BEAT SCHEDULE ==== */
+const DURATION = 7000;
+const stage = document.getElementById('stage');
+const tab = document.getElementById('tab');
+
+function start() {
+  /* 1200ms: sections split apart */
+  setTimeout(() => {
+    stage.classList.remove('wall');
+    stage.classList.add('split');
+  }, 1200);
+
+  /* 1800ms: crossfade + accent bars */
+  setTimeout(() => {
+    stage.classList.add('morphed');
+    stage.classList.add('structured');
+    tab.textContent = 'SKILL.MD';
+  }, 1800);
+
+  /* 2800ms: subtitle fades in */
+  setTimeout(() => {
+    stage.classList.add('revealed');
+  }, 2800);
+}
+
+/* ==== BEAT CONTRACT ==== */
+let readyResolve;
+const readyPromise = new Promise(r => { readyResolve = r; });
+
+window.__beat = {
+  duration: DURATION,
+  stillFrameAt: () => DURATION - 500,
+  onReady: () => readyPromise,
+  start: start,
+};
+
+/* ==== INIT ==== */
+const isCapture = new URLSearchParams(location.search).has('capture');
+document.fonts.ready.then(() => {
+  readyResolve();
+  if (!isCapture) setTimeout(() => start(), 50);
+});
+</script>
+</body>
+</html>

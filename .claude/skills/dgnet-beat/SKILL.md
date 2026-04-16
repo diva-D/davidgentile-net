@@ -71,6 +71,19 @@ Target canvas: **1200×675** (16:9). Matches social MP4 at native resolution. Ho
 
 Keep all important content inside a 1160×600 safe area (centered). Text must be legible at 600×338 (the smallest size it'll render in-feed on mobile).
 
+### Sizing discipline
+
+The beat HTML **must** set its `html, body` and `.stage` dimensions to exactly **1200×675**. The capture script (`scripts/capture.mjs`) opens a Playwright viewport at 1200×675 and clips the hero screenshot to `{ x: 0, y: 0, width: 1200, height: 675 }`. If the beat declares a different canvas (e.g. 1080×1350 portrait), content will render at the viewport width, overflow the viewport height, and get clipped — the hero image cuts off mid-specimen.
+
+Layout implications for the 16:9 landscape canvas:
+- **Side-by-side layouts** (hero text left, specimen right) work well. Stacked vertical layouts run out of vertical space fast at only 675px tall.
+- **Section labels and annotations** outside the main card use the horizontal space that landscape gives you. Position them to the left or right of the card with absolute positioning + margin on the card to make room.
+- **Monospace specimen text** at 11–12px is the practical floor for legibility at 600×338 mobile rendering. Below that, code becomes unreadable.
+- **Section padding** in split-state specimens: 6–8px vertical is tight enough for 5 sections to fit; 12px+ will push the bottom sections off-canvas.
+- **Labels outside the card** should be at least 14px bold uppercase to remain legible at half-size social rendering. Use the accent color — muted grey disappears at small sizes.
+- **Watermark** should match the friction-tax reference: 16px+, font-weight 700, `var(--ink)` color. Muted grey watermarks vanish when the image is compressed for social.
+- **GIF quality**: Always use two-pass palette generation (`palettegen` → `paletteuse` with `dither=bayer:bayer_scale=5:diff_mode=rectangle`). Single-pass GIF encoding produces visible banding and colour artifacts on the warm background tones. Render at 1080px wide (not 600px) — half-resolution GIFs look pixelated on retina displays and high-DPI social feeds.
+
 ## The six-pass design bar
 
 Same disposition as `dgnet-design-editor`. Cut until the beat is just the punch.
@@ -130,6 +143,7 @@ node scripts/capture.mjs <slug> --mode=beat
 
 This produces:
 - `public/images/<slug>/beat.mp4` — the social film
+- `public/images/<slug>/beat.gif` — GIF version (1080px wide, 15fps, two-pass palette) for platforms that don't autoplay MP4
 - `public/images/<slug>/hero.png` — the still from `stillFrameAt()` or final frame
 
 ### How capture works (and why it's set up this way)
@@ -137,6 +151,8 @@ This produces:
 The recorder uses Playwright's native video capture. The page plays in real wall-clock time and the browser's compositor pipes frames to a WebM, which ffmpeg converts to MP4. CSS transitions interpolate naturally because the rendering pipeline sees real time.
 
 Earlier iterations tried frame-by-frame screenshots with virtual-time stepping. Don't go back to that — CSS transitions don't interpolate cleanly when the clock is stepped 33ms at a time, and the captured MP4 looks jerky.
+
+The capture script cleans the `.capture/<slug>-beat-video/` directory before each recording pass. Without this, Playwright may leave a stale webm from a previous run, and the `readdirSync` that finds the webm can pick up the old one — producing an MP4 and GIF that show outdated content even though the beat HTML has changed.
 
 What this means for you as a beat author:
 - Use plain CSS transitions and timer-driven schedules. They'll record correctly.

@@ -237,6 +237,18 @@ main { display: block; }
 .artefact-caption a { color: var(--muted); }
 .artefact-caption a:hover { color: var(--accent); text-decoration: none; }
 
+/* Inline artefact breakout — when <Artefact> is used inside .post-body (MDX),
+   break out of the narrow column to match the wide artefact stage. */
+.post-body .post-artefact {
+  width: 100vw;
+  max-width: 1080px;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0 24px;
+  margin: 32px 0;
+}
+
 /* Narrow essay body */
 .post-body {
   max-width: 680px; margin: 40px auto 40px; padding: 0 24px;
