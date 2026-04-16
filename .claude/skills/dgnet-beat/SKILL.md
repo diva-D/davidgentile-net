@@ -146,6 +146,16 @@ This produces:
 - `public/images/<slug>/beat.gif` — GIF version (1080px wide, 15fps, two-pass palette) for platforms that don't autoplay MP4
 - `public/images/<slug>/hero.png` — the still from `stillFrameAt()` or final frame
 
+After capture, add all three paths to the post's frontmatter:
+
+```yaml
+heroImage: "/images/<slug>/hero.png"
+beatImage: "/images/<slug>/beat.gif"
+beatMov: "/images/<slug>/beat.mp4"
+```
+
+`heroImage` is the OG card / featured tile. `beatImage` (GIF) is shown on the homepage when the post is not the featured post. `beatMov` (MP4) is used where autoplay video is supported. All three are required for a complete publish.
+
 ### How capture works (and why it's set up this way)
 
 The recorder uses Playwright's native video capture. The page plays in real wall-clock time and the browser's compositor pipes frames to a WebM, which ffmpeg converts to MP4. CSS transitions interpolate naturally because the rendering pipeline sees real time.

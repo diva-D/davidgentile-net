@@ -21,7 +21,12 @@ Before committing, verify the following. If any fail, fix before pushing — nev
 
 ### 1. The post file exists
 
-`src/content/posts/<slug>.md` must exist with all required frontmatter: `title`, `description`, `date`, `tags`. Optional: `heroImage`, `artefact`, `artefactHeight`, `draft`.
+`src/content/posts/<slug>.md` must exist with all required frontmatter: `title`, `description`, `date`, `tags`. Optional: `heroImage`, `beatImage`, `beatMov`, `artefact`, `artefactHeight`, `draft`.
+
+For posts with a beat (most posts with artefacts), all three image fields should be set:
+- `heroImage` — the still hero PNG (OG card, featured tile)
+- `beatImage` — the GIF (homepage tile when post is not featured)
+- `beatMov` — the MP4 (homepage tile where autoplay video is supported)
 
 If `draft: true` is set, warn the user — a draft will not appear on the homepage or in the RSS feed. Confirm they want to flip it to `false` (or remove the field) before publishing.
 
