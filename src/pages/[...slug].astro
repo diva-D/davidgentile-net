@@ -1,5 +1,5 @@
 ---
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import Base from '../layouts/Base.astro';
@@ -7,14 +7,14 @@ import Base from '../layouts/Base.astro';
 export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => !data.draft);
   return posts.map((post) => ({
-    params: { slug: post.slug },
+    params: { slug: post.id },
     props: { post },
   }));
 }
 
 interface Props { post: CollectionEntry<'posts'>; }
 const { post } = Astro.props;
-const { Content } = await post.render();
+const { Content } = await render(post);
 
 const fmt = (d: Date) =>
   d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -26,8 +26,8 @@ const artefactHeight = post.data.artefactHeight ?? 780;
 // back to <slug>/beat.alt.txt (written by dgnet-beat, describes the animation
 // the hero is a frame of). Read at build time; undefined if neither exists.
 const publicDir = fileURLToPath(new URL('../../public/images/', import.meta.url));
-const heroAltPath = `${publicDir}${post.slug}/hero.alt.txt`;
-const beatAltPath = `${publicDir}${post.slug}/beat.alt.txt`;
+const heroAltPath = `${publicDir}${post.id}/hero.alt.txt`;
+const beatAltPath = `${publicDir}${post.id}/beat.alt.txt`;
 const ogImageAlt = existsSync(heroAltPath)
   ? readFileSync(heroAltPath, 'utf-8').trim()
   : existsSync(beatAltPath)

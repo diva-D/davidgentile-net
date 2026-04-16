@@ -1,0 +1,70 @@
+---
+/**
+ * <Artefact> — embeds an interactive artefact iframe with self-sizing
+ * and phase-change scroll support. Use inline in MDX posts.
+ *
+ * Props:
+ *   src      — path to the artefact HTML, e.g. "/artefacts/my-post/index.html"
+ *   height   — initial iframe height in px (before self-sizing kicks in)
+ *   caption  — optional italic badge above the iframe
+ */
+interface Props {
+  src: string;
+  height?: number;
+  caption?: string;
+}
+
+const { src, height = 780, caption } = Astro.props;
+const id = `artefact-${src.replace(/[^a-z0-9]/gi, '-')}`;
+---
+
+<section class="post-artefact">
+  {caption && (
+    <div class="artefact-badge">{caption}</div>
+  )}
+  <iframe
+    id={id}
+    src={src}
+    height={height}
+    loading="eager"
+    scrolling="no"
+    title="Interactive artefact"
+    data-artefact-iframe
+  ></iframe>
+  <div class="artefact-caption">
+    <a href={src} target="_blank" rel="noopener">open the artefact full-screen →</a>
+  </div>
+</section>
+
+<style is:global>
+  iframe[data-artefact-iframe] {
+    transition: height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%; border: 0; display: block;
+  }
+</style>
+
+<script is:inline define:vars={{ id }}>
+  (function () {
+    const frame = document.getElementById(id);
+    if (!frame) return;
+
+    window.addEventListener("message", (e) => {
+      const msg = e.data;
+      if (!msg || e.source !== frame.contentWindow) return;
+
+      if (msg.type === "artefact:height" && typeof msg.height === "number") {
+        frame.style.height = msg.height + "px";
+        return;
+      }
+
+      if (msg.type === "artefact:phase-change") {
+        if (msg.phase === 0) return;
+        const rect = frame.getBoundingClientRect();
+        const absoluteTop = window.scrollY + rect.top - 12;
+        if (rect.top < 0 || rect.top > 80) {
+          window.scrollTo({ top: absoluteTop, behavior: "smooth" });
+        }
+      }
+    });
+  })();
+</script>
