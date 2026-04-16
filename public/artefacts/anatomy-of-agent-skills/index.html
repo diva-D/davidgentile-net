@@ -217,6 +217,7 @@ html, body {
   padding: 28px;
   animation: modalIn 0.3s ease;
 }
+.modal.modal-wide { max-width: 960px; }
 @keyframes modalIn {
   from { opacity: 0; transform: translateY(12px) scale(0.97); }
   to { opacity: 1; transform: none; }
@@ -282,6 +283,151 @@ html, body {
 /* Dim anatomy when modal is open */
 .anatomy.dimmed { opacity: 0.3; pointer-events: none; transition: opacity 0.25s; }
 
+/* ==== DISCLOSURE FILE TREE ==== */
+/* Override modal-body grid when disclosure is active */
+.modal-body:has(.disclosure-layout) {
+  grid-template-columns: 1fr;
+}
+.disclosure-intro {
+  margin-bottom: 20px;
+}
+.disclosure-intro p {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  margin: 0;
+}
+.disclosure-layout {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+.file-tree {
+  font-family: "SF Mono", "Menlo", ui-monospace, monospace;
+  font-size: 12px;
+  line-height: 2;
+  color: var(--ink-soft);
+  background: #f8f5ed;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+.file-tree .dir {
+  color: var(--muted);
+  font-weight: 600;
+}
+.file-entry {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 6px;
+  margin: 0 -6px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.file-entry:hover { background: rgba(0,0,0,0.04); }
+.file-entry.active {
+  background: rgba(217, 75, 47, 0.08);
+  color: var(--ink);
+}
+.file-entry .tree-pre { color: var(--line); user-select: none; }
+.file-entry .fname { flex: 1; }
+.file-entry .loaded-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--line);
+  transition: background 0.3s;
+  flex-shrink: 0;
+}
+.file-entry .loaded-dot.on { background: var(--accent); }
+.file-entry .loaded-dot.exec { background: var(--green); }
+.file-entry.is-script .fname { color: var(--muted); }
+
+.file-detail {
+  min-height: 200px;
+}
+.file-detail-header {
+  font-family: "Inter", sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.file-detail-header .status {
+  font-size: 9px; font-weight: 800;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 3px;
+}
+.file-detail-header .status.loaded {
+  background: rgba(217,75,47,0.1); color: var(--accent);
+  border: 1px solid rgba(217,75,47,0.25);
+}
+.file-detail-header .status.on-demand {
+  background: rgba(0,0,0,0.04); color: var(--muted);
+  border: 1px solid var(--line);
+}
+.file-detail-header .status.executed {
+  background: rgba(58,159,94,0.1); color: var(--green);
+  border: 1px solid rgba(58,159,94,0.3);
+}
+.file-detail-content {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+}
+.file-detail-content p { margin: 0 0 12px; }
+.file-detail-content p:last-child { margin-bottom: 0; }
+.file-detail-content strong { color: var(--ink); }
+.file-detail-content em { color: var(--accent); font-style: italic; }
+.file-detail-preview {
+  background: #f8f5ed;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-family: "SF Mono", "Menlo", ui-monospace, monospace;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin-top: 12px;
+  white-space: pre-wrap;
+}
+
+.token-bar {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.token-bar-label {
+  font-family: "Inter", sans-serif;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.token-track {
+  height: 6px;
+  background: var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.token-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+.token-val {
+  font-family: "Inter", sans-serif;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
 /* Prompt line */
 .prompt {
   font-family: "Inter", sans-serif;
@@ -292,6 +438,7 @@ html, body {
   letter-spacing: 0.2px;
   transition: opacity 0.3s;
 }
+
 
 /* ==== MOBILE (≤768px) ==== */
 @media (max-width: 768px) {
@@ -307,6 +454,9 @@ html, body {
   .specimen-tab { padding: 6px 14px; }
 
   .modal-backdrop { padding: 12px; }
+  .disclosure-layout { grid-template-columns: 1fr; }
+  .file-tree { font-size: 11px; }
+  .file-entry { min-height: 36px; }
   .modal { padding: 20px; max-height: 90vh; }
   .modal-body { grid-template-columns: 1fr; }
   .modal-code { font-size: 11px; padding: 14px; }
@@ -343,6 +493,7 @@ html, body {
 
   <div class="prompt" id="prompt">Hover to explore. Click any section to see why it's load-bearing.</div>
 
+
 </div>
 </div>
 
@@ -364,9 +515,9 @@ const SECTIONS = [
       '<span class="ym-delim">---</span>',
     ].join('\n'),
     annotation: [
-      '<p><strong>Before the agent reads a single instruction, it reads this.</strong> The name and description are loaded at startup alongside every other skill\u2019s metadata \u2014 potentially hundreds of them.</p>',
-      '<p>The description is the filter. If it doesn\u2019t match the task, the skill never activates. Everything below this line is irrelevant if the description fails.</p>',
-      '<p><em>Write in third person. Be specific. Include trigger words.</em> This isn\u2019t documentation \u2014 it\u2019s a search query written in advance.</p>',
+      '<p><strong>An agent might have access to hundreds of skills.</strong> When a task comes in, it scans every skill\u2019s name and description to decide which one to load. This block is what it scans.</p>',
+      '<p>If the description doesn\u2019t match the task, nothing below this line ever gets read. The skill stays on the shelf. So the description isn\u2019t documentation \u2014 it\u2019s more like a search query, written in advance, that determines when this skill wakes up.</p>',
+      '<p><em>Be specific. Include the words someone would use to describe the task.</em> A vague description means the skill activates when it shouldn\u2019t, or doesn\u2019t when it should.</p>',
     ].join(''),
   },
   {
@@ -389,9 +540,9 @@ const SECTIONS = [
       'with pytesseract instead.',
     ].join('\n'),
     annotation: [
-      '<p><strong>The default assumption: the model is already smart.</strong> It knows what PDFs are. It knows how libraries work. This section exists only for the things it can\u2019t derive \u2014 which library to use, which method to call, which edge case to watch for.</p>',
-      '<p>Every token here competes with conversation history. If you can delete a sentence and the agent still succeeds, <em>delete it.</em></p>',
-      '<p>This is the knowledge transfer. Not what the model is \u2014 intelligent. What the model lacks \u2014 <strong>your specific, non-obvious expertise.</strong></p>',
+      '<p><strong>The model already knows what PDFs are.</strong> It knows how libraries work in general. What it doesn\u2019t know is which library to use for <em>this</em> job, which method to call first, and what to do when the PDF is scanned instead of digital.</p>',
+      '<p>That\u2019s what this section provides: the specific, non-obvious knowledge that separates someone who\u2019s done this before from someone figuring it out for the first time. Not general intelligence \u2014 <strong>earned expertise.</strong></p>',
+      '<p>Keep it lean. Every line here takes up space in the agent\u2019s working memory. If you can remove a sentence and the agent still gets it right, remove it.</p>',
     ].join(''),
   },
   {
@@ -409,9 +560,9 @@ const SECTIONS = [
       '<span class="md-num">5.</span> Verify \u2014 <span class="md-constraint">if fails, return to step 2</span>',
     ].join('\n'),
     annotation: [
-      '<p><strong>The person who wrote this learned \u2014 probably the hard way \u2014 that skipping validation breaks things.</strong> The feedback loop at step 5 is encoded wisdom: this fails often enough that the retry is part of the design.</p>',
-      '<p>Without this section, the agent improvises a sequence. Sometimes that\u2019s fine. But for fragile operations \u2014 database migrations, form filling, deployment \u2014 <em>the sequence is the skill.</em></p>',
-      '<p>Each step is a checkpoint. The agent can\u2019t jump from step 1 to step 4 without passing through validation. That constraint is the whole point.</p>',
+      '<p><strong>Some operations break if you do them out of order.</strong> Fill a form before validating the field map, and the output is silently wrong. The person who wrote this workflow learned that \u2014 probably the hard way \u2014 and encoded the lesson as a fixed sequence.</p>',
+      '<p>Notice step 5: <em>if validation fails, go back to step 2.</em> That loop isn\u2019t an edge case. It\u2019s there because this fails often enough that the retry is part of the design.</p>',
+      '<p>Without a workflow section, the agent improvises its own order. For simple tasks, that\u2019s fine. For fragile ones, the sequence <strong>is</strong> the skill.</p>',
     ].join(''),
   },
   {
@@ -424,9 +575,9 @@ const SECTIONS = [
       '<span class="md-constraint">Only proceed when validation passes.</span>',
     ].join('\n'),
     annotation: [
-      '<p><strong>Two lines. Easy to miss. Load-bearing.</strong></p>',
-      '<p>Without \u201cdo not modify the command flags,\u201d the agent will helpfully add <em>--verbose</em>, <em>--force</em>, or <em>--skip-validation</em>. Without \u201conly proceed when validation passes,\u201d it will press on after errors.</p>',
-      '<p>Guardrails encode the failures someone already had so the agent doesn\u2019t have them again. They\u2019re small because constraints are specific. <strong>Intelligence is general. Wisdom is not.</strong></p>',
+      '<p><strong>Two lines. Easy to overlook. But remove them and watch what happens.</strong></p>',
+      '<p>Without the first line, the agent will helpfully add flags like <em>--verbose</em> or <em>--force</em> to commands, because it\u2019s trying to be thorough. Without the second, it will press on after a validation error, because it\u2019s trying to be efficient. Both instincts are reasonable. Both break things here.</p>',
+      '<p>Guardrails are where past failures get encoded. Someone already learned that adding flags to this command corrupts the output. These two lines mean <strong>no one learns that lesson again.</strong></p>',
     ].join(''),
   },
   {
@@ -442,9 +593,9 @@ const SECTIONS = [
       '<span class="md-bold">Examples</span>: See <span class="md-link">EXAMPLES.md</span>',
     ].join('\n'),
     annotation: [
-      '<p><strong>FORMS.md, REFERENCE.md, EXAMPLES.md</strong> \u2014 each is a full document the agent can read, but won\u2019t until the task requires it. They sit on the filesystem, consuming zero context tokens.</p>',
-      '<p>This is the skill\u2019s filing cabinet. The main file is the desk \u2014 just enough to work. The referenced files are the drawers you pull open when you need depth.</p>',
-      '<p>A prompt can\u2019t do this. It\u2019s all-or-nothing \u2014 every word is in the context window whether the task needs it or not. <em>A skill decides what to load and when.</em></p>',
+      '<p><strong>These links point to other files in the same directory.</strong> FORMS.md, REFERENCE.md, EXAMPLES.md \u2014 each is a full document the agent <em>can</em> read, but won\u2019t until the task requires it. They sit on the filesystem, using zero memory until opened.</p>',
+      '<p>Think of it like a desk and a filing cabinet. The main skill file is the desk \u2014 just enough to work with right now. The referenced files are drawers you pull open only when the task gets specific.</p>',
+      '<p>This is something a regular prompt can\u2019t do. A prompt is all-or-nothing: every word sits in the agent\u2019s working memory whether the task needs it or not. A skill file lets the agent <em>decide what to load and when.</em></p>',
     ].join(''),
   },
 ];
@@ -565,10 +716,150 @@ document.querySelectorAll('.label').forEach(lbl => {
   lbl.addEventListener('mouseleave', () => highlightSection(null));
 });
 
+/* ==== FILE TREE DATA (for disclosure modal) ==== */
+const FILES = [
+  {
+    name: 'SKILL.md',
+    type: 'loaded',
+    tokens: 1200,
+    desc: '<p><strong>Always in memory.</strong> This is the file you\u2019ve been exploring \u2014 the main skill definition with all five layers. It gives the agent everything it needs for the common case.</p><p>A good SKILL.md stays <em>under 2,000 tokens</em>. Small enough that the agent can load ten different skills and still have room to think about your actual task.</p>',
+    preview: null,
+  },
+  {
+    name: 'FORMS.md',
+    type: 'on-demand',
+    tokens: 3400,
+    desc: '<p><strong>Only opened when the task involves forms.</strong> Covers field mapping, checkbox edge cases, signature fields, date formats. The kind of detail that\u2019s essential for form-filling and irrelevant for everything else.</p><p>3,400 tokens the agent never loads unless it\u2019s actually filling a form. <em>Depth without default cost.</em></p>',
+    preview: '# Form Filling Reference\n\n## Field types\n- text: standard input\n- checkbox: use /Yes, /Off\n- radio: group by name\n- signature: skip (manual)',
+  },
+  {
+    name: 'REFERENCE.md',
+    type: 'on-demand',
+    tokens: 5100,
+    desc: '<p><strong>The full API surface.</strong> Every method, every parameter, every return type. The kind of reference that\u2019s essential when the agent needs to call a specific function and pure noise the rest of the time.</p><p>At 5,100 tokens, putting this in the main file would crowd out everything else. As a separate reference, it\u2019s <em>free until the agent actually needs it.</em></p>',
+    preview: '# pdfplumber API Reference\n\n## Page methods\n.extract_text()  \u2192 str\n.extract_tables() \u2192 list\n.crop(bbox)      \u2192 Page',
+  },
+  {
+    name: 'EXAMPLES.md',
+    type: 'on-demand',
+    tokens: 2800,
+    desc: '<p><strong>Worked examples the agent can learn from.</strong> Input/output pairs that show what a correct result looks like. Not explanations \u2014 demonstrations the agent can pattern-match against.</p><p>High-leverage but bulky. The agent loads them for unfamiliar tasks and <em>skips them when the job is straightforward.</em></p>',
+    preview: '# Examples\n\n## Extract table from invoice\nInput:  invoice_q4.pdf (2pp)\nOutput: CSV [date, item, qty, total]',
+  },
+  {
+    name: 'scripts/analyze_form.py',
+    type: 'executed',
+    tokens: 0,
+    desc: '<p><strong>Not read \u2014 run.</strong> This isn\u2019t a document the agent loads into memory. It\u2019s a program the agent executes, reads the output, and acts on the result. Zero memory cost.</p><p>This is the deepest layer of the skill: knowledge encoded as <em>runnable code</em> instead of prose. The agent doesn\u2019t need to understand how form analysis works \u2014 it just calls the script and interprets what comes back.</p>',
+    preview: '#!/usr/bin/env python3\n"""Analyze PDF form fields.\nOutputs JSON field map to stdout.\n"""',
+  },
+];
+
+const TOTAL_BUDGET = 8000; // illustrative context budget
+
 /* ==== MODAL ==== */
 let activeSection = null;
+let activeFile = null;
 const backdrop = document.getElementById('modalBackdrop');
 const anatomyEl = document.getElementById('anatomy');
+
+function renderDisclosureModal() {
+  const body = document.querySelector('.modal-body');
+
+  // Build file tree
+  let treeHtml = '<div class="dir">processing-pdfs/</div>';
+  FILES.forEach((f, i) => {
+    const isScript = f.type === 'executed';
+    const isLast = i === FILES.length - 1;
+    const dotClass = f.type === 'loaded' ? 'on' : f.type === 'executed' ? 'exec' : '';
+    const displayName = isScript ? f.name.replace('scripts/', '') : f.name;
+    let prefix = isLast ? '\u2514\u2500 ' : '\u251c\u2500 ';
+    if (isScript) {
+      treeHtml += '<div class="dir" style="padding-left:6px">\u251c\u2500 scripts/</div>';
+      prefix = '   \u2514\u2500 ';
+    }
+    treeHtml += `<div class="file-entry${isScript ? ' is-script' : ''}" data-file="${i}">
+      <span class="tree-pre">${prefix}</span>
+      <span class="fname">${displayName}</span>
+      <span class="loaded-dot ${dotClass}"></span>
+    </div>`;
+  });
+
+  body.innerHTML = `
+    <div class="disclosure-intro">
+      <p>This skill file doesn\u2019t live alone. It sits in a directory alongside reference files and scripts. Those <span style="color:var(--accent)">FORMS.md</span>, <span style="color:var(--accent)">REFERENCE.md</span> links? They point to real files the agent opens when it needs depth.</p>
+    </div>
+    <div class="disclosure-layout">
+      <div>
+        <div class="file-tree">${treeHtml}</div>
+        <div class="token-bar">
+          <div class="token-bar-label">Context budget</div>
+          <div class="token-track"><div class="token-fill" id="tokenFill" style="width: 0%"></div></div>
+          <div class="token-val" id="tokenVal">Click a file to see its cost</div>
+        </div>
+      </div>
+      <div class="file-detail" id="fileDetail">
+        <div class="modal-annotation"><p>Each file is a layer of depth the agent <em>can</em> access but <em>doesn\u2019t have to.</em></p><p>Click a file to see what it holds, what it costs, and when it loads.</p></div>
+      </div>
+    </div>`;
+
+  // Wire up file clicks
+  body.querySelectorAll('.file-entry').forEach(entry => {
+    entry.addEventListener('click', () => {
+      const idx = parseInt(entry.dataset.file);
+      selectFile(idx, body);
+    });
+  });
+
+  // Auto-select SKILL.md
+  setTimeout(() => selectFile(0, body), 100);
+}
+
+function selectFile(idx, body) {
+  activeFile = idx;
+  const f = FILES[idx];
+
+  // Highlight active entry
+  body.querySelectorAll('.file-entry').forEach(e => e.classList.remove('active'));
+  const entry = body.querySelector(`[data-file="${idx}"]`);
+  if (entry) entry.classList.add('active');
+
+  // Status badge
+  const statusLabel = f.type === 'loaded' ? 'Always loaded'
+    : f.type === 'executed' ? 'Executed' : 'On demand';
+  const statusClass = f.type === 'loaded' ? 'loaded'
+    : f.type === 'executed' ? 'executed' : 'on-demand';
+
+  // Detail panel
+  const detail = document.getElementById('fileDetail');
+  detail.innerHTML = `
+    <div class="file-detail-header">
+      <span>${f.name}</span>
+      <span class="status ${statusClass}">${statusLabel}</span>
+    </div>
+    <div class="file-detail-content">${f.desc}</div>
+    ${f.preview ? `<div class="file-detail-preview">${f.preview}</div>` : ''}`;
+
+  // Token bar
+  const loaded = FILES.filter(x => x.type === 'loaded').reduce((s, x) => s + x.tokens, 0);
+  const current = loaded + (f.type !== 'loaded' ? f.tokens : 0);
+  const pct = Math.round((current / TOTAL_BUDGET) * 100);
+
+  const fill = document.getElementById('tokenFill');
+  const val = document.getElementById('tokenVal');
+  if (fill) fill.style.width = pct + '%';
+  if (val) {
+    if (f.type === 'executed') {
+      val.textContent = `${loaded.toLocaleString()} tokens loaded \u00b7 scripts cost 0 tokens`;
+    } else if (f.type === 'loaded') {
+      val.textContent = `${loaded.toLocaleString()} tokens \u00b7 always in context`;
+    } else {
+      val.textContent = `${loaded.toLocaleString()} + ${f.tokens.toLocaleString()} = ${current.toLocaleString()} tokens if loaded`;
+    }
+  }
+
+  postHeight();
+}
 
 function openModal(id) {
   const s = SECTIONS.find(x => x.id === id);
@@ -579,11 +870,26 @@ function openModal(id) {
   anatomyEl.classList.add('dimmed');
   backdrop.classList.add('active');
 
+  const modal = document.getElementById('modal');
   document.getElementById('modalTitle').textContent = s.title;
-  document.getElementById('modalCode').innerHTML = s.code;
-  document.getElementById('modalAnnotation').innerHTML = s.annotation;
+
+  if (id === 'disclosure') {
+    modal.classList.add('modal-wide');
+    renderDisclosureModal();
+  } else {
+    modal.classList.remove('modal-wide');
+    const body = document.querySelector('.modal-body');
+    body.innerHTML = `
+      <div class="modal-code" id="modalCode"></div>
+      <div class="modal-annotation" id="modalAnnotation"></div>`;
+    document.getElementById('modalCode').innerHTML = s.code;
+    document.getElementById('modalAnnotation').innerHTML = s.annotation;
+  }
+
   document.getElementById('prompt').textContent =
     `${s.title} \u2014 one of five layers in a skill file.`;
+
+  postHeight();
 }
 
 function closeModal() {

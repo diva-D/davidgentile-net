@@ -9,13 +9,22 @@ stage: "draft"
 ---
 
 import Artefact from '../../components/Artefact.astro';
+import Sources from '../../components/Sources.astro';
 
-[Opening claim. One or two short sentences. State the thesis without preamble.]
+When you ask an AI agent to do something complex, it needs more than intelligence. It needs to know *which* library to call, *what order* to run the steps in, and *which mistakes* you've already made so it doesn't repeat them. A skill file is a structured document that gives it all three. Not a prompt — a layered encoding of the knowledge, sequence, and constraints that make the difference between an agent that demos well and one that works. Below is a real one, taken apart.
 
 <Artefact src="/artefacts/anatomy-of-agent-skills/index.html" height={820} caption="Hover to explore. Click to drill in." />
 
-[Supporting paragraph. Evidence or mechanism. Name things concretely. Avoid abstractions when a concrete example would land harder.]
+Five layers, each solving a different problem. A short description so the agent knows *when* to use this skill and when to ignore it. Domain knowledge for the things the model can't figure out on its own — which library, which method, which edge case. A workflow that locks the steps into an order, because some operations break if you skip ahead. Guardrails: two lines that prevent the agent from helpfully adding a flag that corrupts the output. And a set of reference files the agent only opens when it needs depth, so the simple case stays fast.
 
-> [The blockquote. This is the screenshotable sentence. Make it worth isolating.]
+The separation matters. A prompt tries to do all five jobs in one block of text. A skill file lets each layer be *right on its own terms* — you can fix the workflow without touching the domain knowledge, add a guardrail without rewriting the description. It mirrors how an expert actually works: identify the task, recall the domain, follow the procedure, respect the constraints, pull the manual when you need it.
 
-[Closing. Implication, not summary. What changes because of the claim? Leave the reader with the stakes, not a recap.]
+> A prompt is a sentence you hope will work. A skill file is *structured expertise* — what to know, what order to do it in, and what not to do, separated so each part can be right independently.
+
+The difference shows up in production. A long prompt works on the demo because the demo is the happy path. The skill file is what catches the rest — the validation step someone learned to never skip, the reference doc that only loads when the task is unusual, the two-line guardrail that prevents the agent from being *too* helpful. Intelligence is built into the model. The skill file is where you add everything intelligence alone can't give you.
+
+<Sources items={[
+  { label: "Anthropic: Agent Skills documentation", url: "https://docs.anthropic.com/en/docs/agents-and-tools/agent-skills" },
+  { label: "Skill file best practices", url: "https://docs.anthropic.com/en/docs/agents-and-tools/agent-skills/best-practices" },
+  { label: "Specimen based on Anthropic's PDF processing skill example" },
+]} />
