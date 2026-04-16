@@ -6,38 +6,16 @@
 <title>Anatomy of Agent Skills · artefact</title>
 <link rel="preconnect" href="https://rsms.me/" />
 <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+<link rel="stylesheet" href="/styles/artefact.css" />
 <style>
-:root {
-  --bg: #faf7f0;
-  --ink: #1a1a1d;
-  --ink-soft: #4a4a52;
-  --muted: #8c8c93;
-  --line: #e4dfd2;
-  --accent: #d94b2f;
-  --gold: #e0a526;
-  --green: #3a9f5e;
-  --paper: #fff;
-}
-* { box-sizing: border-box; }
-html, body {
-  margin: 0; background: var(--bg); color: var(--ink);
-  font-family: "Iowan Old Style", "Palatino", ui-serif, Georgia, serif;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ==== STRUCTURAL ==== */
-.wrap { max-width: 1040px; margin: 0 auto; padding: 24px 24px 28px; }
-.stage {
-  background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
-  padding: 24px 28px 22px; box-shadow: 0 2px 0 rgba(0,0,0,0.03);
-}
-
 /* ==== ANATOMY LAYOUT ==== */
 .anatomy {
   position: relative;
   display: grid;
-  grid-template-columns: 190px 1fr 190px;
+  grid-template-columns: 140px 1fr 140px;
   gap: 0;
+  max-width: 820px;
+  margin: 0 auto;
 }
 .anatomy.hidden { display: none; }
 
@@ -165,7 +143,7 @@ html, body {
   top: 0; left: 0;
   width: 100%; height: 100%;
   pointer-events: none;
-  z-index: 1;
+  z-index: 3;
 }
 .connector-line {
   stroke: var(--line);
@@ -282,23 +260,8 @@ html, body {
 /* Dim anatomy when modal is open */
 .anatomy.dimmed { opacity: 0.3; pointer-events: none; transition: opacity 0.25s; }
 
-/* Prompt line */
-.prompt {
-  font-family: "Inter", sans-serif;
-  font-size: 11px;
-  color: var(--muted);
-  text-align: center;
-  margin-top: 16px;
-  letter-spacing: 0.2px;
-  transition: opacity 0.3s;
-}
-
-
 /* ==== MOBILE (≤768px) ==== */
 @media (max-width: 768px) {
-  .wrap  { padding: 12px 12px 18px; }
-  .stage { padding: 18px 14px; border-radius: 10px; }
-
   .anatomy { grid-template-columns: 1fr; }
   .labels { display: none; }
   .lines-svg { display: none; }
@@ -359,10 +322,7 @@ const SECTIONS = [
     code: [
       '<span class="ym-delim">---</span>',
       '<span class="ym-key">name:</span> <span class="ym-val">processing-pdfs</span>',
-      '<span class="ym-key">description:</span> <span class="ym-val">Extract text and</span>',
-      '  <span class="ym-val">tables from PDF files, fill forms,</span>',
-      '  <span class="ym-val">merge documents. Use when working</span>',
-      '  <span class="ym-val">with PDFs, forms, or extraction.</span>',
+      '<span class="ym-key">description:</span> <span class="ym-val">Extract text and tables from PDF files, fill forms, merge documents. Use when working with PDFs, forms, or extraction.</span>',
       '<span class="ym-delim">---</span>',
     ].join('\n'),
     annotation: [

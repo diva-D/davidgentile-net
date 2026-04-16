@@ -6,32 +6,9 @@
 <title>From File to Package · artefact</title>
 <link rel="preconnect" href="https://rsms.me/" />
 <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+<link rel="stylesheet" href="/styles/artefact.css" />
 <style>
-:root {
-  --bg: #faf7f0;
-  --ink: #1a1a1d;
-  --ink-soft: #4a4a52;
-  --muted: #8c8c93;
-  --line: #e4dfd2;
-  --accent: #d94b2f;
-  --gold: #e0a526;
-  --green: #3a9f5e;
-  --paper: #fff;
-}
-* { box-sizing: border-box; }
-html, body {
-  margin: 0; background: var(--bg); color: var(--ink);
-  font-family: "Iowan Old Style", "Palatino", ui-serif, Georgia, serif;
-  -webkit-font-smoothing: antialiased;
-}
-
-.wrap { max-width: 1040px; margin: 0 auto; padding: 24px 24px 28px; }
-.stage {
-  background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
-  padding: 28px 32px 24px; box-shadow: 0 2px 0 rgba(0,0,0,0.03);
-}
-
-/* ==== LAYOUT ==== */
+/* ==== ARTEFACT-SPECIFIC ==== */
 .build {
   display: grid;
   grid-template-columns: 200px 1fr;
@@ -123,13 +100,6 @@ html, body {
 .narration p:last-child { margin-bottom: 0; }
 .narration strong { color: var(--ink); font-weight: 700; }
 .narration em { color: var(--accent); font-style: italic; }
-.narration code {
-  font-family: "SF Mono", "Menlo", ui-monospace, monospace;
-  font-size: 13px;
-  background: rgba(0,0,0,0.045);
-  padding: 1px 5px;
-  border-radius: 3px;
-}
 
 /* File preview */
 .preview {
@@ -185,52 +155,12 @@ html, body {
   animation: fileIn 0.3s ease both;
 }
 
-/* Phase nav */
-.nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 22px;
-  padding-top: 14px;
-  border-top: 1px solid var(--line);
-}
-.step {
-  font-family: "Inter", sans-serif;
-  font-size: 11px;
-  color: var(--muted);
-  letter-spacing: 0.3px;
-}
-.btn {
-  font-family: "Inter", sans-serif;
-  font-size: 12px; font-weight: 600;
-  color: var(--paper);
-  background: var(--accent);
-  border: none; border-radius: 6px;
-  padding: 7px 16px;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-.btn:hover { opacity: 0.85; }
-.btn.back {
-  background: transparent;
-  color: var(--muted);
-  border: 1px solid var(--line);
-}
-.btn.back:hover { color: var(--ink); border-color: var(--ink); }
-.btn-group { display: flex; gap: 8px; }
-
 /* ==== MOBILE ==== */
 @media (max-width: 768px) {
-  .wrap { padding: 12px 12px 18px; }
-  .stage { padding: 20px 16px 18px; border-radius: 10px; }
   .build { grid-template-columns: 1fr; }
   .folder { font-size: 11px; }
   .narration { font-size: 14px; }
-  .btn { min-height: 36px; }
   .previews-row { grid-template-columns: 1fr; }
-}
-@media (max-width: 640px) {
-  .narration code { font-size: 12px; }
 }
 </style>
 </head>
@@ -358,11 +288,11 @@ function render() {
     previewHtml = `<div class="previews-row">${cols}</div>`;
   }
 
-  // Nav
-  let nav = `<div class="step">${phase + 1} / ${total}</div><div class="btn-group">`;
-  if (phase > 0) nav += '<button class="btn back" id="btnBack">\u2190 Back</button>';
-  if (phase < total - 1) nav += '<button class="btn" id="btnNext">Next \u2192</button>';
-  else nav += '<button class="btn back" id="btnReset">Reset \u21ba</button>';
+  // Nav — uses shared .btn classes from artefact.css
+  let nav = `<div class="phase-step">${phase + 1} / ${total}</div><div class="btn-group">`;
+  if (phase > 0) nav += '<button class="btn ghost" id="btnBack">\u2190 Back</button>';
+  if (phase < total - 1) nav += '<button class="btn primary" id="btnNext">Next \u2192</button>';
+  else nav += '<button class="btn" id="btnReset">Reset \u21ba</button>';
   nav += '</div>';
 
   stage.innerHTML = `
@@ -380,7 +310,7 @@ function render() {
         ${previewHtml}
       </div>
     </div>
-    <div class="nav">${nav}</div>`;
+    <div class="phase-nav">${nav}</div>`;
 
   const next = document.getElementById('btnNext');
   const back = document.getElementById('btnBack');
