@@ -237,31 +237,31 @@ html, body {
 const SECTIONS = [
   {
     id: 'frontmatter',
-    label: 'Identity',
+    label: 'Discovery',
     wall: 'This skill handles PDF processing. It extracts text from PDF files, fills out form fields, merges multiple documents, and converts scanned pages to searchable text. Use it whenever the user asks about PDFs or document extraction.',
     code: '<span class="ym-delim">---</span>\n<span class="ym-key">name:</span> <span class="ym-val">processing-pdfs</span>\n<span class="ym-key">description:</span> <span class="ym-val">Extract text and tables from</span>\n<span class="ym-val">  PDF files, fill forms, merge docs.</span>\n<span class="ym-key">allowed_tools:</span> <span class="ym-val">Bash, Read, Write</span>\n<span class="ym-delim">---</span>',
   },
   {
     id: 'knowledge',
-    label: 'Knowledge',
+    label: 'Domain\nKnowledge',
     wall: 'Use pdfplumber to extract text from native PDFs. Open the file, iterate over pages, call extract_text on each one. For tables use extract_tables. For scanned PDFs use pdf2image to convert pages to images, then run pytesseract OCR on each.',
     code: '<span class="md-h"><span class="hash">#</span> Extraction</span>\n\n  <span class="md-kw">import</span> pdfplumber\n  <span class="md-kw">with</span> pdfplumber.<span class="md-fn">open</span>(<span class="md-str">"f.pdf"</span>) <span class="md-kw">as</span> pdf:\n    <span class="md-kw">for</span> page <span class="md-kw">in</span> pdf.pages:\n      text = page.<span class="md-fn">extract_text</span>()\n\nScanned: <span class="md-code">pdf2image</span> + <span class="md-code">pytesseract</span>',
   },
   {
     id: 'workflow',
-    label: 'Sequence',
+    label: 'Workflow',
     wall: 'First analyze the form structure to understand what fields exist. Then map each source value to its target field. Run the fill script. Verify the result visually. If any fields are wrong go back to the mapping step and adjust. Never skip the visual check.',
     code: '<span class="md-h"><span class="hash">##</span> Form-filling workflow</span>\n\n<span class="md-num">1.</span> Analyze: <span class="md-code">scripts/analyze_form.py</span>\n<span class="md-num">2.</span> Map source values \u2192 target fields\n<span class="md-num">3.</span> Fill: <span class="md-code">scripts/fill_form.py</span>\n<span class="md-num">4.</span> Verify visually\n<span class="md-num">5.</span> <span class="md-constraint">If wrong \u2192 return to step 2</span>',
   },
   {
     id: 'guardrails',
-    label: 'Constraints',
+    label: 'Guardrails',
     wall: 'Run scripts exactly as shown, don\'t add extra flags. Always check the output visually before delivering. Files over 50 pages must be processed in batches. Never modify the original input.',
     code: '<span class="md-constraint">Run scripts exactly as shown. No extra flags.</span>\n<span class="md-constraint">Verify filled PDF visually before delivering.</span>\n<span class="md-constraint">Files &gt;50pp: batch in groups of 10.</span>\n<span class="md-constraint">Never modify the original input file.</span>',
   },
   {
     id: 'disclosure',
-    label: 'References',
+    label: 'Progressive\nDisclosure',
     wall: 'For more on form filling see the forms doc. API details are in the reference. Examples directory has sample scripts. Check troubleshooting if extraction returns empty text.',
     code: '<span class="md-bold">Form filling</span>: <span class="md-link">FORMS.md</span>\n<span class="md-bold">API reference</span>: <span class="md-link">REFERENCE.md</span>\n<span class="md-bold">Examples</span>: <span class="md-link">examples/*.py</span>\n<span class="md-bold">Troubleshooting</span>: <span class="md-link">TROUBLESHOOT.md</span>',
   },
@@ -277,7 +277,7 @@ SECTIONS.forEach(s => {
   sec.innerHTML =
     '<div class="layer wall-text">' + s.wall + '</div>' +
     '<div class="layer code-text">' + s.code + '</div>' +
-    '<div class="label">' + s.label + '</div>';
+    '<div class="label">' + s.label.replace(/\n/g, '<br>') + '</div>';
   specimenEl.appendChild(sec);
 });
 

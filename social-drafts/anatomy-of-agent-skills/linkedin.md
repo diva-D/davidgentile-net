@@ -11,9 +11,17 @@
 
 Most AI agent instructions are long prompts. One document, everything mixed together, and the model has to figure out what matters when.
 
-A skill file is the alternative. Five layers, each solving a different problem: a short trigger so the agent knows when to use it, domain knowledge it can't derive on its own, a locked workflow sequence, guardrails that prevent the confident-but-wrong moves, and reference files that load only when needed. Each layer can be tested and corrected independently.
+An agent skill file is the alternative. Five layers, each solving a different problem:
 
-I took apart a real one. Interactive specimen + full essay at davidgentile.net/anatomy-of-agent-skills/
+- Discovery: what it's for
+- Domain Knowledge: what to know
+- Workflow: what order to do it in
+- Guardrails: what not to do
+- Progressive Disclosure: what to pull in when
+
+Each one can be tested and corrected independently.
+
+I took apart a real one. Interactive example + full essay at davidgentile.net/anatomy-of-agent-skills/
 
 ---
 

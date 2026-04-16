@@ -9,13 +9,30 @@
 
 ---
 
-A prompt dumps everything in one place and hopes the model sorts it out. A skill file splits it into five layers, each one right on its own.
+**Main post (attach beat.mp4):**
 
-davidgentile.net/anatomy-of-agent-skills/
+Most AI agent instructions are one long prompt. Everything in one place, hoping the model sorts it out.
+
+There's a better structure. **Agent Skills**
+
+Five layers: 
+
+1. **Identity**: what it is for
+2. **Domain Knowledge**: what to know
+3. **Workflow**: what order to do it in
+4. **Guardrails**: what not to do
+5. **Progressive Disclosure**: what to pull in when
+
+I took apart a real one to explain how it works in detail.
+
+**Reply (no media):**
+
+Interactive example + full essay at davidgentile.net/anatomy-of-agent-skills/
 
 ---
 
 ## Notes
 
-- 193 chars including URL. Well under 280/240.
-- Attach beat.mp4 as native video for autoplay in feed.
+- Opens with the problem anyone using agents has felt. No jargon.
+- Reply carries the URL only.
+- Attach beat.mp4 to the main post for autoplay in feed.

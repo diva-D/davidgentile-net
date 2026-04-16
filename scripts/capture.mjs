@@ -127,10 +127,12 @@ if (mode === "beat") {
     "-pix_fmt", "yuv420p", "-movflags", "+faststart", mp4]);
   console.log(`wrote ${mp4}`);
 
-  // GIF — two-pass palette for sharp output at full resolution.
+  // GIF — two-pass palette from the MP4 for best colour accuracy.
+  // Output at native 1200px (matches MP4). Two-pass palettegen + bayer dither
+  // eliminates the banding that single-pass GIF encoding produces.
   const palette = `${videoDir}/palette.png`;
   const gif = `${IMG_DIR}/beat.gif`;
-  const gifFilter = "fps=15,scale=1080:-1:flags=lanczos";
+  const gifFilter = "fps=15,scale=1200:-1:flags=lanczos";
   await run("ffmpeg", ["-y", "-i", mp4,
     "-vf", `${gifFilter},palettegen=stats_mode=diff`, palette]);
   await run("ffmpeg", ["-y", "-i", mp4, "-i", palette,
