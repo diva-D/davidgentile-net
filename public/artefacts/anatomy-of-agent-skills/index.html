@@ -597,7 +597,7 @@ window.__artefact = {
   slug: 'anatomy-of-agent-skills',
   phaseCount: 1,
   currentPhase: () => 0,
-  goToPhase: () => { hideDetail(); return Promise.resolve(); },
+  goToPhase: () => { closeModal(); return Promise.resolve(); },
   phaseReady: () => new Promise(r => setTimeout(r, 400)),
 };
 
