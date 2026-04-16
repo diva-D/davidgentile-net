@@ -120,14 +120,25 @@ html, body {
   background: var(--accent);
 }
 
-/* Mobile inline label — hidden on desktop */
+/* Mobile section header — hidden on desktop */
 .section .mobile-lbl {
   display: none;
   font-family: "Inter", sans-serif;
-  font-size: 9px; font-weight: 800;
-  letter-spacing: 1px; text-transform: uppercase;
+  font-size: 10px; font-weight: 800;
+  letter-spacing: 0.8px; text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 6px;
+  background: #f5f2ea;
+  border-bottom: 1px solid var(--line);
+  padding: 8px 14px;
+  margin: -12px -14px 10px;
+}
+.section .mobile-lbl .mobile-sub {
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  text-transform: none;
+  color: var(--muted);
+  margin-left: 8px;
+  font-size: 10px;
 }
 
 /* ==== SYNTAX HIGHLIGHTING ==== */
@@ -174,50 +185,77 @@ html, body {
   fill: var(--accent);
 }
 
-/* ==== DETAIL VIEW ==== */
-.detail-view { display: none; }
-.detail-view.active {
-  display: block;
-  animation: detailIn 0.3s ease;
+/* ==== MODAL OVERLAY ==== */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 26, 29, 0.35);
+  z-index: 100;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
 }
-@keyframes detailIn {
-  from { opacity: 0; transform: translateY(8px); }
+.modal-backdrop.active {
+  display: flex;
+  animation: backdropIn 0.25s ease;
+}
+@keyframes backdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+  max-width: 720px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 28px;
+  animation: modalIn 0.3s ease;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
   to { opacity: 1; transform: none; }
 }
 
-.detail-header {
+.modal-header {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 24px;
+  justify-content: space-between;
+  margin-bottom: 22px;
   padding-bottom: 14px;
   border-bottom: 1px solid var(--line);
 }
-.back-btn {
+.modal-title {
+  font-family: "Inter", sans-serif;
+  font-size: 14px; font-weight: 800;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--accent);
+}
+.modal-close {
   font-family: "Inter", sans-serif;
   font-size: 12px; font-weight: 600;
   color: var(--muted);
   cursor: pointer;
-  border: none; background: none;
-  padding: 8px 0;
-  transition: color 0.2s;
+  border: 1px solid var(--line); background: var(--paper);
+  border-radius: 6px;
+  padding: 6px 12px;
+  transition: color 0.2s, border-color 0.2s;
 }
-.back-btn:hover { color: var(--ink); }
-.detail-title {
-  font-family: "Inter", sans-serif;
-  font-size: 13px; font-weight: 800;
-  letter-spacing: 1px; text-transform: uppercase;
-  color: var(--accent);
-}
+.modal-close:hover { color: var(--ink); border-color: var(--ink); }
 
-.detail-body {
+.modal-body {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 28px;
+  gap: 24px;
   align-items: start;
 }
 
-.detail-code {
+.modal-code {
   background: #f8f5ed;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -231,15 +269,18 @@ html, body {
   word-break: break-word;
 }
 
-.detail-annotation {
+.modal-annotation {
   font-size: 15px;
   line-height: 1.7;
   color: var(--ink-soft);
 }
-.detail-annotation p { margin: 0 0 14px; }
-.detail-annotation p:last-child { margin-bottom: 0; }
-.detail-annotation strong { color: var(--ink); font-weight: 700; }
-.detail-annotation em { color: var(--accent); font-style: italic; }
+.modal-annotation p { margin: 0 0 14px; }
+.modal-annotation p:last-child { margin-bottom: 0; }
+.modal-annotation strong { color: var(--ink); font-weight: 700; }
+.modal-annotation em { color: var(--accent); font-style: italic; }
+
+/* Dim anatomy when modal is open */
+.anatomy.dimmed { opacity: 0.3; pointer-events: none; transition: opacity 0.25s; }
 
 /* Prompt line */
 .prompt {
@@ -265,11 +306,12 @@ html, body {
   .section { padding: 12px 14px; font-size: 11px; }
   .specimen-tab { padding: 6px 14px; }
 
-  .detail-body { grid-template-columns: 1fr; }
-  .detail-code { font-size: 11px; padding: 14px; }
-  .detail-annotation { font-size: 14px; }
-  .back-btn { padding: 10px 0; min-height: 36px; }
-  .detail-header { gap: 12px; margin-bottom: 18px; }
+  .modal-backdrop { padding: 12px; }
+  .modal { padding: 20px; max-height: 90vh; }
+  .modal-body { grid-template-columns: 1fr; }
+  .modal-code { font-size: 11px; padding: 14px; }
+  .modal-annotation { font-size: 14px; }
+  .modal-close { min-height: 36px; padding: 8px 14px; }
 }
 </style>
 </head>
@@ -286,14 +328,16 @@ html, body {
     <svg class="lines-svg" id="linesSvg"></svg>
   </div>
 
-  <div class="detail-view" id="detail">
-    <div class="detail-header">
-      <button class="back-btn" id="backBtn">&larr; Back to anatomy</button>
-      <div class="detail-title" id="detailTitle"></div>
-    </div>
-    <div class="detail-body">
-      <div class="detail-code" id="detailCode"></div>
-      <div class="detail-annotation" id="detailAnnotation"></div>
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal" id="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle"></div>
+        <button class="modal-close" id="modalClose">Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-code" id="modalCode"></div>
+        <div class="modal-annotation" id="modalAnnotation"></div>
+      </div>
     </div>
   </div>
 
@@ -414,7 +458,7 @@ SECTIONS.forEach(s => {
   const sec = document.createElement('div');
   sec.className = 'section';
   sec.dataset.section = s.id;
-  sec.innerHTML = `<div class="mobile-lbl">${s.title}</div>${s.code}`;
+  sec.innerHTML = `<div class="mobile-lbl">${s.title} <span class="mobile-sub">${s.sub}</span></div>${s.code}`;
   specimenEl.appendChild(sec);
 
   const lbl = document.createElement('div');
@@ -521,49 +565,50 @@ document.querySelectorAll('.label').forEach(lbl => {
   lbl.addEventListener('mouseleave', () => highlightSection(null));
 });
 
-/* ==== DETAIL VIEW ==== */
+/* ==== MODAL ==== */
 let activeSection = null;
+const backdrop = document.getElementById('modalBackdrop');
+const anatomyEl = document.getElementById('anatomy');
 
-function showDetail(id) {
+function openModal(id) {
   const s = SECTIONS.find(x => x.id === id);
   if (!s) return;
   activeSection = id;
 
-  document.getElementById('anatomy').classList.add('hidden');
-  const detail = document.getElementById('detail');
-  detail.classList.add('active');
+  highlightSection(id);
+  anatomyEl.classList.add('dimmed');
+  backdrop.classList.add('active');
 
-  document.getElementById('detailTitle').textContent = s.title;
-  document.getElementById('detailCode').innerHTML = s.code;
-  document.getElementById('detailAnnotation').innerHTML = s.annotation;
+  document.getElementById('modalTitle').textContent = s.title;
+  document.getElementById('modalCode').innerHTML = s.code;
+  document.getElementById('modalAnnotation').innerHTML = s.annotation;
   document.getElementById('prompt').textContent =
     `${s.title} \u2014 one of five layers in a skill file.`;
-
-  postHeight();
 }
 
-function hideDetail() {
+function closeModal() {
   activeSection = null;
-  document.getElementById('detail').classList.remove('active');
-  document.getElementById('anatomy').classList.remove('hidden');
+  backdrop.classList.remove('active');
+  anatomyEl.classList.remove('dimmed');
+  highlightSection(null);
   document.getElementById('prompt').textContent =
     'Hover to explore. Click any section to see why it\u2019s load-bearing.';
-
-  requestAnimationFrame(() => {
-    positionLabels();
-    drawLines();
-    postHeight();
-  });
 }
 
 /* Click handlers */
 document.querySelectorAll('.section').forEach(sec => {
-  sec.addEventListener('click', () => showDetail(sec.dataset.section));
+  sec.addEventListener('click', () => openModal(sec.dataset.section));
 });
 document.querySelectorAll('.label').forEach(lbl => {
-  lbl.addEventListener('click', () => showDetail(lbl.dataset.section));
+  lbl.addEventListener('click', () => openModal(lbl.dataset.section));
 });
-document.getElementById('backBtn').addEventListener('click', hideDetail);
+document.getElementById('modalClose').addEventListener('click', closeModal);
+backdrop.addEventListener('click', e => {
+  if (e.target === backdrop) closeModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && activeSection) closeModal();
+});
 
 /* ==== INIT ==== */
 function layout() {
