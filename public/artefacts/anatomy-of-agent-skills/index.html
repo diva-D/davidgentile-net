@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Anatomy of Agent Skills · artefact</title>
+<link rel="preconnect" href="https://rsms.me/" />
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+<style>
+:root {
+  --bg: #faf7f0;
+  --ink: #1a1a1d;
+  --ink-soft: #4a4a52;
+  --muted: #8c8c93;
+  --line: #e4dfd2;
+  --accent: #d94b2f;
+  --gold: #e0a526;
+  --green: #3a9f5e;
+  --paper: #fff;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: "Iowan Old Style", "Palatino", ui-serif, Georgia, serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==== STRUCTURAL ==== */
+.wrap { max-width: 1040px; margin: 0 auto; padding: 24px 24px 28px; }
+.stage {
+  background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
+  padding: 24px 28px 22px; box-shadow: 0 2px 0 rgba(0,0,0,0.03);
+}
+
+/* ==== ANATOMY LAYOUT ==== */
+.anatomy {
+  position: relative;
+  display: grid;
+  grid-template-columns: 190px 1fr 190px;
+  gap: 0;
+}
+.anatomy.hidden { display: none; }
+
+/* Label columns */
+.labels { position: relative; }
+
+.label {
+  position: absolute;
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 4px 0;
+  transition: color 0.25s;
+}
+.labels-left .label { right: 20px; text-align: right; }
+.labels-right .label { left: 20px; text-align: left; }
+.label.highlight { color: var(--accent); }
+.label .sub {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  color: var(--muted);
+  opacity: 0.85;
+  margin-top: 3px;
+  transition: color 0.25s, opacity 0.25s;
+}
+.label.highlight .sub { color: var(--accent); opacity: 0.8; }
+
+/* ==== SPECIMEN ==== */
+.specimen {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+}
+.specimen-tab {
+  font-family: "Inter", sans-serif;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--muted);
+  padding: 7px 18px;
+  border-bottom: 1px solid var(--line);
+  background: #f5f2ea;
+}
+
+.section {
+  padding: 12px 18px;
+  font-family: "SF Mono", "Menlo", ui-monospace, monospace;
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: background 0.2s;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.section:last-child { border-bottom: none; }
+
+/* Accent left bar on hover */
+.section::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: transparent;
+  transition: background 0.2s;
+}
+.section.highlight {
+  background: rgba(217, 75, 47, 0.035);
+}
+.section.highlight::after {
+  background: var(--accent);
+}
+
+/* Mobile inline label — hidden on desktop */
+.section .mobile-lbl {
+  display: none;
+  font-family: "Inter", sans-serif;
+  font-size: 9px; font-weight: 800;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+/* ==== SYNTAX HIGHLIGHTING ==== */
+.ym-delim { color: var(--muted); }
+.ym-key { color: var(--ink); font-weight: 600; }
+.ym-val { color: var(--ink-soft); }
+.md-h { color: var(--ink); font-weight: 700; }
+.md-h .hash { color: var(--muted); font-weight: 400; }
+.md-code {
+  background: rgba(0,0,0,0.045); padding: 1px 4px; border-radius: 3px;
+  font-size: 10.5px;
+}
+.md-link { color: var(--accent); }
+.md-bold { font-weight: 700; color: var(--ink); }
+.md-num { color: var(--accent); font-weight: 600; }
+.md-constraint { color: var(--accent); font-weight: 600; }
+.md-kw { color: #6b5ce7; }
+.md-str { color: #2a7e4f; }
+.md-fn { color: #b07a1b; }
+
+/* ==== SVG CONNECTOR LINES ==== */
+.lines-svg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+.connector-line {
+  stroke: var(--line);
+  stroke-width: 1;
+  fill: none;
+  transition: stroke 0.25s, stroke-width 0.25s;
+}
+.connector-line.highlight {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.connector-dot {
+  fill: var(--line);
+  transition: fill 0.25s;
+}
+.connector-dot.highlight {
+  fill: var(--accent);
+}
+
+/* ==== DETAIL VIEW ==== */
+.detail-view { display: none; }
+.detail-view.active {
+  display: block;
+  animation: detailIn 0.3s ease;
+}
+@keyframes detailIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.back-btn {
+  font-family: "Inter", sans-serif;
+  font-size: 12px; font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  border: none; background: none;
+  padding: 8px 0;
+  transition: color 0.2s;
+}
+.back-btn:hover { color: var(--ink); }
+.detail-title {
+  font-family: "Inter", sans-serif;
+  font-size: 13px; font-weight: 800;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--accent);
+}
+
+.detail-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.detail-code {
+  background: #f8f5ed;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+  font-family: "SF Mono", "Menlo", ui-monospace, monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  box-shadow: inset 3px 0 0 var(--accent);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.detail-annotation {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+.detail-annotation p { margin: 0 0 14px; }
+.detail-annotation p:last-child { margin-bottom: 0; }
+.detail-annotation strong { color: var(--ink); font-weight: 700; }
+.detail-annotation em { color: var(--accent); font-style: italic; }
+
+/* Prompt line */
+.prompt {
+  font-family: "Inter", sans-serif;
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 16px;
+  letter-spacing: 0.2px;
+  transition: opacity 0.3s;
+}
+
+/* ==== MOBILE (≤768px) ==== */
+@media (max-width: 768px) {
+  .wrap  { padding: 12px 12px 18px; }
+  .stage { padding: 18px 14px; border-radius: 10px; }
+
+  .anatomy { grid-template-columns: 1fr; }
+  .labels { display: none; }
+  .lines-svg { display: none; }
+
+  .section .mobile-lbl { display: block; }
+  .section { padding: 12px 14px; font-size: 11px; }
+  .specimen-tab { padding: 6px 14px; }
+
+  .detail-body { grid-template-columns: 1fr; }
+  .detail-code { font-size: 11px; padding: 14px; }
+  .detail-annotation { font-size: 14px; }
+  .back-btn { padding: 10px 0; min-height: 36px; }
+  .detail-header { gap: 12px; margin-bottom: 18px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="stage">
+
+  <div class="anatomy" id="anatomy">
+    <div class="labels labels-left" id="labelsLeft"></div>
+    <div class="specimen" id="specimen">
+      <div class="specimen-tab">SKILL.md</div>
+    </div>
+    <div class="labels labels-right" id="labelsRight"></div>
+    <svg class="lines-svg" id="linesSvg"></svg>
+  </div>
+
+  <div class="detail-view" id="detail">
+    <div class="detail-header">
+      <button class="back-btn" id="backBtn">&larr; Back to anatomy</button>
+      <div class="detail-title" id="detailTitle"></div>
+    </div>
+    <div class="detail-body">
+      <div class="detail-code" id="detailCode"></div>
+      <div class="detail-annotation" id="detailAnnotation"></div>
+    </div>
+  </div>
+
+  <div class="prompt" id="prompt">Hover to explore. Click any section to see why it's load-bearing.</div>
+
+</div>
+</div>
+
+<script>
+/* ==== SECTION DATA ==== */
+const SECTIONS = [
+  {
+    id: 'frontmatter',
+    title: 'Discovery',
+    sub: 'name + description',
+    side: 'left',
+    code: [
+      '<span class="ym-delim">---</span>',
+      '<span class="ym-key">name:</span> <span class="ym-val">processing-pdfs</span>',
+      '<span class="ym-key">description:</span> <span class="ym-val">Extract text and</span>',
+      '  <span class="ym-val">tables from PDF files, fill forms,</span>',
+      '  <span class="ym-val">merge documents. Use when working</span>',
+      '  <span class="ym-val">with PDFs, forms, or extraction.</span>',
+      '<span class="ym-delim">---</span>',
+    ].join('\n'),
+    annotation: [
+      '<p><strong>Before the agent reads a single instruction, it reads this.</strong> The name and description are loaded at startup alongside every other skill\u2019s metadata \u2014 potentially hundreds of them.</p>',
+      '<p>The description is the filter. If it doesn\u2019t match the task, the skill never activates. Everything below this line is irrelevant if the description fails.</p>',
+      '<p><em>Write in third person. Be specific. Include trigger words.</em> This isn\u2019t documentation \u2014 it\u2019s a search query written in advance.</p>',
+    ].join(''),
+  },
+  {
+    id: 'knowledge',
+    title: 'Domain Knowledge',
+    sub: 'what the agent doesn\u2019t already know',
+    side: 'right',
+    code: [
+      '<span class="md-h"><span class="hash">#</span> PDF Processing</span>',
+      '',
+      '<span class="md-h"><span class="hash">##</span> Quick start</span>',
+      '',
+      'Extract text with pdfplumber:',
+      '',
+      '  <span class="md-kw">import</span> pdfplumber',
+      '  <span class="md-kw">with</span> pdfplumber.<span class="md-fn">open</span>(<span class="md-str">"f.pdf"</span>) <span class="md-kw">as</span> pdf:',
+      '    text = pdf.pages[0].<span class="md-fn">extract_text</span>()',
+      '',
+      'For scanned PDFs, use pdf2image',
+      'with pytesseract instead.',
+    ].join('\n'),
+    annotation: [
+      '<p><strong>The default assumption: the model is already smart.</strong> It knows what PDFs are. It knows how libraries work. This section exists only for the things it can\u2019t derive \u2014 which library to use, which method to call, which edge case to watch for.</p>',
+      '<p>Every token here competes with conversation history. If you can delete a sentence and the agent still succeeds, <em>delete it.</em></p>',
+      '<p>This is the knowledge transfer. Not what the model is \u2014 intelligent. What the model lacks \u2014 <strong>your specific, non-obvious expertise.</strong></p>',
+    ].join(''),
+  },
+  {
+    id: 'workflow',
+    title: 'Workflow',
+    sub: 'encoded sequence + feedback loops',
+    side: 'left',
+    code: [
+      '<span class="md-h"><span class="hash">##</span> Form filling workflow</span>',
+      '',
+      '<span class="md-num">1.</span> Analyze: <span class="md-code">analyze_form.py input.pdf</span>',
+      '<span class="md-num">2.</span> Map fields: edit <span class="md-code">fields.json</span>',
+      '<span class="md-num">3.</span> Validate: <span class="md-code">validate_fields.py fields.json</span>',
+      '<span class="md-num">4.</span> Fill: <span class="md-code">fill_form.py input.pdf out.pdf</span>',
+      '<span class="md-num">5.</span> Verify \u2014 <span class="md-constraint">if fails, return to step 2</span>',
+    ].join('\n'),
+    annotation: [
+      '<p><strong>The person who wrote this learned \u2014 probably the hard way \u2014 that skipping validation breaks things.</strong> The feedback loop at step 5 is encoded wisdom: this fails often enough that the retry is part of the design.</p>',
+      '<p>Without this section, the agent improvises a sequence. Sometimes that\u2019s fine. But for fragile operations \u2014 database migrations, form filling, deployment \u2014 <em>the sequence is the skill.</em></p>',
+      '<p>Each step is a checkpoint. The agent can\u2019t jump from step 1 to step 4 without passing through validation. That constraint is the whole point.</p>',
+    ].join(''),
+  },
+  {
+    id: 'guardrails',
+    title: 'Guardrails',
+    sub: 'what the agent must not do',
+    side: 'right',
+    code: [
+      '<span class="md-constraint">Do not modify the command or add flags.</span>',
+      '<span class="md-constraint">Only proceed when validation passes.</span>',
+    ].join('\n'),
+    annotation: [
+      '<p><strong>Two lines. Easy to miss. Load-bearing.</strong></p>',
+      '<p>Without \u201cdo not modify the command flags,\u201d the agent will helpfully add <em>--verbose</em>, <em>--force</em>, or <em>--skip-validation</em>. Without \u201conly proceed when validation passes,\u201d it will press on after errors.</p>',
+      '<p>Guardrails encode the failures someone already had so the agent doesn\u2019t have them again. They\u2019re small because constraints are specific. <strong>Intelligence is general. Wisdom is not.</strong></p>',
+    ].join(''),
+  },
+  {
+    id: 'disclosure',
+    title: 'Progressive Disclosure',
+    sub: 'knowledge loaded on demand',
+    side: 'left',
+    code: [
+      '<span class="md-h"><span class="hash">##</span> Advanced features</span>',
+      '',
+      '<span class="md-bold">Form filling</span>: See <span class="md-link">FORMS.md</span>',
+      '<span class="md-bold">API reference</span>: See <span class="md-link">REFERENCE.md</span>',
+      '<span class="md-bold">Examples</span>: See <span class="md-link">EXAMPLES.md</span>',
+    ].join('\n'),
+    annotation: [
+      '<p><strong>FORMS.md, REFERENCE.md, EXAMPLES.md</strong> \u2014 each is a full document the agent can read, but won\u2019t until the task requires it. They sit on the filesystem, consuming zero context tokens.</p>',
+      '<p>This is the skill\u2019s filing cabinet. The main file is the desk \u2014 just enough to work. The referenced files are the drawers you pull open when you need depth.</p>',
+      '<p>A prompt can\u2019t do this. It\u2019s all-or-nothing \u2014 every word is in the context window whether the task needs it or not. <em>A skill decides what to load and when.</em></p>',
+    ].join(''),
+  },
+];
+
+/* ==== BUILD DOM ==== */
+const specimenEl = document.getElementById('specimen');
+const labelsLeftEl = document.getElementById('labelsLeft');
+const labelsRightEl = document.getElementById('labelsRight');
+
+SECTIONS.forEach(s => {
+  const sec = document.createElement('div');
+  sec.className = 'section';
+  sec.dataset.section = s.id;
+  sec.innerHTML = `<div class="mobile-lbl">${s.title}</div>${s.code}`;
+  specimenEl.appendChild(sec);
+
+  const lbl = document.createElement('div');
+  lbl.className = 'label';
+  lbl.dataset.section = s.id;
+  lbl.innerHTML = `${s.title}<span class="sub">${s.sub}</span>`;
+  (s.side === 'left' ? labelsLeftEl : labelsRightEl).appendChild(lbl);
+});
+
+/* ==== POSITION LABELS ==== */
+function positionLabels() {
+  const anatomy = document.getElementById('anatomy');
+  const aRect = anatomy.getBoundingClientRect();
+
+  SECTIONS.forEach(s => {
+    const sec = specimenEl.querySelector(`[data-section="${s.id}"]`);
+    const lbl = document.querySelector(`.labels .label[data-section="${s.id}"]`);
+    if (!sec || !lbl) return;
+    const sRect = sec.getBoundingClientRect();
+    const centerY = sRect.top + sRect.height / 2 - aRect.top;
+    lbl.style.top = (centerY - lbl.offsetHeight / 2) + 'px';
+  });
+}
+
+/* ==== DRAW CONNECTOR LINES ==== */
+function drawLines() {
+  const svg = document.getElementById('linesSvg');
+  const anatomy = document.getElementById('anatomy');
+  const aRect = anatomy.getBoundingClientRect();
+
+  svg.innerHTML = '';
+  svg.setAttribute('width', aRect.width);
+  svg.setAttribute('height', aRect.height);
+
+  SECTIONS.forEach(s => {
+    const sec = specimenEl.querySelector(`[data-section="${s.id}"]`);
+    const lbl = document.querySelector(`.labels .label[data-section="${s.id}"]`);
+    if (!sec || !lbl) return;
+
+    const sRect = sec.getBoundingClientRect();
+    const lRect = lbl.getBoundingClientRect();
+
+    const sy = sRect.top + sRect.height / 2 - aRect.top;
+    const ly = lRect.top + lRect.height / 2 - aRect.top;
+
+    let sx, lx;
+    if (s.side === 'left') {
+      sx = sRect.left - aRect.left;
+      lx = lRect.right - aRect.left;
+    } else {
+      sx = sRect.right - aRect.left;
+      lx = lRect.left - aRect.left;
+    }
+
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', lx);
+    line.setAttribute('y1', ly);
+    line.setAttribute('x2', sx);
+    line.setAttribute('y2', sy);
+    line.setAttribute('class', 'connector-line');
+    line.dataset.section = s.id;
+    svg.appendChild(line);
+
+    const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    dot.setAttribute('cx', sx);
+    dot.setAttribute('cy', sy);
+    dot.setAttribute('r', 3);
+    dot.setAttribute('class', 'connector-dot');
+    dot.dataset.section = s.id;
+    svg.appendChild(dot);
+  });
+}
+
+/* ==== HOVER HIGHLIGHTING ==== */
+function highlightSection(id) {
+  document.querySelectorAll('.section.highlight').forEach(el => el.classList.remove('highlight'));
+  document.querySelectorAll('.label.highlight').forEach(el => el.classList.remove('highlight'));
+  document.querySelectorAll('.connector-line.highlight').forEach(el => el.classList.remove('highlight'));
+  document.querySelectorAll('.connector-dot.highlight').forEach(el => el.classList.remove('highlight'));
+
+  if (!id) return;
+
+  const sec = specimenEl.querySelector(`[data-section="${id}"]`);
+  const lbl = document.querySelector(`.labels .label[data-section="${id}"]`);
+  const line = document.querySelector(`.connector-line[data-section="${id}"]`);
+  const dot = document.querySelector(`.connector-dot[data-section="${id}"]`);
+
+  if (sec) sec.classList.add('highlight');
+  if (lbl) lbl.classList.add('highlight');
+  if (line) line.classList.add('highlight');
+  if (dot) dot.classList.add('highlight');
+}
+
+/* Hover on sections */
+document.querySelectorAll('.section').forEach(sec => {
+  sec.addEventListener('mouseenter', () => highlightSection(sec.dataset.section));
+  sec.addEventListener('mouseleave', () => highlightSection(null));
+});
+specimenEl.addEventListener('mouseleave', () => highlightSection(null));
+
+/* Hover on labels */
+document.querySelectorAll('.label').forEach(lbl => {
+  lbl.addEventListener('mouseenter', () => highlightSection(lbl.dataset.section));
+  lbl.addEventListener('mouseleave', () => highlightSection(null));
+});
+
+/* ==== DETAIL VIEW ==== */
+let activeSection = null;
+
+function showDetail(id) {
+  const s = SECTIONS.find(x => x.id === id);
+  if (!s) return;
+  activeSection = id;
+
+  document.getElementById('anatomy').classList.add('hidden');
+  const detail = document.getElementById('detail');
+  detail.classList.add('active');
+
+  document.getElementById('detailTitle').textContent = s.title;
+  document.getElementById('detailCode').innerHTML = s.code;
+  document.getElementById('detailAnnotation').innerHTML = s.annotation;
+  document.getElementById('prompt').textContent =
+    `${s.title} \u2014 one of five layers in a skill file.`;
+
+  postHeight();
+}
+
+function hideDetail() {
+  activeSection = null;
+  document.getElementById('detail').classList.remove('active');
+  document.getElementById('anatomy').classList.remove('hidden');
+  document.getElementById('prompt').textContent =
+    'Hover to explore. Click any section to see why it\u2019s load-bearing.';
+
+  requestAnimationFrame(() => {
+    positionLabels();
+    drawLines();
+    postHeight();
+  });
+}
+
+/* Click handlers */
+document.querySelectorAll('.section').forEach(sec => {
+  sec.addEventListener('click', () => showDetail(sec.dataset.section));
+});
+document.querySelectorAll('.label').forEach(lbl => {
+  lbl.addEventListener('click', () => showDetail(lbl.dataset.section));
+});
+document.getElementById('backBtn').addEventListener('click', hideDetail);
+
+/* ==== INIT ==== */
+function layout() {
+  positionLabels();
+  drawLines();
+}
+
+window.addEventListener('load', () => { layout(); postHeight(); });
+window.addEventListener('resize', () => {
+  if (!activeSection) layout();
+  postHeight();
+});
+
+/* ==== CAPTURE CONTRACT ==== */
+window.__artefact = {
+  slug: 'anatomy-of-agent-skills',
+  phaseCount: 1,
+  currentPhase: () => 0,
+  goToPhase: () => { hideDetail(); return Promise.resolve(); },
+  phaseReady: () => new Promise(r => setTimeout(r, 400)),
+};
+
+/* ==== IFRAME SELF-SIZING ==== */
+function postHeight() {
+  const h = Math.ceil(document.documentElement.getBoundingClientRect().height);
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'artefact:height', height: h }, '*');
+  }
+}
+new ResizeObserver(postHeight).observe(document.body);
+</script>
+</body>
+</html>
