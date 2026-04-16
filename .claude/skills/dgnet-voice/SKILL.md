@@ -92,8 +92,8 @@ Sentences average 14-18 words but should range from 4 to 30. If every sentence i
 
 Before declaring a draft done, do this:
 
-1. **Em dash sweep.** Search the file for the character `—`. There should be zero. If there's one, replace it.
-2. **Phrase blocklist sweep.** Search for the worst offenders (delve, leverage, robust, seamless, multifaceted, ultimately, in essence, that said). Each hit gets reviewed and almost always cut.
+1. **Em dash sweep.** Search the post file AND all artefact HTML files for both the literal character `—` and the escaped unicode `\u2014` (which appears in JS strings inside artefacts). There should be zero in reader-facing text. Code comments are exempt. If there's one, replace it.
+2. **Phrase blocklist sweep.** Search the post file AND artefact HTML files for the worst offenders (delve, leverage, robust, seamless, multifaceted, ultimately, in essence, that said). Each hit gets reviewed and almost always cut.
 3. **Read it out loud.** Genuinely. If you stumble or it sounds like a press release, rewrite that sentence.
 4. **Triplet check.** Count "X, Y, and Z" patterns. More than two in a 250-word post means cut at least one.
 5. **The "did a person write this?" gut check.** If your gut says no, the reader's will too.

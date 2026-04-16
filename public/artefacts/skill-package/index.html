@@ -177,7 +177,7 @@ const PHASES = [
     ],
     tokens: 1200, tokenPct: 10,
     tokenLabel: '1,200 tokens \u00b7 the entire skill',
-    narration: '<p><strong>For simple tasks, this is the entire skill.</strong> One file. Everything the agent needs \u2014 discovery, knowledge, workflow, guardrails \u2014 in under 2,000 tokens.</p><p>Most skills start here and many never need more. If the use case is straightforward, a single file is the whole package.</p>',
+    narration: '<p><strong>For simple tasks, this is the entire skill.</strong> One file. Everything the agent needs (discovery, knowledge, workflow, guardrails) in under 2,000 tokens.</p><p>Most skills start here and many never need more. If the use case is straightforward, a single file is the whole package.</p>',
     previews: [],
   },
   {
@@ -187,7 +187,7 @@ const PHASES = [
     ],
     tokens: 4600, tokenPct: 37,
     tokenLabel: '1,200 always loaded + 3,400 on demand',
-    narration: '<p><strong>Now the task gets specific.</strong> A user asks the agent to fill a PDF form. The main file has the basics, but form-filling has dozens of edge cases \u2014 field types, date formats, signature fields.</p><p>You <em>could</em> cram all that into <code>SKILL.md</code>, but then every task pays the cost of loading it. Instead, <code>FORMS.md</code> sits alongside \u2014 3,400 tokens the agent only reads when the task actually involves forms.</p>',
+    narration: '<p><strong>Now the task gets specific.</strong> A user asks the agent to fill a PDF form. The main file has the basics, but form-filling has dozens of edge cases: field types, date formats, signature fields.</p><p>You <em>could</em> cram all that into <code>SKILL.md</code>, but then every task pays the cost of loading it. Instead, <code>FORMS.md</code> sits alongside. 3,400 tokens the agent only reads when the task actually involves forms.</p>',
     previews: ['FORMS.md'],
   },
   {
@@ -199,7 +199,7 @@ const PHASES = [
     ],
     tokens: 12500, tokenPct: 100,
     tokenLabel: '1,200 always loaded + 11,300 available on demand',
-    narration: '<p><strong>Same pattern for depth.</strong> <code>REFERENCE.md</code> holds the full API surface \u2014 every method, every parameter. <code>EXAMPLES.md</code> holds worked input/output pairs the agent can pattern-match against.</p><p>Each file exists because some tasks need it and most don\u2019t. The agent decides what to open based on what the task requires. <em>Depth without default cost.</em></p>',
+    narration: '<p><strong>Same pattern for depth.</strong> <code>REFERENCE.md</code> holds the full API surface: every method, every parameter. <code>EXAMPLES.md</code> holds worked input/output pairs the agent can pattern-match against.</p><p>Each file exists because some tasks need it and most don\u2019t. The agent decides what to open based on what the task requires. <em>Depth without default cost.</em></p>',
     previews: ['REFERENCE.md', 'EXAMPLES.md'],
   },
   {
@@ -209,12 +209,13 @@ const PHASES = [
       { name: 'REFERENCE.md', pre: '\u251c\u2500 ', dot: 'on-demand' },
       { name: 'EXAMPLES.md', pre: '\u251c\u2500 ', dot: 'on-demand' },
       { name: 'scripts/', pre: '\u2514\u2500 ', isDir: true },
-      { name: 'analyze_form.py', pre: '   \u2514\u2500 ', dot: 'executed', isNew: true },
+      { name: 'analyze_form.py', pre: '   \u251c\u2500 ', dot: 'executed', isNew: true },
+      { name: 'fill_form.py', pre: '   \u2514\u2500 ', dot: 'executed', isNew: true },
     ],
     tokens: 12500, tokenPct: 100,
     tokenLabel: '1,200 always loaded + 11,300 on demand + scripts free',
-    narration: '<p><strong>Now the skill needs to <em>do</em> something, not just <em>know</em> something.</strong> <code>analyze_form.py</code> isn\u2019t a document the agent reads into memory. It\u2019s a program it executes \u2014 calls the script, reads stdout, acts on the result.</p><p>Zero memory cost. Knowledge encoded as runnable code instead of prose.</p>',
-    previews: ['analyze_form.py'],
+    narration: '<p><strong>Now the skill needs to <em>do</em> something, not just <em>know</em> something.</strong> These scripts aren\u2019t documents the agent reads into memory. They\u2019re programs it executes: call the script, read stdout, act on the result.</p><p>Zero memory cost. Knowledge encoded as runnable code instead of prose.</p>',
+    previews: ['analyze_form.py', 'fill_form.py'],
   },
   {
     files: [
@@ -223,11 +224,12 @@ const PHASES = [
       { name: 'REFERENCE.md', pre: '\u251c\u2500 ', dot: 'on-demand' },
       { name: 'EXAMPLES.md', pre: '\u251c\u2500 ', dot: 'on-demand' },
       { name: 'scripts/', pre: '\u2514\u2500 ', isDir: true },
-      { name: 'analyze_form.py', pre: '   \u2514\u2500 ', dot: 'executed' },
+      { name: 'analyze_form.py', pre: '   \u251c\u2500 ', dot: 'executed' },
+      { name: 'fill_form.py', pre: '   \u2514\u2500 ', dot: 'executed' },
     ],
     tokens: 12500, tokenPct: 100,
     tokenLabel: '1,200 base \u00b7 up to 12,500 total \u00b7 pays only for what it uses',
-    narration: '<p><strong>What started as a single document is now a package.</strong> One main file, three reference files loaded on demand, one executable script. The agent always pays for 1,200 tokens. It <em>can</em> access 12,500 more \u2014 but only pays for what the task actually needs.</p><p>Not a prompt. Not a document. A program \u2014 with knowledge, branching, and tools, bundled into a single skill.</p>',
+    narration: '<p><strong>What started as a single document is now a package.</strong> One main file, three reference files loaded on demand, two executable scripts. The agent always pays for 1,200 tokens. It <em>can</em> access 12,500 more, but only pays for what the task actually needs.</p><p>Not a prompt. Not a document. A program, with knowledge, branching, and tools, bundled into a single skill.</p>',
     previews: [],
   },
 ];
@@ -235,7 +237,7 @@ const PHASES = [
 const FILE_PREVIEWS = {
   'FORMS.md': {
     badge: 'on-demand', badgeLabel: 'Loaded on demand',
-    code: '# Form Filling Reference\n\n## Field types\n- text: standard input\n- checkbox: use /Yes, /Off\n- radio: group by field name\n- signature: skip (requires manual)\n\n## Date formats\nUS forms: MM/DD/YYYY\nISO:      YYYY-MM-DD',
+    code: '# Form Filling Guide\n\nCRITICAL: Complete steps in order.\nDo not skip ahead to filling.\n\n## Step 1: Check field type\nRun: scripts/analyze_form.py input.pdf\n\nIf output has field annotations:\n  \u2192 Go to "Fillable fields" below\nIf output is empty:\n  \u2192 Go to "Non-fillable fields"\n\n## Fillable fields\n- checkbox: use /Yes, /Off\n- radio: group by field name\n- signature: skip (requires manual)',
   },
   'REFERENCE.md': {
     badge: 'on-demand', badgeLabel: 'Loaded on demand',
@@ -247,7 +249,11 @@ const FILE_PREVIEWS = {
   },
   'analyze_form.py': {
     badge: 'executed', badgeLabel: 'Executed',
-    code: '#!/usr/bin/env python3\n"""Analyze PDF form fields.\nOutputs JSON field map to stdout.\n"""\nimport pdfplumber, json, sys\n\ndef analyze(path):\n    with pdfplumber.open(path) as pdf:\n        fields = pdf.pages[0].annots\n    print(json.dumps(fields))',
+    code: '#!/usr/bin/env python3\n"""Analyze PDF form fields.\nOutputs JSON field map to stdout.\n\nUsage:\n  python scripts/analyze_form.py input.pdf\n"""\nimport pdfplumber, json, sys\n\nwith pdfplumber.open(sys.argv[1]) as pdf:\n    fields = []\n    for page in pdf.pages:\n        for annot in (page.annots or []):\n            fields.append(annot)\n    print(json.dumps(fields, indent=2))',
+  },
+  'fill_form.py': {
+    badge: 'executed', badgeLabel: 'Executed',
+    code: '#!/usr/bin/env python3\n"""Fill PDF form from field values.\n\nUsage:\n  python scripts/fill_form.py in.pdf vals.json out.pdf\n"""\nfrom pypdf import PdfReader, PdfWriter\nimport json, sys\n\nreader = PdfReader(sys.argv[1])\nvals = json.load(open(sys.argv[2]))\nwriter = PdfWriter()\nwriter.append(reader)\nwriter.update_page_form_field_values(\n    writer.pages[0], vals\n)\nwriter.write(sys.argv[3])',
   },
 };
 

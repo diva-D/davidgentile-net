@@ -326,8 +326,8 @@ const SECTIONS = [
       '<span class="ym-delim">---</span>',
     ].join('\n'),
     annotation: [
-      '<p><strong>An agent might have access to hundreds of skills.</strong> When a task comes in, it scans every skill\u2019s name and description to decide which one to load. This block is what it scans.</p>',
-      '<p>If the description doesn\u2019t match the task, nothing below this line ever gets read. The skill stays on the shelf. So the description isn\u2019t documentation \u2014 it\u2019s more like a search query, written in advance, that determines when this skill wakes up.</p>',
+      '<p><strong>An agent might have access to hundreds of skills.</strong> When a task comes in, it scans every skill\u2019s name and description to decide which one to load. Just the name and description. Not the full skill. That\u2019s roughly 50\u2013100 tokens per skill instead of thousands.</p>',
+      '<p>If the description doesn\u2019t match the task, nothing below this line ever gets read. The skill stays on the shelf. So the description isn\u2019t documentation. It\u2019s more like a search query, written in advance, that determines when this skill wakes up.</p>',
       '<p><em>Be specific. Include the words someone would use to describe the task.</em> A vague description means the skill activates when it shouldn\u2019t, or doesn\u2019t when it should.</p>',
     ].join(''),
   },
@@ -352,7 +352,7 @@ const SECTIONS = [
     ].join('\n'),
     annotation: [
       '<p><strong>The model already knows what PDFs are.</strong> It knows how libraries work in general. What it doesn\u2019t know is which library to use for <em>this</em> job, which method to call first, and what to do when the PDF is scanned instead of digital.</p>',
-      '<p>That\u2019s what this section provides: the specific, non-obvious knowledge that separates someone who\u2019s done this before from someone figuring it out for the first time. Not general intelligence \u2014 <strong>earned expertise.</strong></p>',
+      '<p>That\u2019s what this section provides: the specific, non-obvious knowledge that separates someone who\u2019s done this before from someone figuring it out for the first time. Not general intelligence. <strong>Earned expertise.</strong></p>',
       '<p>Keep it lean. Every line here takes up space in the agent\u2019s working memory. If you can remove a sentence and the agent still gets it right, remove it.</p>',
     ].join(''),
   },
@@ -364,15 +364,15 @@ const SECTIONS = [
     code: [
       '<span class="md-h"><span class="hash">##</span> Form filling workflow</span>',
       '',
-      '<span class="md-num">1.</span> Analyze: <span class="md-code">analyze_form.py input.pdf</span>',
-      '<span class="md-num">2.</span> Map fields: edit <span class="md-code">fields.json</span>',
-      '<span class="md-num">3.</span> Validate: <span class="md-code">validate_fields.py fields.json</span>',
-      '<span class="md-num">4.</span> Fill: <span class="md-code">fill_form.py input.pdf out.pdf</span>',
-      '<span class="md-num">5.</span> Verify \u2014 <span class="md-constraint">if fails, return to step 2</span>',
+      '<span class="md-num">1.</span> Analyze: <span class="md-code">scripts/analyze_form.py input.pdf</span>',
+      '<span class="md-num">2.</span> Map fields: create <span class="md-code">field_values.json</span> from output',
+      '<span class="md-num">3.</span> Fill: <span class="md-code">scripts/fill_form.py input.pdf field_values.json out.pdf</span>',
+      '<span class="md-num">4.</span> Verify: convert out.pdf to images, check placement',
+      '<span class="md-num">5.</span> <span class="md-constraint">If placement wrong, return to step 2</span>',
     ].join('\n'),
     annotation: [
-      '<p><strong>Some operations break if you do them out of order.</strong> Fill a form before validating the field map, and the output is silently wrong. The person who wrote this workflow learned that \u2014 probably the hard way \u2014 and encoded the lesson as a fixed sequence.</p>',
-      '<p>Notice step 5: <em>if validation fails, go back to step 2.</em> That loop isn\u2019t an edge case. It\u2019s there because this fails often enough that the retry is part of the design.</p>',
+      '<p><strong>Some operations break if you do them out of order.</strong> Fill a form before analyzing the field map, and the output is silently wrong. The person who wrote this workflow learned that (probably the hard way) and encoded the lesson as a fixed sequence.</p>',
+      '<p>Notice step 5: <em>if placement is wrong, go back to step 2.</em> That loop isn\u2019t an edge case. It\u2019s there because field placement fails often enough that the retry is part of the design. The real version of this skill verifies every fill by converting the output to images and checking visually.</p>',
       '<p>Without a workflow section, the agent improvises its own order. For simple tasks, that\u2019s fine. For fragile ones, the sequence <strong>is</strong> the skill.</p>',
     ].join(''),
   },
@@ -382,13 +382,13 @@ const SECTIONS = [
     sub: 'what the agent must not do',
     side: 'right',
     code: [
-      '<span class="md-constraint">Do not modify the command or add flags.</span>',
-      '<span class="md-constraint">Only proceed when validation passes.</span>',
+      '<span class="md-constraint">Run scripts exactly as shown. Do not add flags.</span>',
+      '<span class="md-constraint">Always verify filled PDF visually before delivering.</span>',
     ].join('\n'),
     annotation: [
       '<p><strong>Two lines. Easy to overlook. But remove them and watch what happens.</strong></p>',
-      '<p>Without the first line, the agent will helpfully add flags like <em>--verbose</em> or <em>--force</em> to commands, because it\u2019s trying to be thorough. Without the second, it will press on after a validation error, because it\u2019s trying to be efficient. Both instincts are reasonable. Both break things here.</p>',
-      '<p>Guardrails are where past failures get encoded. Someone already learned that adding flags to this command corrupts the output. These two lines mean <strong>no one learns that lesson again.</strong></p>',
+      '<p>Without the first line, the agent will helpfully add flags like <em>--verbose</em> or <em>--force</em> to the fill script, because it\u2019s trying to be thorough. Without the second, it will skip the visual check and deliver a PDF with misaligned fields, because it\u2019s trying to be efficient. Both instincts are reasonable. Both produce broken output.</p>',
+      '<p>Guardrails are where past failures get encoded. Someone already learned that adding flags to these scripts corrupts the output, and that field placement needs a visual check every time. These two lines mean <strong>no one learns those lessons again.</strong></p>',
     ].join(''),
   },
   {
@@ -404,8 +404,8 @@ const SECTIONS = [
       '<span class="md-bold">Examples</span>: See <span class="md-link">EXAMPLES.md</span>',
     ].join('\n'),
     annotation: [
-      '<p><strong>These links point to other files in the same directory.</strong> FORMS.md, REFERENCE.md, EXAMPLES.md \u2014 each is a full document the agent <em>can</em> read, but won\u2019t until the task requires it. They sit on the filesystem, using zero memory until opened.</p>',
-      '<p>Think of it like a desk and a filing cabinet. The main skill file is the desk \u2014 just enough to work with right now. The referenced files are drawers you pull open only when the task gets specific.</p>',
+      '<p><strong>These links point to other files in the same directory.</strong> <code>FORMS.md</code>, <code>REFERENCE.md</code>, <code>EXAMPLES.md</code>. Each is a full document the agent <em>can</em> read, but won\u2019t until the task requires it. They sit on the filesystem, using zero memory until opened.</p>',
+      '<p>Think of it like a desk and a filing cabinet. The main skill file is the desk: just enough to work with right now. The referenced files are drawers you pull open only when the task gets specific.</p>',
       '<p>This is something a regular prompt can\u2019t do. A prompt is all-or-nothing: every word sits in the agent\u2019s working memory whether the task needs it or not. A skill file lets the agent <em>decide what to load and when.</em></p>',
     ].join(''),
   },
@@ -551,7 +551,7 @@ function openModal(id) {
   document.getElementById('modalAnnotation').innerHTML = s.annotation;
 
   document.getElementById('prompt').textContent =
-    `${s.title} \u2014 one of five layers in a skill file.`;
+    `${s.title}: one of five layers in a skill file.`;
 
   postHeight();
 }

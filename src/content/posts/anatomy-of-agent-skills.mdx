@@ -1,6 +1,6 @@
 ---
 title: "The Anatomy of Agent Skills"
-description: "A skill file isn't a fancy prompt. It's codified knowledge, tool access, and guardrails — the scaffolding that makes AI intelligence reliable."
+description: "A skill file isn't a fancy prompt. It's codified knowledge, tool access, and guardrails: the scaffolding that makes AI intelligence reliable."
 date: 2026-04-16
 heroImage: "/images/anatomy-of-agent-skills/hero.png"
 artefact: "/artefacts/anatomy-of-agent-skills/index.html"
@@ -11,19 +11,19 @@ stage: "draft"
 import Artefact from '../../components/Artefact.astro';
 import Sources from '../../components/Sources.astro';
 
-When you ask an AI agent to do something complex, it needs more than intelligence. It needs to know *which* library to call, *what order* to run the steps in, and *which mistakes* you've already made so it doesn't repeat them. A skill file is a structured document that gives it all three. Not a prompt — a layered encoding of the knowledge, sequence, and constraints that make the difference between an agent that demos well and one that works. Below is a real one, taken apart.
+An AI agent needs to know *which* library to call, *what order* to run the steps in, and *which mistakes* you've already made so it doesn't repeat them. A skill file gives it all three. Not a prompt. A layered encoding of the knowledge, sequence, and constraints that make the difference between an agent that demos well and one that works. Below is a real one, taken apart.
 
 <Artefact src="/artefacts/anatomy-of-agent-skills/index.html" height={820} caption="Hover to explore. Click to drill in." />
 
-Five layers, each solving a different problem. A short description so the agent knows *when* to use this skill and when to ignore it. Domain knowledge for the things the model can't figure out on its own — which library, which method, which edge case. A workflow that locks the steps into an order, because some operations break if you skip ahead. Guardrails: two lines that prevent the agent from helpfully adding a flag that corrupts the output. And a set of reference files the agent only opens when it needs depth, so the simple case stays fast.
+Five layers, each solving a different problem. A short description so the agent knows *when* to use this skill and when to ignore it. Domain knowledge for the things the model can't figure out on its own: which library, which method, which edge case. A workflow that locks the steps into an order, because some operations break if you skip ahead. Guardrails: two lines that prevent the agent from adding a flag that corrupts the output. And a set of reference files the agent only opens when it needs depth, so the simple case stays fast.
 
-> A prompt is a sentence you hope will work. A skill file is *structured expertise* — what to know, what order to do it in, and what not to do, separated so each part can be right independently.
+> A prompt is a sentence you hope will work. A skill file is *structured expertise*: what to know, what order to do it in, and what not to do, separated so each part can be right independently.
 
-That single file is enough for simple tasks. But it gets interesting when the use case grows. A skill can expand from one document into a full package — reference files that load on demand, executable scripts, branching paths for different task types. The file becomes a directory. The directory becomes a program.
+That single file is enough for simple tasks. But it gets interesting when the use case grows. A skill can expand from one document into a full package. The file becomes a directory. The directory becomes a program.
 
 <Artefact src="/artefacts/skill-package/index.html" height={520} caption="Click 'Next' to build up from a single file to a full skill package." />
 
-The difference shows up in production. A long prompt works on the demo because the demo is the happy path. The skill file is what catches the rest — the validation step someone learned to never skip, the reference doc that only loads when the task is unusual, the two-line guardrail that prevents the agent from being *too* helpful. Intelligence is built into the model. The skill file is where you add everything intelligence alone can't give you.
+The difference shows up in production. A long prompt works on the demo because the demo is the happy path. The skill file catches the rest: the validation step someone learned to never skip, the reference doc that only loads when the task is unusual, the two-line guardrail that prevents the agent from being *too* helpful. Intelligence is built into the model. The skill file is where you add everything intelligence alone can't give you.
 
 <Sources items={[
   { label: "Anthropic: Agent Skills documentation", url: "https://docs.anthropic.com/en/docs/agents-and-tools/agent-skills" },
