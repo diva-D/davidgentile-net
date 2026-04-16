@@ -177,7 +177,7 @@ const PHASES = [
     ],
     tokenPct: 10,
     tokenLabel: '1,200 tokens \u00b7 the entire skill',
-    narration: '<p><strong>For simple tasks, this is the entire skill.</strong> One file. Everything the agent needs (discovery, knowledge, workflow, guardrails) in under 2,000 tokens.</p><p>Most skills start here and many never need more. If the use case is straightforward, a single file is the whole package.</p>',
+    narration: '<p><strong>For simple tasks, this is the entire skill.</strong> One file. Everything the agent needs (discovery, knowledge, workflow, guardrails) in under 2,000 tokens (roughly a page of text in the agent\u2019s working memory).</p><p>Most skills start here and many never need more. If the use case is straightforward, a single file is the whole package.</p>',
     previews: [],
   },
   {
@@ -321,9 +321,10 @@ function render() {
   const next = document.getElementById('btnNext');
   const back = document.getElementById('btnBack');
   const reset = document.getElementById('btnReset');
-  if (next) next.addEventListener('click', () => { phase++; render(); });
-  if (back) back.addEventListener('click', () => { phase--; render(); });
-  if (reset) reset.addEventListener('click', () => { phase = 0; render(); });
+  function advance(fn) { fn(); render(); document.getElementById('stage').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  if (next) next.addEventListener('click', () => advance(() => phase++));
+  if (back) back.addEventListener('click', () => advance(() => phase--));
+  if (reset) reset.addEventListener('click', () => advance(() => phase = 0));
 
   postHeight();
 }
