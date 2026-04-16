@@ -52,11 +52,15 @@ const rest = posts.slice(3);
         {next.map((post) => (
           <li>
             <a href={`/${post.slug}`}>
-              {post.data.heroImage && (
+              {post.data.beatImage ? (
+                <div class="post-grid-img">
+                  <img src={post.data.beatImage} alt={post.data.title} />
+                </div>
+              ) : post.data.heroImage ? (
                 <div class="post-grid-img">
                   <img src={post.data.heroImage} alt={post.data.title} />
                 </div>
-              )}
+              ) : null}
               <span class="date">{fmt(post.data.date)}</span>
               <span class="title">{post.data.title}</span>
               <span class="summary">{post.data.description}</span>
