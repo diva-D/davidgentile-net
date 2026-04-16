@@ -21,8 +21,8 @@ export async function GET(context) {
       (p) => `
     <item>
       <title>${escape(p.data.title)}</title>
-      <link>${site}/${p.slug}</link>
-      <guid isPermaLink="true">${site}/${p.slug}</guid>
+      <link>${site}/${p.id}</link>
+      <guid isPermaLink="true">${site}/${p.id}</guid>
       <pubDate>${p.data.date.toUTCString()}</pubDate>
       <description><![CDATA[${p.data.description}]]></description>
     </item>`

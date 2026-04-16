@@ -20,7 +20,7 @@ const rest = posts.slice(3);
     </section>
 
     {featured && (
-      <a class="featured" href={`/${featured.slug}`}>
+      <a class="featured" href={`/${featured.id}`}>
         <div class="featured-meta">
           <span class="featured-kicker">Latest</span>
           <span class="featured-date">{fmt(featured.data.date)}</span>
