@@ -6,11 +6,13 @@ heroImage: "/images/friction-tax/hero.png"
 beatImage: "/images/friction-tax/beat.gif"
 beatMov: "/images/friction-tax/beat.mp4"
 artefact: "/artefacts/friction-tax/index.html"
-artefactHeight: 880
-artefactCaption: "Click the 'Next' button to walk through four phases."
 tags: ["Intelligence interface"]
 stage: published
 ---
+
+import Artefact from '../../components/Artefact.astro';
+
+<Artefact src="/artefacts/friction-tax/index.html" height={880} caption="Click the 'Next' button to walk through four phases." />
 
 The friction tax isn't the work. It's the *re-reading*. Remembering what state this thing was in. Digging through Slack for what Daniel said on Tuesday. Every item that lands on you without a context, a status, and a next action charges rent on your attention, every time you look at the pile.
 
